@@ -1,0 +1,102 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+def projectName = "weaving"
+def mavenDesc = 'Add text on your Android app icon'
+def baseUrl = 'https://github.com/2BAB/Weaving'
+def siteUrl = baseUrl
+def gitUrl = "${baseUrl}.git"
+def issueUrl = "${baseUrl}/issues"
+
+def licenseIds = ['Apache-2.0']
+def licenseNames = ['The Apache Software License, Version 2.0']
+def licenseUrls = ['http://www.apache.org/licenses/LICENSE-2.0.txt']
+def inception = '2018'
+
+def username = '2BAB'
+
+install {
+    repositories {
+        mavenInstaller {
+            pom.project {
+                // Description
+                name projectName
+                description mavenDesc
+                url siteUrl
+
+                // Archive
+                groupId project.group
+                artifactId archivesBaseName
+                version project.version
+
+                // License
+                inceptionYear inception
+                licenses {
+                    licenseNames.eachWithIndex { ln, li ->
+                        license {
+                            name ln
+                            url licenseUrls[li]
+                        }
+                    }
+                }
+                developers {
+                    developer {
+                        name username
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+def btUser = null
+def btApiKey = null
+
+if (travisBuild) {
+    btUser = System.getenv("BINTRAY_USER")
+    btApiKey = System.getenv("BINTRAY_API_KEY")
+} else {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    btUser = properties.getProperty("bintray.user")
+    btApiKey = properties.getProperty("bintray.apikey")
+}
+
+bintray {
+    user = btUser
+    key = btApiKey
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = projectName
+        desc = mavenDesc
+        websiteUrl = siteUrl
+        issueTrackerUrl = issueUrl
+        vcsUrl = gitUrl
+        labels = ['2BAB', 'Gradle']
+        licenses = licenseIds
+        publish = true
+        publicDownloadNumbers = true
+    }
+}

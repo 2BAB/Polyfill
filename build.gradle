@@ -1,0 +1,62 @@
+// must keep the order among `buildscript` `plugins` `repositories` blocks
+
+buildscript {
+    ext.kotlin_version = '1.2.71'
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+    }
+
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'maven'
+    id "org.jetbrains.kotlin.jvm" version "1.2.71"
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+configurations.all {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation 'com.android.tools.build:gradle:3.2.0'
+    implementation 'org.jfree:jfreesvg:3.3'
+}
+
+compileJava {
+    options.compilerArgs += ["-proc:none"]
+}
+
+ext.travisBuild = System.getenv("TRAVIS") == "true"
+
+if (project.extensions.findByName("buildScan") != null) {
+    buildScan {
+        licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+        licenseAgree = 'yes'
+    }
+}
+
+// publish
+group 'me.2bab'
+version '2.3.0'
+apply from: 'bintray.gradle'
+apply from: 'mavenlocal.gradle'
