@@ -1,4 +1,4 @@
-import me.xx2bab.polyfill.build.BuildConfig.Versions.polyfillDevVersion
+import me.xx2bab.polyfill.buildscript.BuildConfig.Versions.polyfillDevVersion
 
 buildscript {
 

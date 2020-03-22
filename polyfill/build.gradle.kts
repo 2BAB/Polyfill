@@ -1,5 +1,5 @@
-import me.xx2bab.polyfill.build.BuildConfig.Deps
-import me.xx2bab.polyfill.build.BuildConfig.Versions
+import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
+import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
     id("kotlin")

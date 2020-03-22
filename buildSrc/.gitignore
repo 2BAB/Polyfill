@@ -14,7 +14,7 @@ gen/
 # Android Studio
 /*.iml
 .idea
-./build/
+/build
 .gradle
 captures/
 
