@@ -1,0 +1,26 @@
+/local.properties
+.DS_Store
+
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Android Studio
+/*.iml
+.idea
+/build
+.gradle
+captures/
+
+# Beta distribution
+release_notes.txt
+group_aliases.txt
+
+release-script/
