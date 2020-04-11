@@ -20,7 +20,8 @@ object ReleaseMetaData {
         val pwd = project.rootProject.rootDir.absolutePath
         val res = mutableListOf<File>()
         val javaProjectNames = arrayOf(
-                "polyfill"
+                "polyfill",
+                "polyfill-arsc"
         )
         for (name in javaProjectNames) {
             val jar = File(arrayOf(pwd, name, "build", "libs", name + "-" + getVersion() + ".jar")
