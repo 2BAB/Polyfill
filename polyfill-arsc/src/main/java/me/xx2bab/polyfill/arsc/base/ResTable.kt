@@ -1,11 +1,14 @@
 package me.xx2bab.polyfill.arsc.base
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
+import me.xx2bab.polyfill.arsc.io.flipToArray
+import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
 import me.xx2bab.polyfill.arsc.pack.ResPackage
 import me.xx2bab.polyfill.arsc.stringpool.StringPool
 import java.io.File
 import java.io.IOException
 import java.lang.IllegalArgumentException
+import java.nio.ByteBuffer
 
 /**
  * The parser of resource.arsc binary artifact.
@@ -13,13 +16,6 @@ import java.lang.IllegalArgumentException
 class ResTable: IParsable {
 
     companion object {
-        @JvmStatic
-        fun main(args : Array<String>) {
-            val input = fileToLittleEndianInputStream(File("/Users/2bab/Desktop/resources.arsc"))
-            val resTable = ResTable()
-            resTable.parse(input, 0)
-        }
-
         @JvmStatic
         @Throws(IllegalArgumentException::class)
         fun fileToLittleEndianInputStream(arscFile: File): LittleEndianInputStream {
@@ -55,7 +51,28 @@ class ResTable: IParsable {
             packages.add(resPackage)
         }
 
-        println("Done")
+//        println("Done")
+    }
+
+    override fun toByteArray(): ByteArray {
+        val headerSize = header.size() + sizeOf(packageCount)
+
+        val stringPoolByteArray = stringPool.toByteArray()
+        val stringPoolSize = stringPoolByteArray.size
+        val packageByteArrays = packages.map { it.toByteArray() }
+        val packageSize = packageByteArrays.sumBy { it.size }
+
+        val newChunkSize = headerSize + stringPoolSize + packageSize
+        val bf = ByteBuffer.allocate(newChunkSize)
+        bf.takeLittleEndianOrder()
+        bf.putShort(header.type)
+        bf.putShort(headerSize.toShort())
+        bf.putInt(newChunkSize)
+        bf.putInt(packages.size)
+        bf.put(stringPoolByteArray)
+        packageByteArrays.forEach { bf.put(it) }
+
+        return bf.flipToArray()
     }
 
 }

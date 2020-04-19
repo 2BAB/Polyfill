@@ -1,13 +1,11 @@
 package me.xx2bab.polyfill.arsc.stringpool
 
-import me.xx2bab.polyfill.arsc.base.Header
-import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_INT
-import me.xx2bab.polyfill.arsc.base.IParsable
+import me.xx2bab.polyfill.arsc.base.*
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
+import me.xx2bab.polyfill.arsc.io.flipToArray
+import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
 import java.io.IOException
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.charset.StandardCharsets
 
 class StringPool : IParsable {
 
@@ -25,8 +23,8 @@ class StringPool : IParsable {
 
     lateinit var stringOffsets: IntArray
     lateinit var styleOffsets: IntArray
-    lateinit var strings: Array<ByteBuffer>
-    lateinit var styles: Array<ByteBuffer>
+    lateinit var strings: Array<ByteArray>
+    lateinit var styles: Array<ByteArray>
 
 
     @Throws(IOException::class)
@@ -52,7 +50,7 @@ class StringPool : IParsable {
 
         strings = if (stringCount > 0) {
             Array(stringCount) { i ->
-                val buffer = if (i < stringCount - 1) {
+                val array = if (i < stringCount - 1) {
                     ByteArray(stringOffsets[i + 1] - stringOffsets[i])
                 } else {
                     if (styleCount > 0) {
@@ -61,36 +59,109 @@ class StringPool : IParsable {
                         ByteArray(header.chunkSize - stringStartPosition - stringOffsets[i])
                     }
                 }
-                input.read(buffer)
-                println(String(buffer, StandardCharsets.UTF_8))
-                ByteBuffer.allocate(buffer.size).apply {
-                    order(ByteOrder.LITTLE_ENDIAN)
-                    clear()
-                    put(buffer)
-                }
+                input.read(array)
+//                println(String(buffer, StandardCharsets.UTF_8))
+//                ByteBuffer.allocate(buffer.size).apply {
+//                    order(ByteOrder.LITTLE_ENDIAN)
+//                    clear()
+//                    put(buffer)
+//                }
+                array
             }
         } else {
             emptyArray()
         }
         styles = if (styleCount > 0) {
             Array(styleCount) { i ->
-                val buffer = if (i < styleCount - 1) {
+                val array = if (i < styleCount - 1) {
                     ByteArray(styleOffsets[i + 1] - styleOffsets[i])
                 } else {
                     ByteArray(header.chunkSize - styleStartPosition - styleOffsets[i])
                 }
-                input.read(buffer)
-                println(String(buffer, StandardCharsets.UTF_8))
-                ByteBuffer.allocate(buffer.size).apply {
-                    order(ByteOrder.LITTLE_ENDIAN)
-                    clear()
-                    put(buffer)
-                }
+                input.read(array)
+//                println(String(buffer, StandardCharsets.UTF_8))
+//                ByteBuffer.allocate(buffer.size).apply {
+//                    order(ByteOrder.LITTLE_ENDIAN)
+//                    clear()
+//                    put(buffer)
+//                }
+                array
             }
         } else {
             emptyArray()
         }
     }
 
+    override fun toByteArray(): ByteArray {
+        val headerSize = header.size()
+        val stringCountSize = sizeOf(stringCount)
+        val styleCountSize = sizeOf(styleCount)
+        val flagSize = sizeOf(flag)
+        val stringStartPositionSize = sizeOf(stringStartPosition)
+        val styleStartPositionSize = sizeOf(styleStartPosition)
+
+        val stringsSize = strings.sumBy { it.size }
+        val stringOffsetsSize = strings.size * SIZE_INT
+        val stylesSize = styles.sumBy { it.size }
+        val styleOffsetsSize = styles.size * SIZE_INT
+
+        val newStringOffsets = calculateOffsets(strings)
+        val newStyleOffsets = calculateOffsets(styles)
+
+        val newChunkSize = (headerSize
+                + stringCountSize
+                + styleCountSize
+                + flagSize
+                + stringStartPositionSize
+                + styleStartPositionSize
+                + stringsSize
+                + stringOffsetsSize
+                + stylesSize
+                + styleOffsetsSize)
+
+        val newStringStartPosition = newChunkSize - stylesSize - stringsSize
+        val newStyleStartPosition = if (stylesSize == 0) 0 else newChunkSize - stylesSize
+
+
+        val bf = ByteBuffer.allocate(newChunkSize)
+        bf.takeLittleEndianOrder()
+        bf.putShort(header.type)
+        bf.putShort((headerSize
+                + stringCountSize
+                + styleCountSize
+                + flagSize
+                + stringStartPositionSize
+                + styleStartPositionSize).toShort())
+        bf.putInt(newChunkSize)
+        bf.putInt(strings.size)
+        bf.putInt(styles.size)
+        bf.putInt(flag)
+        bf.putInt(newStringStartPosition)
+        bf.putInt(newStyleStartPosition)
+        newStringOffsets.forEach { bf.putInt(it) }
+        newStyleOffsets.forEach { bf.putInt(it) }
+        strings.forEach { bf.put(it) }
+        styles.forEach { bf.put(it) }
+
+        return bf.flipToArray()
+    }
+
+    private fun calculateOffsets(array: Array<ByteArray>): IntArray {
+        val offsets = IntArray(array.size)
+        var currentPointer = 0
+        var lastSize = 0
+        for (i in array.indices) {
+            val s = array[i]
+            if (i == 0) {
+                offsets[i] = 0
+                lastSize = s.size
+            } else {
+                currentPointer += lastSize
+                lastSize = s.size
+                offsets[i] = currentPointer
+            }
+        }
+        return offsets
+    }
 
 }

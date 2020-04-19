@@ -1,26 +1,40 @@
 package me.xx2bab.polyfill.arsc.pack
 
-import me.xx2bab.polyfill.arsc.base.Header
-import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_BYTE
-import me.xx2bab.polyfill.arsc.base.IParsable
+import me.xx2bab.polyfill.arsc.base.SIZE_INT
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
+import me.xx2bab.polyfill.arsc.io.flipToArray
+import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
+import java.nio.ByteBuffer
 
-class TypeSpec : IParsable {
+class TypeSpec : AbsResType() {
 
-    lateinit var header: Header // Pass the header instance from resTable before using it or calling parse(...)
-    var typeId: Byte = INVALID_VALUE_BYTE
-    private var reservedField0: Byte = 0 // So far can ignore it
-    private var reservedField1: Short = 0 // So far can ignore it
     var specCount: Int = 0
     lateinit var specArray: IntArray
 
     override fun parse(input: LittleEndianInputStream, start: Long) {
-        typeId = input.readByte()
-        reservedField0 = input.readByte()
-        reservedField1 = input.readShort()
+        super.parse(input, start)
         specCount = input.readInt()
         specArray = IntArray(specCount) { input.readInt() }
-//        print(specCount)
+    }
+
+    override fun toByteArray(): ByteArray {
+        val commonHeaderSize = commonHeaderSize()
+        val specCountSize = SIZE_INT
+        val specArraySize = SIZE_INT * specArray.size
+        val newChunkSize = commonHeaderSize + specCountSize + specArraySize
+
+        val bf = ByteBuffer.allocate(newChunkSize)
+        bf.takeLittleEndianOrder()
+        bf.putShort(header.type)
+        bf.putShort((commonHeaderSize + specCountSize).toShort())
+        bf.putInt(newChunkSize)
+        bf.put(typeId)
+        bf.put(reservedField0)
+        bf.putShort(reservedField1)
+        bf.putInt(specArray.size)
+        specArray.forEach { bf.putInt(it) }
+
+        return bf.flipToArray()
     }
 
 }
