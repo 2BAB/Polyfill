@@ -6,12 +6,15 @@ import me.xx2bab.polyfill.arsc.pack.TypeType
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class ResourceTableIntegrationTest {
 
     @Test
     fun simpleARSCTest() {
-        val input = ResTable.fileToLittleEndianInputStream(File("/Users/2bab/Desktop/resources.arsc"))
+        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val input = ResTable.fileToLittleEndianInputStream(originArscFile)
         val resTable = ResTable()
         resTable.parse(input, 0)
 
@@ -21,6 +24,7 @@ class ResourceTableIntegrationTest {
         validateStringPools(input, resTable)
         validatePackages(input, resTable)
         validateTable(input, resTable)
+        validateFile(originArscFile, resTable)
     }
 
 
@@ -99,4 +103,15 @@ class ResourceTableIntegrationTest {
         input.read(tableInput)
         assertArrayEquals(tableInput, tableOutput)
     }
+
+    private fun validateFile(originArscFile: File, resTable: ResTable) {
+        val generatedArscFile = File(originArscFile.parentFile,
+                "${originArscFile.nameWithoutExtension}-modified.arsc")
+        ResTable.byteArrayToFile(resTable.toByteArray(), generatedArscFile)
+        assertArrayEquals(Files.readAllBytes(Paths.get(originArscFile.absolutePath)),
+                Files.readAllBytes(Paths.get(generatedArscFile.absolutePath)))
+        generatedArscFile.delete()
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package me.xx2bab.polyfill.arsc.base
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
+import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
 import me.xx2bab.polyfill.arsc.io.flipToArray
 import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
 import me.xx2bab.polyfill.arsc.pack.ResPackage
@@ -17,12 +18,24 @@ class ResTable: IParsable {
 
     companion object {
         @JvmStatic
-        @Throws(IllegalArgumentException::class)
+        @Throws(IllegalArgumentException::class, IOException::class)
         fun fileToLittleEndianInputStream(arscFile: File): LittleEndianInputStream {
             if (arscFile.exists() && arscFile.isFile && arscFile.extension == "arsc") {
                 return LittleEndianInputStream(arscFile)
             }
             throw IllegalArgumentException("The arsc file is illegal.")
+        }
+        @JvmStatic
+        @Throws(IOException::class)
+        fun byteArrayToFile(byteArray: ByteArray, file: File) {
+            if (file.exists()) {
+                file.delete()
+            }
+            file.parentFile.mkdirs()
+            file.createNewFile()
+            val outputStream = LittleEndianOutputStream(file)
+            outputStream.writeByte(byteArray)
+            outputStream.close()
         }
     }
 
