@@ -1,5 +1,6 @@
 package me.xx2bab.polyfill.arsc.io
 
+import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.io.RandomAccessFile
@@ -14,6 +15,8 @@ import java.nio.ByteOrder
  * Created by jinqiuchen on 18/7/29.
  */
 class LittleEndianOutputStream(private val original: RandomAccessFile) : OutputStream() {
+
+    constructor(file: File?) : this(RandomAccessFile(file, "rw")) {}
 
     constructor(file: String?) : this(RandomAccessFile(file, "rw")) {}
 
