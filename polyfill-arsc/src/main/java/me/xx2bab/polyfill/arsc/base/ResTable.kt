@@ -1,5 +1,7 @@
 package me.xx2bab.polyfill.arsc.base
 
+import me.xx2bab.polyfill.arsc.export.IResArscTweaker
+import me.xx2bab.polyfill.arsc.export.SimpleResource
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
 import me.xx2bab.polyfill.arsc.io.flipToArray
@@ -8,36 +10,12 @@ import me.xx2bab.polyfill.arsc.pack.ResPackage
 import me.xx2bab.polyfill.arsc.stringpool.StringPool
 import java.io.File
 import java.io.IOException
-import java.lang.IllegalArgumentException
 import java.nio.ByteBuffer
 
 /**
  * The parser of resource.arsc binary artifact.
  */
-class ResTable: IParsable {
-
-    companion object {
-        @JvmStatic
-        @Throws(IllegalArgumentException::class, IOException::class)
-        fun fileToLittleEndianInputStream(arscFile: File): LittleEndianInputStream {
-            if (arscFile.exists() && arscFile.isFile && arscFile.extension == "arsc") {
-                return LittleEndianInputStream(arscFile)
-            }
-            throw IllegalArgumentException("The arsc file is illegal.")
-        }
-        @JvmStatic
-        @Throws(IOException::class)
-        fun byteArrayToFile(byteArray: ByteArray, file: File) {
-            if (file.exists()) {
-                file.delete()
-            }
-            file.parentFile.mkdirs()
-            file.createNewFile()
-            val outputStream = LittleEndianOutputStream(file)
-            outputStream.writeByte(byteArray)
-            outputStream.close()
-        }
-    }
+class ResTable: IParsable, IResArscTweaker {
 
     lateinit var header: Header
     var packageCount = 0
@@ -86,6 +64,42 @@ class ResTable: IParsable {
         packageByteArrays.forEach { bf.put(it) }
 
         return bf.flipToArray()
+    }
+
+    override fun read(source: File) {
+        if (source.exists() && source.isFile && source.extension == "arsc") {
+            val inputStream = LittleEndianInputStream(source)
+            parse(inputStream, 0)
+            return
+        }
+        throw IllegalArgumentException("The arsc file is illegal.")
+    }
+
+    override fun write(dest: File) {
+        if (dest.exists()) {
+            dest.delete()
+        }
+        dest.parentFile.mkdirs()
+        dest.createNewFile()
+        val outputStream = LittleEndianOutputStream(dest)
+        outputStream.writeByte(toByteArray())
+        outputStream.close()
+    }
+
+    override fun getResourceTypes(): Map<String, Int> {
+        TODO("Not yet implemented")
+    }
+
+    override fun findResourceById(id: Int): List<SimpleResource?> {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeResourceById(id: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateResourceById(simpleResource: SimpleResource): Boolean {
+        TODO("Not yet implemented")
     }
 
 }

@@ -1,13 +1,11 @@
 package me.xx2bab.polyfill.arsc.pack.type
 
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_BYTE
-import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_INT
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_SHORT
 import me.xx2bab.polyfill.arsc.base.IParsable
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.*
 
 /**
  * Reference [google/android-arscblamer](https://github.com/google/android-arscblamer)

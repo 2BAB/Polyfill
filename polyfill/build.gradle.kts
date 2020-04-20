@@ -7,6 +7,8 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    implementation(project(":polyfill-arsc"))
+
     implementation("com.android.tools.build:gradle:${rootProject.extra["agpVersion"]}")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))

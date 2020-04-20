@@ -2,8 +2,6 @@ package me.xx2bab.polyfill.arsc.base
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 /**
  * The common header for per chunk.

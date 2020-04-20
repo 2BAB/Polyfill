@@ -14,9 +14,9 @@ class ResourceTableIntegrationTest {
     @Test
     fun simpleARSCTest() {
         val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
-        val input = ResTable.fileToLittleEndianInputStream(originArscFile)
+        val input = LittleEndianInputStream(originArscFile) // Used for validation
         val resTable = ResTable()
-        resTable.parse(input, 0)
+        resTable.read(originArscFile)
 
         validateResConfigs(input, resTable)
         validateResEntries(input, resTable)
@@ -107,7 +107,7 @@ class ResourceTableIntegrationTest {
     private fun validateFile(originArscFile: File, resTable: ResTable) {
         val generatedArscFile = File(originArscFile.parentFile,
                 "${originArscFile.nameWithoutExtension}-modified.arsc")
-        ResTable.byteArrayToFile(resTable.toByteArray(), generatedArscFile)
+        resTable.write(generatedArscFile)
         assertArrayEquals(Files.readAllBytes(Paths.get(originArscFile.absolutePath)),
                 Files.readAllBytes(Paths.get(generatedArscFile.absolutePath)))
         generatedArscFile.delete()
