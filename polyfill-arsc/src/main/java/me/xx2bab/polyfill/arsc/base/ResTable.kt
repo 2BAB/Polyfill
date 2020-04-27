@@ -1,5 +1,7 @@
 package me.xx2bab.polyfill.arsc.base
 
+import android.util.TypedValue.TYPE_FIRST_COLOR_INT
+import android.util.TypedValue.TYPE_LAST_COLOR_INT
 import me.xx2bab.polyfill.arsc.export.IResArscTweaker
 import me.xx2bab.polyfill.arsc.export.SimpleResource
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
@@ -7,15 +9,17 @@ import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
 import me.xx2bab.polyfill.arsc.io.flipToArray
 import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
 import me.xx2bab.polyfill.arsc.pack.ResPackage
+import me.xx2bab.polyfill.arsc.pack.TypeType
 import me.xx2bab.polyfill.arsc.stringpool.StringPool
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.util.*
 
 /**
  * The parser of resource.arsc binary artifact.
  */
-class ResTable: IParsable, IResArscTweaker {
+class ResTable : IParsable, IResArscTweaker {
 
     lateinit var header: Header
     var packageCount = 0
@@ -87,19 +91,61 @@ class ResTable: IParsable, IResArscTweaker {
     }
 
     override fun getResourceTypes(): Map<String, Int> {
-        TODO("Not yet implemented")
+        return Collections.emptyMap()
     }
 
     override fun findResourceById(id: Int): List<SimpleResource?> {
-        TODO("Not yet implemented")
+        val packageId = getPackageId(id)
+        val typeId = getResourceTypeId(id)
+        val entryId = getResourceEntryId(id)
+        val filteredPackages = packages.filter { it.packageId == packageId }
+        if (filteredPackages.isNullOrEmpty()) {
+            return Collections.emptyList()
+        }
+        val filteredTypes = filteredPackages[0].resTypes.filter { it.typeId.toInt() == typeId }
+        if (filteredTypes.isNullOrEmpty()) {
+            return Collections.emptyList()
+        }
+        return filteredTypes.filter {
+            it is TypeType && it.entries.size > entryId // List<TypeType>
+        }.mapNotNull {
+            (it as TypeType).entries[entryId] // List<ResEntry>
+        }.filter {
+            it.pairCount == 0 // List<ResEntry>, here only support simple ResValue
+        }.map {
+            SimpleResource(packageId,
+                    typeId,
+                    entryId,
+                    it.resValue.dataType.toInt(), it.resValue.data.toString())
+        }
     }
 
+
     override fun removeResourceById(id: Int): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun updateResourceById(simpleResource: SimpleResource): Boolean {
-        TODO("Not yet implemented")
+        return false
+    }
+
+    private fun parseValue(type: Int, value: Int): String {
+        if (type in TYPE_FIRST_COLOR_INT..TYPE_LAST_COLOR_INT) { // Color
+            return Integer.toHexString(value)
+        }
+        return ""
+    }
+
+    private fun getPackageId(resourceId: Int): Int {
+        return resourceId and 0xFF000000.toInt() shr 24
+    }
+
+    private fun getResourceTypeId(resourceId: Int): Int {
+        return resourceId and 0x00FF0000 shr 16
+    }
+
+    private fun getResourceEntryId(resourceId: Int): Int {
+        return resourceId and 0x0000FFFF
     }
 
 }

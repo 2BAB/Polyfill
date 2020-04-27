@@ -4,6 +4,6 @@ data class SimpleResource(
         val packageId: Int,
         val typeId: Int,
         val entryId: Int,
-        val type: String,
+        val type: Int,
         val value: String
 )

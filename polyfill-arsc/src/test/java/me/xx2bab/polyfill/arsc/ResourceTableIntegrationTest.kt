@@ -3,7 +3,9 @@ package me.xx2bab.polyfill.arsc
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.pack.TypeType
+import me.xx2bab.polyfill.arsc.stringpool.StringPool
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
@@ -25,6 +27,16 @@ class ResourceTableIntegrationTest {
         validatePackages(input, resTable)
         validateTable(input, resTable)
         validateFile(originArscFile, resTable)
+    }
+
+    @Test
+    fun findResByIdTest() {
+        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val resTable = ResTable()
+        resTable.read(originArscFile)
+
+        val result = resTable.findResourceById(0x7f040036)
+        assertEquals(Integer.toHexString(result[0]!!.value.toInt()), "ff80cbc4")
     }
 
 
