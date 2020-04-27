@@ -20,6 +20,7 @@ class ResourceTableIntegrationTest {
         val resTable = ResTable()
         resTable.read(originArscFile)
 
+        validateStrings(resTable)
         validateResConfigs(input, resTable)
         validateResEntries(input, resTable)
         validateTypes(input, resTable)
@@ -39,6 +40,44 @@ class ResourceTableIntegrationTest {
         assertEquals(Integer.toHexString(result[0]!!.value.toInt()), "ff80cbc4")
     }
 
+    private fun validateStrings(resTable: ResTable) {
+        var byteCount = 0
+        resTable.stringPool.strings.forEachIndexed { index, element ->
+            byteCount += validateString(element, resTable.stringPool.flag,
+                    index == resTable.stringPool.strings.size - 1, byteCount)
+        }
+        resTable.packages.forEach { pack ->
+            byteCount = 0
+            pack.resTypeStringPool.strings.forEachIndexed { index, element ->
+                byteCount += validateString(element, pack.resTypeStringPool.flag,
+                        index == pack.resTypeStringPool.strings.size - 1, byteCount)
+            }
+            byteCount = 0
+            pack.resKeywordStringPool.strings.forEachIndexed { index, element ->
+                byteCount += validateString(element, pack.resKeywordStringPool.flag,
+                        index == pack.resKeywordStringPool.strings.size - 1, byteCount)
+            }
+        }
+    }
+
+    private fun validateString(it: ByteArray, flag: Int, isLastItem: Boolean, byteCount: Int): Int {
+        val string = StringPool.byteArrayToString(it, flag)
+        val byteArray = StringPool.stringToByteArray(string, flag)
+
+        if (isLastItem) {
+            val zeroCount = 4 - (byteCount + byteArray.size) % 4 // 4 byte aligned
+            val origin = if (zeroCount != 4) {
+                it.take(it.size - zeroCount).toByteArray()
+            } else {
+                it
+            }
+            assertArrayEquals(origin, byteArray)
+        } else {
+            assertArrayEquals(it, byteArray)
+        }
+
+        return byteArray.size
+    }
 
     private fun validateResConfigs(input: LittleEndianInputStream, resTable: ResTable) {
         resTable.packages.forEach { pack ->
