@@ -23,8 +23,10 @@ class StringPool : IParsable {
 
     lateinit var stringOffsets: IntArray
     lateinit var styleOffsets: IntArray
-    lateinit var strings: Array<ByteArray>
-    lateinit var styles: Array<ByteArray>
+    lateinit var stringByteArrays: Array<ByteArray>
+    lateinit var stylesByteArrays: Array<ByteArray>
+    lateinit var strings: Array<String?>
+    lateinit var styles: Array<String?>
 
 
     @Throws(IOException::class)
@@ -48,7 +50,8 @@ class StringPool : IParsable {
 
         input.seek(header.start + stringStartPosition)
 
-        strings = if (stringCount > 0) {
+        strings = Array(stringCount) { null }
+        stringByteArrays = if (stringCount > 0) {
             Array(stringCount) { i ->
                 val array = if (i < stringCount - 1) {
                     ByteArray(stringOffsets[i + 1] - stringOffsets[i])
@@ -60,12 +63,14 @@ class StringPool : IParsable {
                     }
                 }
                 input.read(array)
+                strings[i] = if (array.isEmpty()) null else UtfUtil.byteArrayToString(array, flag)
                 array
             }
         } else {
             emptyArray()
         }
-        styles = if (styleCount > 0) {
+        styles = Array(styleCount) { null }
+        stylesByteArrays = if (styleCount > 0) {
             Array(styleCount) { i ->
                 val array = if (i < styleCount - 1) {
                     ByteArray(styleOffsets[i + 1] - styleOffsets[i])
@@ -73,6 +78,7 @@ class StringPool : IParsable {
                     ByteArray(header.chunkSize - styleStartPosition - styleOffsets[i])
                 }
                 input.read(array)
+                styles[i] = if (array.isEmpty()) null else UtfUtil.byteArrayToString(array, flag)
                 array
             }
         } else {
@@ -88,13 +94,24 @@ class StringPool : IParsable {
         val stringStartPositionSize = sizeOf(stringStartPosition)
         val styleStartPositionSize = sizeOf(styleStartPosition)
 
-        val stringsSize = strings.sumBy { it.size }
-        val stringOffsetsSize = strings.size * SIZE_INT
-        val stylesSize = styles.sumBy { it.size }
-        val styleOffsetsSize = styles.size * SIZE_INT
+        val newStringByteArrays = Array(strings.size) {
+            val s = strings[it]
+            if (s == null) ByteArray(0) else UtfUtil.stringToByteArray(s, flag)
+        }
+        val stringsSize = newStringByteArrays.sumBy { it.size }
+        val stringsByteAlignedSupplementCount = 4 - stringsSize % 4
+        val stringOffsetsSize = newStringByteArrays.size * SIZE_INT
 
-        val newStringOffsets = calculateOffsets(strings)
-        val newStyleOffsets = calculateOffsets(styles)
+        val newStyleByteArrays = Array(styles.size) {
+            val s = styles[it]
+            if (s == null) ByteArray(0) else UtfUtil.stringToByteArray(s, flag)
+        }
+        val stylesSize = newStyleByteArrays.sumBy { it.size }
+        val stylesByteAlignedSupplementCount = 4 - stylesSize % 4
+        val styleOffsetsSize = newStyleByteArrays.size * SIZE_INT
+
+        val newStringOffsets = calculateOffsets(newStringByteArrays)
+        val newStyleOffsets = calculateOffsets(newStyleByteArrays)
 
         val newChunkSize = (headerSize
                 + stringCountSize
@@ -103,12 +120,14 @@ class StringPool : IParsable {
                 + stringStartPositionSize
                 + styleStartPositionSize
                 + stringsSize
+                + stringsByteAlignedSupplementCount % 4
                 + stringOffsetsSize
                 + stylesSize
+                + stylesByteAlignedSupplementCount % 4
                 + styleOffsetsSize)
 
-        val newStringStartPosition = newChunkSize - stylesSize - stringsSize
-        val newStyleStartPosition = if (stylesSize == 0) 0 else newChunkSize - stylesSize
+        val newStringStartPosition = newChunkSize - stylesSize - stringsSize - stringsByteAlignedSupplementCount % 4
+        val newStyleStartPosition = if (stylesSize == 0) 0 else newChunkSize - stylesSize - stylesByteAlignedSupplementCount % 4
 
 
         val bf = ByteBuffer.allocate(newChunkSize)
@@ -121,15 +140,26 @@ class StringPool : IParsable {
                 + stringStartPositionSize
                 + styleStartPositionSize).toShort())
         bf.putInt(newChunkSize)
-        bf.putInt(strings.size)
-        bf.putInt(styles.size)
+        bf.putInt(newStringByteArrays.size)
+        bf.putInt(newStyleByteArrays.size)
         bf.putInt(flag)
         bf.putInt(newStringStartPosition)
         bf.putInt(newStyleStartPosition)
         newStringOffsets.forEach { bf.putInt(it) }
         newStyleOffsets.forEach { bf.putInt(it) }
-        strings.forEach { bf.put(it) }
-        styles.forEach { bf.put(it) }
+        newStringByteArrays.forEach { bf.put(it) }
+        val zeroInByte: Byte = 0
+        if (stringsByteAlignedSupplementCount != 4) {
+            for (i in 0 until stringsByteAlignedSupplementCount) {
+                bf.put(zeroInByte)
+            }
+        }
+        newStyleByteArrays.forEach { bf.put(it) }
+        if (stylesByteAlignedSupplementCount != 4) {
+            for (i in 0 until stylesByteAlignedSupplementCount) {
+                bf.put(zeroInByte)
+            }
+        }
 
         return bf.flipToArray()
     }
