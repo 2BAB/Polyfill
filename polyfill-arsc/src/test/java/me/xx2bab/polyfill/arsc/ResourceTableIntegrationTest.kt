@@ -3,7 +3,7 @@ package me.xx2bab.polyfill.arsc
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.pack.TypeType
-import me.xx2bab.polyfill.arsc.stringpool.StringPool
+import me.xx2bab.polyfill.arsc.stringpool.UtfUtil
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -42,30 +42,30 @@ class ResourceTableIntegrationTest {
 
     private fun validateStrings(resTable: ResTable) {
         var byteCount = 0
-        resTable.stringPool.strings.forEachIndexed { index, element ->
+        resTable.stringPool.stringByteArrays.forEachIndexed { index, element ->
             byteCount += validateString(element, resTable.stringPool.flag,
-                    index == resTable.stringPool.strings.size - 1, byteCount)
+                    index == resTable.stringPool.stringByteArrays.size - 1, byteCount)
         }
         resTable.packages.forEach { pack ->
             byteCount = 0
-            pack.resTypeStringPool.strings.forEachIndexed { index, element ->
+            pack.resTypeStringPool.stringByteArrays.forEachIndexed { index, element ->
                 byteCount += validateString(element, pack.resTypeStringPool.flag,
-                        index == pack.resTypeStringPool.strings.size - 1, byteCount)
+                        index == pack.resTypeStringPool.stringByteArrays.size - 1, byteCount)
             }
             byteCount = 0
-            pack.resKeywordStringPool.strings.forEachIndexed { index, element ->
+            pack.resKeywordStringPool.stringByteArrays.forEachIndexed { index, element ->
                 byteCount += validateString(element, pack.resKeywordStringPool.flag,
-                        index == pack.resKeywordStringPool.strings.size - 1, byteCount)
+                        index == pack.resKeywordStringPool.stringByteArrays.size - 1, byteCount)
             }
         }
     }
 
     private fun validateString(it: ByteArray, flag: Int, isLastItem: Boolean, byteCount: Int): Int {
-        val string = StringPool.byteArrayToString(it, flag)
-        val byteArray = StringPool.stringToByteArray(string, flag)
+        val string = UtfUtil.byteArrayToString(it, flag)
+        val byteArray = UtfUtil.stringToByteArray(string, flag)
 
         if (isLastItem) {
-            val zeroCount = 4 - (byteCount + byteArray.size) % 4 // 4 byte aligned
+            val zeroCount = 4 - (byteCount + byteArray.size) % 4 // 4 bytes aligned
             val origin = if (zeroCount != 4) {
                 it.take(it.size - zeroCount).toByteArray()
             } else {

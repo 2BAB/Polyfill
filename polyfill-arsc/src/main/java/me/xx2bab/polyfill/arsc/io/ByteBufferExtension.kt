@@ -12,4 +12,3 @@ fun ByteBuffer.flipToArray(): ByteArray {
     flip()
     return array()
 }
-
