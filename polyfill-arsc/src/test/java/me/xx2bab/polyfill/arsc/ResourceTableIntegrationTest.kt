@@ -1,11 +1,13 @@
 package me.xx2bab.polyfill.arsc
 
 import me.xx2bab.polyfill.arsc.base.ResTable
+import me.xx2bab.polyfill.arsc.export.SimpleResource
+import me.xx2bab.polyfill.arsc.export.SupportedResConfig
+import me.xx2bab.polyfill.arsc.export.SupportedResType
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.pack.TypeType
 import me.xx2bab.polyfill.arsc.stringpool.UtfUtil
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
@@ -31,13 +33,54 @@ class ResourceTableIntegrationTest {
     }
 
     @Test
-    fun findResByIdTest() {
+    fun findResByIdTest_Regular() {
         val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
         val resTable = ResTable()
         resTable.read(originArscFile)
 
         val result = resTable.findResourceById(0x7f040036)
-        assertEquals(Integer.toHexString(result[0]!!.value.toInt()), "ff80cbc4")
+        assertEquals(result[0]!!.value!!, "ff80cbc4")
+    }
+
+    @Test
+    fun updateResByIdTest_DefaultConfig() {
+        // Write
+        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val resTable = ResTable()
+        resTable.read(originArscFile)
+
+        val result = resTable.updateResourceById(SimpleResource(0x7f0b0027,
+                SupportedResType.STRING,
+                // It doesn't matter if you pass a null or empty string when update,
+                // since we only do locating by id
+                "app_name",
+                // To change the app name to SP2
+                "SP2"),
+                // A default config without any customization
+                SupportedResConfig())
+        assertTrue(result)
+        val result2 = resTable.updateResourceById(SimpleResource(0x7f040027,
+                SupportedResType.COLOR,
+                // It doesn't matter if you pass a null or empty string when update,
+                // since we only do locating by id
+                "colorPrimary",
+                // To change the colorPrimary to Red
+                "#ff450d"),
+                // A default config without any customization
+                SupportedResConfig())
+        assertTrue(result2)
+
+        // Read
+        val generatedArscFile = File(originArscFile.parentFile,
+                "${originArscFile.nameWithoutExtension}-modified.arsc")
+        resTable.write(generatedArscFile)
+        val newResTable = ResTable()
+        newResTable.read(generatedArscFile)
+        val appNameChangeResult = newResTable.findResourceById(0x7f0b0027)
+        assertEquals(appNameChangeResult[0]!!.value, "SP2")
+        val colorPrimaryChangeResult = newResTable.findResourceById(0x7f040027)
+        assertEquals(colorPrimaryChangeResult[0]!!.value, "#ffff450d")
+        generatedArscFile.delete()
     }
 
     private fun validateStrings(resTable: ResTable) {

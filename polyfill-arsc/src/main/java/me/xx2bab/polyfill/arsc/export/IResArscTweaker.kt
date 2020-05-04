@@ -39,6 +39,7 @@ interface IResArscTweaker {
      */
     fun removeResourceById(id: Int): Boolean
 
-    fun updateResourceById(simpleResource: SimpleResource): Boolean
+    fun updateResourceById(resource: SimpleResource,
+                           config: SupportedResConfig): Boolean
 
 }

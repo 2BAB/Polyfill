@@ -1,11 +1,13 @@
 package me.xx2bab.polyfill.arsc.pack.type
 
+import com.google.common.primitives.UnsignedBytes
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_BYTE
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_SHORT
 import me.xx2bab.polyfill.arsc.base.IParsable
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.experimental.and
 
 /**
  * Reference [google/android-arscblamer](https://github.com/google/android-arscblamer)
@@ -249,6 +251,30 @@ class ResConfig : IParsable {
 
         bf.flip()
         return bf.array()
+    }
+
+
+    fun unpackLanguage(language: ByteArray): String {
+        return unpackLanguageOrRegion(language, 0x61)
+    }
+
+    private fun unpackRegion(region: ByteArray): String {
+        return unpackLanguageOrRegion(region, 0x30)
+    }
+
+    private fun unpackLanguageOrRegion(value: ByteArray, base: Int): String {
+        val byteZero: Byte = 0
+        if (value[0] == byteZero && value[1] == byteZero) {
+            return ""
+        }
+        if ((UnsignedBytes.toInt(value[0]) and 0x80) != 0) {
+            val result = ByteArray(3)
+            result[0] = (base + (value[1] and 0x1F)).toByte()
+            result[1] = (base + ((value[1].toInt() and 0xE0) ushr 5) + ((value[0].toInt() and 0x03) shl 3)).toByte()
+            result[2] = (base + (value[0].toInt() and 0x7C ushr 2)).toByte()
+            return String(result, Charsets.US_ASCII)
+        }
+        return String(value, Charsets.US_ASCII)
     }
 
 }
