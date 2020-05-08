@@ -9,4 +9,5 @@ if (polyfillPubModule != null) {
 if (polyfillPubModule == null) {
     include(":polyfill")
     include(":polyfill-arsc")
+    include(":polyfill-manifest")
 }
