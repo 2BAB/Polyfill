@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.android.tools.build:gradle:3.6.1")
+    implementation("com.android.tools.build:gradle:4.0.0")
 
     // Github Release
     implementation("gradle.plugin.com.github.breadmoirai:github-release:2.2.1")

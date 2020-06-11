@@ -7,17 +7,11 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    implementation(project(":polyfill-arsc"))
-    implementation(project(":polyfill-manifest"))
-
+    implementation(gradleApi())
     implementation("com.android.tools.build:gradle:${rootProject.extra["agpVersion"]}")
     implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
+    implementation(project(":polyfill-gradle"))
 
-    implementation(Deps.koin)
-//    implementation(Deps.koinExt)
-
-    testImplementation(Deps.koinTest)
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)

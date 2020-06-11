@@ -8,6 +8,8 @@ if (polyfillPubModule != null) {
 
 if (polyfillPubModule == null) {
     include(":polyfill")
+    include(":polyfill-agp")
+    include(":polyfill-gradle")
     include(":polyfill-arsc")
     include(":polyfill-manifest")
 }
