@@ -11,31 +11,31 @@ import java.nio.ByteBuffer
 class Attribute: IParsable {
 
     var namespaceUriAttr = INVALID_VALUE_INT // -1 means null
-    var nameAttr = INVALID_VALUE_INT // -1 means null
-    var valueStr = INVALID_VALUE_INT // -1 means null
+    var nameIndex = INVALID_VALUE_INT // -1 means null
+    var valueIndex = INVALID_VALUE_INT // -1 means null
     var type = INVALID_VALUE_INT // >> 24
     var data = INVALID_VALUE_INT
 
     override fun parse(input: LittleEndianInputStream, start: Long) {
         namespaceUriAttr = input.readInt()
-        nameAttr = input.readInt()
-        valueStr = input.readInt()
+        nameIndex = input.readInt()
+        valueIndex = input.readInt()
         type = input.readInt()
         data = input.readInt()
     }
 
     override fun toByteArray(): ByteArray {
         val newChunkSize = (sizeOf(namespaceUriAttr)
-                + sizeOf(nameAttr)
-                + sizeOf(valueStr)
+                + sizeOf(nameIndex)
+                + sizeOf(valueIndex)
                 + sizeOf(type)
                 + sizeOf(data))
         val bf = ByteBuffer.allocate(newChunkSize)
         bf.takeLittleEndianOrder()
 
         bf.putInt(namespaceUriAttr)
-        bf.putInt(nameAttr)
-        bf.putInt(valueStr)
+        bf.putInt(nameIndex)
+        bf.putInt(valueIndex)
         bf.putInt(type)
         bf.putInt(data)
 

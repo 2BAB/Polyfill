@@ -5,6 +5,7 @@ import me.xx2bab.polyfill.manifest.post.ManifestBlock
 import me.xx2bab.polyfill.manifest.post.ManifestPostTweaker
 import me.xx2bab.polyfill.manifest.post.body.XMLBodyType
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -31,6 +32,7 @@ class ManifestPostTweakerIntegrationTest {
         validateNamespaceXmlBody(input, manifest)
         validateTagXmlBody(input, manifest)
         validateFile(originManifestFile, manifestPostTweaker)
+        validatePackageNameModification(originManifestFile, manifestPostTweaker)
     }
 
     private fun validateStringPoolBlock(input: LittleEndianInputStream,
@@ -88,6 +90,24 @@ class ManifestPostTweakerIntegrationTest {
         manifestPostTweaker.write(generatedManifestFile)
         assertArrayEquals(Files.readAllBytes(Paths.get(originManifestFile.absolutePath)),
                 Files.readAllBytes(Paths.get(generatedManifestFile.absolutePath)))
+        generatedManifestFile.delete()
+    }
+
+    private fun validatePackageNameModification(originManifestFile: File,
+                                                manifestPostTweaker: ManifestPostTweaker) {
+        val newPackageName = "me.xx2bab.polyfill.manifest.test.packagename"
+        val generatedManifestFile = File(originManifestFile.parentFile,
+                "${originManifestFile.nameWithoutExtension}-modified.arsc")
+        manifestPostTweaker.updatePackageName(newPackageName)
+        manifestPostTweaker.write(generatedManifestFile)
+
+        val newTweaker = ManifestPostTweaker()
+        newTweaker.read(generatedManifestFile)
+        val valueIndex = newTweaker.getAttrFromTagAttrs("package",
+                newTweaker.getSpecifyStartTagBodyByName("manifest")!!)!!
+                .valueIndex
+        val value = newTweaker.getManifestBlock().stringBlock.strings[valueIndex]
+        assertEquals(newPackageName, value)
         generatedManifestFile.delete()
     }
 

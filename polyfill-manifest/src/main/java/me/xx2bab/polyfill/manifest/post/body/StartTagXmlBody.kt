@@ -32,6 +32,7 @@ open class StartTagXmlBody: XMLBody() {
     }
 
     override fun toByteArray(): ByteArray {
+        val newAttributeCount = attrs.size
         val attrsByteArray = attrs.map { it.toByteArray() }
         val attrsLength = attrsByteArray.sumBy { it.size }
         val newChunkSize = (header.size()
@@ -53,7 +54,7 @@ open class StartTagXmlBody: XMLBody() {
         bf.putInt(namespaceUri)
         bf.putInt(name)
         bf.putInt(reservedField1)
-        bf.putInt(attributeCount)
+        bf.putInt(newAttributeCount)
         bf.putInt(classAttribute)
         attrsByteArray.forEach { bf.put(it) }
 

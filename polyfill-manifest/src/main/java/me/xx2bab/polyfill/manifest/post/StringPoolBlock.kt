@@ -12,7 +12,6 @@ import java.nio.ByteBuffer
 
 class StringPoolBlock: IParsable {
 
-
     lateinit var header: Header
     var stringCount: Int = 0
     var styleCount: Int = 0

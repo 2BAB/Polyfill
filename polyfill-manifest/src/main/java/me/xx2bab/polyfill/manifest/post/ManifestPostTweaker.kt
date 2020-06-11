@@ -3,14 +3,17 @@ package me.xx2bab.polyfill.manifest.post
 import com.google.common.annotations.VisibleForTesting
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
+import me.xx2bab.polyfill.manifest.post.body.Attribute
+import me.xx2bab.polyfill.manifest.post.body.StartTagXmlBody
+import me.xx2bab.polyfill.manifest.post.body.XMLBodyType
 import java.io.File
 
-class ManifestPostTweaker {
+class ManifestPostTweaker : IManifestPostTweaker {
 
     private val manifestBlock = ManifestBlock()
 
-    fun read(source: File) {
-        if (source.exists() && source.isFile && source.name == "AndroidManifest.xml") {
+    override fun read(source: File) {
+        if (source.exists() && source.isFile /*&& source.name == "AndroidManifest.xml"*/) {
             val inputStream = LittleEndianInputStream(source)
             manifestBlock.parse(inputStream, 0)
             return
@@ -18,7 +21,11 @@ class ManifestPostTweaker {
         throw IllegalArgumentException("The input file is illegal.")
     }
 
-    fun write(dest: File, manifest: ManifestBlock = manifestBlock) {
+    override fun write(dest: File) {
+        write(dest, manifestBlock)
+    }
+
+    override fun write(dest: File, manifest: ManifestBlock) {
         if (dest.exists()) {
             dest.delete()
         }
@@ -32,6 +39,30 @@ class ManifestPostTweaker {
     @VisibleForTesting
     fun getManifestBlock(): ManifestBlock {
         return manifestBlock
+    }
+
+    override fun updatePackageName(newPackageName: String) {
+        val applicationTag = getSpecifyStartTagBodyByName("manifest")
+                ?: throw IllegalStateException("Could not found <manifest> tag")
+        val ackageName = getAttrFromTagAttrs("package", applicationTag)
+                ?: throw IllegalStateException("Could not found package")
+        manifestBlock.stringBlock.strings[ackageName.valueIndex] = newPackageName
+    }
+
+    fun getSpecifyStartTagBodyByName(tagName: String): StartTagXmlBody? {
+        val list = manifestBlock.bodyList
+                .filter { it.header.chunkType == XMLBodyType.START_TAG }
+                .filter { manifestBlock.stringBlock.strings[(it as StartTagXmlBody).name] == tagName }
+        return if (list.isNullOrEmpty()) {
+            null
+        } else {
+            list[0] as StartTagXmlBody
+        }
+    }
+
+    fun getAttrFromTagAttrs(attrName: String, tag: StartTagXmlBody): Attribute? { // ignore the uri so far
+        val res = tag.attrs.filter { manifestBlock.stringBlock.strings[it.nameIndex] == attrName }
+        return if (res.isNullOrEmpty()) null else res[0]
     }
 
 }
