@@ -2,16 +2,14 @@ package me.xx2bab.polyfill
 
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.export.IResArscTweaker
-import me.xx2bab.polyfill.di.mainModule
 import me.xx2bab.polyfill.manifest.post.IManifestPostTweaker
-import org.koin.core.KoinComponent
-import org.koin.core.context.startKoin
-import org.koin.core.inject
+import me.xx2bab.polyfill.manifest.post.ManifestPostTweaker
 
-class Polyfill: KoinComponent {
 
-    private val arscTweaker: IResArscTweaker by inject()
-    private val manifestPostTweaker: IManifestPostTweaker by inject()
+class Polyfill {
+
+    private val arscTweaker: IResArscTweaker = ResTable()
+    private val manifestPostTweaker: IManifestPostTweaker = ManifestPostTweaker()
 
     private val serviceMap = mapOf<Class<*>, Class<*>>(
             IResArscTweaker::class.java to ResTable::class.java)
@@ -21,9 +19,6 @@ class Polyfill: KoinComponent {
             throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version is: ")
         }
 
-        startKoin {
-            modules(mainModule)
-        }
     }
 
     private fun checkSupportedGradleVersion(): Boolean {

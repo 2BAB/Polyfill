@@ -16,12 +16,6 @@ object BuildConfig {
         const val junit = "junit:junit:4.12"
         const val mockito = "org.mockito:mockito-core:3.3.1"
         const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
-
-        // Koin
-        const val koinVer = "2.1.5"
-        const val koin = "org.koin:koin-core:$koinVer"
-        const val koinExt = "org.koin:koin-core-ext:$koinVer"
-        const val koinTest = "org.koin:koin-test:$koinVer"
     }
 
 }

@@ -14,10 +14,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
 
-    implementation(Deps.koin)
-//    implementation(Deps.koinExt)
-
-    testImplementation(Deps.koinTest)
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)
