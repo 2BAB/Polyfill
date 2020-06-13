@@ -7,9 +7,10 @@ if (polyfillPubModule != null) {
 }
 
 if (polyfillPubModule == null) {
-    include(":polyfill")
-    include(":polyfill-agp")
-    include(":polyfill-gradle")
-    include(":polyfill-arsc")
-    include(":polyfill-manifest")
+    include(":polyfill") // Main Entry
+    include(":polyfill-agp") // Android Gradle Plugin relevant features
+    include(":polyfill-gradle") // Gradle relevant features
+    include(":polyfill-arsc") // resource.arsc relevant features
+    include(":polyfill-manifest") // Manifest relevant features
+    include(":polyfill-matrix") // Tools, Extensions, Resources
 }

@@ -7,10 +7,13 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    implementation(kotlin("stdlib-jdk8"))
+
     implementation(gradleApi())
     implementation("com.android.tools.build:gradle:${rootProject.extra["agpVersion"]}")
-    implementation(kotlin("stdlib-jdk8"))
+
     implementation(project(":polyfill-gradle"))
+    implementation(project(":polyfill-matrix"))
 
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
