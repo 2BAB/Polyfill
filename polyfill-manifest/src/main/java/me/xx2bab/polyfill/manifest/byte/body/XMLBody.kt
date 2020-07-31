@@ -1,9 +1,9 @@
-package me.xx2bab.polyfill.manifest.post.body
+package me.xx2bab.polyfill.manifest.byte.body
 
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_INT
 import me.xx2bab.polyfill.arsc.base.IParsable
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
-import me.xx2bab.polyfill.manifest.post.Header
+import me.xx2bab.polyfill.manifest.byte.Header
 
 abstract class XMLBody: IParsable {
 

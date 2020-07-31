@@ -1,9 +1,9 @@
 package me.xx2bab.polyfill.manifest
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
-import me.xx2bab.polyfill.manifest.post.ManifestBlock
-import me.xx2bab.polyfill.manifest.post.ManifestPostTweaker
-import me.xx2bab.polyfill.manifest.post.body.XMLBodyType
+import me.xx2bab.polyfill.manifest.byte.ManifestBlock
+import me.xx2bab.polyfill.manifest.byte.ManifestPostTweaker
+import me.xx2bab.polyfill.manifest.byte.body.XMLBodyType
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Before

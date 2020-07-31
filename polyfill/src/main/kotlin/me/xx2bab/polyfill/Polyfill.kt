@@ -2,8 +2,8 @@ package me.xx2bab.polyfill
 
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.export.IResArscTweaker
-import me.xx2bab.polyfill.manifest.post.IManifestPostTweaker
-import me.xx2bab.polyfill.manifest.post.ManifestPostTweaker
+import me.xx2bab.polyfill.manifest.byte.IManifestPostTweaker
+import me.xx2bab.polyfill.manifest.byte.ManifestPostTweaker
 
 
 class Polyfill {

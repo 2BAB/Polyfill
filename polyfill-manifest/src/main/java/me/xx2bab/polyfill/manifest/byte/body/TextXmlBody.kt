@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.post.body
+package me.xx2bab.polyfill.manifest.byte.body
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.flipToArray

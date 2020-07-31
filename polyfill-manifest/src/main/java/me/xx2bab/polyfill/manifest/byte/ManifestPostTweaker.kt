@@ -1,11 +1,11 @@
-package me.xx2bab.polyfill.manifest.post
+package me.xx2bab.polyfill.manifest.byte
 
 import com.google.common.annotations.VisibleForTesting
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
-import me.xx2bab.polyfill.manifest.post.body.Attribute
-import me.xx2bab.polyfill.manifest.post.body.StartTagXmlBody
-import me.xx2bab.polyfill.manifest.post.body.XMLBodyType
+import me.xx2bab.polyfill.manifest.byte.body.Attribute
+import me.xx2bab.polyfill.manifest.byte.body.StartTagXmlBody
+import me.xx2bab.polyfill.manifest.byte.body.XMLBodyType
 import java.io.File
 
 class ManifestPostTweaker : IManifestPostTweaker {

@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.post
+package me.xx2bab.polyfill.manifest.byte
 
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_INT
 import me.xx2bab.polyfill.arsc.base.IParsable
@@ -6,7 +6,7 @@ import me.xx2bab.polyfill.arsc.base.sizeOf
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.flipToArray
 import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
-import me.xx2bab.polyfill.manifest.post.body.*
+import me.xx2bab.polyfill.manifest.byte.body.*
 import java.nio.ByteBuffer
 
 class ManifestBlock : IParsable {
