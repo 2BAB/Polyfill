@@ -5,7 +5,7 @@ import com.android.Version
 import me.xx2bab.polyfill.gradle.tool.SemanticVersionLite
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
-import me.xx2bab.polyfill.matrix.base.PolyfillDataProvider
+import me.xx2bab.polyfill.matrix.base.DataProvider
 import org.gradle.api.Project
 
 /**
@@ -15,7 +15,7 @@ import org.gradle.api.Project
  * The result will be formatted by [SemanticVersionLite].
  */
 @ProviderConfig(InitStage.PRE_BUILD)
-class AGPVersionProvider() : PolyfillDataProvider<SemanticVersionLite> {
+class AGPVersionProvider() : DataProvider<SemanticVersionLite> {
 
     private lateinit var agpVersion: SemanticVersionLite
 

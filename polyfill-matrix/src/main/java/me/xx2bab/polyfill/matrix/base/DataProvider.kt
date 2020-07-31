@@ -2,7 +2,7 @@ package me.xx2bab.polyfill.matrix.base
 
 import org.gradle.api.Project
 
-interface PolyfillDataProvider<T> {
+interface DataProvider<T> {
 
     fun initialize(project: Project)
 

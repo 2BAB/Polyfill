@@ -6,7 +6,7 @@ import com.android.build.gradle.internal.scope.GlobalScope
 import com.android.sdklib.BuildToolInfo
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
-import me.xx2bab.polyfill.matrix.base.PolyfillDataProvider
+import me.xx2bab.polyfill.matrix.base.DataProvider
 import me.xx2bab.polyfill.matrix.ext.getField
 import org.gradle.api.Project
 
@@ -23,7 +23,7 @@ import org.gradle.api.Project
  * @see BuildToolInfo
  */
 @ProviderConfig(InitStage.PRE_BUILD)
-class BuildToolProvider : PolyfillDataProvider<BuildToolInfo> {
+class BuildToolProvider : DataProvider<BuildToolInfo> {
 
     private var bti: BuildToolInfo? = null
 
