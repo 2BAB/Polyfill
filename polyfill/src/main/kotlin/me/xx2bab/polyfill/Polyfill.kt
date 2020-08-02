@@ -4,9 +4,11 @@ import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.export.IResArscTweaker
 import me.xx2bab.polyfill.manifest.byte.IManifestPostTweaker
 import me.xx2bab.polyfill.manifest.byte.ManifestPostTweaker
+import me.xx2bab.polyfill.matrix.base.AGPTaskListener
+import org.gradle.api.Project
 
 
-class Polyfill {
+class Polyfill(val project: Project) {
 
     private val arscTweaker: IResArscTweaker = ResTable()
     private val manifestPostTweaker: IManifestPostTweaker = ManifestPostTweaker()
@@ -18,7 +20,6 @@ class Polyfill {
         if (!checkSupportedGradleVersion()) {
             throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version is: ")
         }
-
     }
 
     private fun checkSupportedGradleVersion(): Boolean {
@@ -28,6 +29,10 @@ class Polyfill {
     fun <T> getService(apiInterface: Class<T>): T? {
         val impl = serviceMap[apiInterface] ?: return null
         return impl.newInstance() as T
+    }
+
+    fun addOnAGPTaskListener(listener: AGPTaskListener) {
+
     }
 
     class UnsupportedAGPVersionException(msg: String): Exception(msg)

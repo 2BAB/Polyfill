@@ -9,7 +9,11 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(project(":polyfill-arsc"))
     implementation(project(":polyfill-manifest"))
+    implementation(project(":polyfill-gradle"))
+    implementation(project(":polyfill-agp"))
+    implementation(project(":polyfill-matrix"))
 
+    implementation(gradleApi())
     implementation("com.android.tools.build:gradle:${rootProject.extra["agpVersion"]}")
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
