@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.byte.body
+package me.xx2bab.polyfill.manifest.bytes.parser.body
 
 import me.xx2bab.polyfill.arsc.base.INVALID_VALUE_INT
 import me.xx2bab.polyfill.arsc.base.sizeOf
@@ -7,7 +7,7 @@ import me.xx2bab.polyfill.arsc.io.flipToArray
 import me.xx2bab.polyfill.arsc.io.takeLittleEndianOrder
 import java.nio.ByteBuffer
 
-class EndTagXmlBody: XMLBody() {
+open class StartNamespaceXmlBody: XMLBody() {
 
     var prefix = INVALID_VALUE_INT
     var uri = INVALID_VALUE_INT
@@ -36,4 +36,6 @@ class EndTagXmlBody: XMLBody() {
 
         return bf.flipToArray()
     }
+
+
 }

@@ -1,9 +1,9 @@
 package me.xx2bab.polyfill.manifest
 
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
-import me.xx2bab.polyfill.manifest.byte.ManifestBlock
-import me.xx2bab.polyfill.manifest.byte.ManifestPostTweaker
-import me.xx2bab.polyfill.manifest.byte.body.XMLBodyType
+import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBlock
+import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBytesTweaker
+import me.xx2bab.polyfill.manifest.bytes.parser.body.XMLBodyType
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -23,7 +23,7 @@ class ManifestPostTweakerIntegrationTest {
     fun fullIntegrationTest() {
         val originManifestFile = File("/Users/2bab/Desktop/AndroidManifest.xml")
         val input = LittleEndianInputStream(originManifestFile)
-        val manifestPostTweaker = ManifestPostTweaker()
+        val manifestPostTweaker = ManifestBytesTweaker()
         manifestPostTweaker.read(originManifestFile)
         val manifest = manifestPostTweaker.getManifestBlock()
 
@@ -84,7 +84,7 @@ class ManifestPostTweakerIntegrationTest {
     }
 
     private fun validateFile(originManifestFile: File,
-                             manifestPostTweaker: ManifestPostTweaker) {
+                             manifestPostTweaker: ManifestBytesTweaker) {
         val generatedManifestFile = File(originManifestFile.parentFile,
                 "${originManifestFile.nameWithoutExtension}-modified.arsc")
         manifestPostTweaker.write(generatedManifestFile)
@@ -94,14 +94,14 @@ class ManifestPostTweakerIntegrationTest {
     }
 
     private fun validatePackageNameModification(originManifestFile: File,
-                                                manifestPostTweaker: ManifestPostTweaker) {
+                                                manifestPostTweaker: ManifestBytesTweaker) {
         val newPackageName = "me.xx2bab.polyfill.manifest.test.packagename"
         val generatedManifestFile = File(originManifestFile.parentFile,
                 "${originManifestFile.nameWithoutExtension}-modified.arsc")
         manifestPostTweaker.updatePackageName(newPackageName)
         manifestPostTweaker.write(generatedManifestFile)
 
-        val newTweaker = ManifestPostTweaker()
+        val newTweaker = ManifestBytesTweaker()
         newTweaker.read(generatedManifestFile)
         val valueIndex = newTweaker.getAttrFromTagAttrs("package",
                 newTweaker.getSpecifyStartTagBodyByName("manifest")!!)!!

@@ -1,8 +1,8 @@
-package me.xx2bab.polyfill.manifest.byte
+package me.xx2bab.polyfill.manifest.bytes.parser
 
 import java.io.File
 
-interface IManifestPostTweaker {
+interface IManifestBytesTweaker {
 
     fun read(source: File)
 

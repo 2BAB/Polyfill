@@ -2,8 +2,8 @@ package me.xx2bab.polyfill
 
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.export.IResArscTweaker
-import me.xx2bab.polyfill.manifest.byte.IManifestPostTweaker
-import me.xx2bab.polyfill.manifest.byte.ManifestPostTweaker
+import me.xx2bab.polyfill.manifest.bytes.parser.IManifestBytesTweaker
+import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBytesTweaker
 import me.xx2bab.polyfill.matrix.base.AGPTaskListener
 import org.gradle.api.Project
 
@@ -11,7 +11,7 @@ import org.gradle.api.Project
 class Polyfill(val project: Project) {
 
     private val arscTweaker: IResArscTweaker = ResTable()
-    private val manifestPostTweaker: IManifestPostTweaker = ManifestPostTweaker()
+    private val manifestBytesTweaker: IManifestBytesTweaker = ManifestBytesTweaker()
 
     private val serviceMap = mapOf<Class<*>, Class<*>>(
             IResArscTweaker::class.java to ResTable::class.java)

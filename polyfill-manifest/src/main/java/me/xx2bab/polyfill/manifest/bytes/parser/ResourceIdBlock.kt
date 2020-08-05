@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.byte
+package me.xx2bab.polyfill.manifest.bytes.parser
 
 import me.xx2bab.polyfill.arsc.base.IParsable
 import me.xx2bab.polyfill.arsc.base.SIZE_INT

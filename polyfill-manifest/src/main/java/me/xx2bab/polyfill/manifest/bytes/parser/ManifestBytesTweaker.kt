@@ -1,14 +1,14 @@
-package me.xx2bab.polyfill.manifest.byte
+package me.xx2bab.polyfill.manifest.bytes.parser
 
 import com.google.common.annotations.VisibleForTesting
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.arsc.io.LittleEndianOutputStream
-import me.xx2bab.polyfill.manifest.byte.body.Attribute
-import me.xx2bab.polyfill.manifest.byte.body.StartTagXmlBody
-import me.xx2bab.polyfill.manifest.byte.body.XMLBodyType
+import me.xx2bab.polyfill.manifest.bytes.parser.body.Attribute
+import me.xx2bab.polyfill.manifest.bytes.parser.body.StartTagXmlBody
+import me.xx2bab.polyfill.manifest.bytes.parser.body.XMLBodyType
 import java.io.File
 
-class ManifestPostTweaker : IManifestPostTweaker {
+class ManifestBytesTweaker : IManifestBytesTweaker {
 
     private val manifestBlock = ManifestBlock()
 

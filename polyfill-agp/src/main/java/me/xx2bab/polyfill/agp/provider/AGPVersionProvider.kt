@@ -38,5 +38,4 @@ class AGPVersionProvider() : SelfManageableProvider<SemanticVersionLite> {
     }
 
 
-
 }
