@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.plain
+package me.xx2bab.polyfill.manifest.source
 
 import com.android.build.api.artifact.ArtifactType
 import com.android.build.api.dsl.CommonExtension

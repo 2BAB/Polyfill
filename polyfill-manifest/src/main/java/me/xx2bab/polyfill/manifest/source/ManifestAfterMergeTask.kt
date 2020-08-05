@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.manifest.plain
+package me.xx2bab.polyfill.manifest.source
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
