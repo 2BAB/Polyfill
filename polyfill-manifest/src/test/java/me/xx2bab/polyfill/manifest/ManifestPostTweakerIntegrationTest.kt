@@ -1,5 +1,6 @@
 package me.xx2bab.polyfill.manifest
 
+import com.google.common.io.Resources.getResource
 import me.xx2bab.polyfill.arsc.io.LittleEndianInputStream
 import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBlock
 import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBytesTweaker
@@ -12,6 +13,9 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * Currently we are doing integration test only for "ScratchPaper" project's Manifest file in bytes.
+ */
 class ManifestPostTweakerIntegrationTest {
 
     @Before
@@ -21,7 +25,7 @@ class ManifestPostTweakerIntegrationTest {
 
     @Test
     fun fullIntegrationTest() {
-        val originManifestFile = File("/Users/2bab/Desktop/AndroidManifest.xml")
+        val originManifestFile = File(getResource("AndroidManifest.xml").toURI())
         val input = LittleEndianInputStream(originManifestFile)
         val manifestPostTweaker = ManifestBytesTweaker()
         manifestPostTweaker.read(originManifestFile)
