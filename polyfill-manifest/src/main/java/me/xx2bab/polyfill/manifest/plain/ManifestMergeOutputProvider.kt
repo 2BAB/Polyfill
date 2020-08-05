@@ -9,7 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 
-class ManifestOutputProvider: SelfManageableProvider<RegularFile> {
+class ManifestMergeOutputProvider: SelfManageableProvider<RegularFile> {
 
     lateinit var mergedManifests: Provider<RegularFile>
 

@@ -8,7 +8,7 @@ import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 
-class ManifestInputProvider: SelfManageableProvider<FileCollection> {
+class ManifestMergeInputProvider: SelfManageableProvider<FileCollection> {
 
     private lateinit var manifests: FileCollection
 
