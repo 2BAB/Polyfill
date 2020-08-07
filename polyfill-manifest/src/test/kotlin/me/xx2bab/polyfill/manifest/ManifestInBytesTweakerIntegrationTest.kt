@@ -16,7 +16,7 @@ import java.nio.file.Paths
 /**
  * Currently we are doing integration test only for "ScratchPaper" project's Manifest file in bytes.
  */
-class ManifestPostTweakerIntegrationTest {
+class ManifestInBytesTweakerIntegrationTest {
 
     @Before
     fun setup() {
