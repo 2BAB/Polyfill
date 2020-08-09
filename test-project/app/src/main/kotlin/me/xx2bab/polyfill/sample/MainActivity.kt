@@ -1,9 +1,10 @@
-package me.xx2bab.gradle.scratchpaper.sample
+package me.xx2bab.polyfill.sample
 
+import android.app.Activity
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.text.method.ScrollingMovementMethod
-import android.widget.TextView
+import me.xx2bab.gradle.scratchpaper.sample.R
+import androidx.appcompat.app.AppCompatActivity
+
 
 class MainActivity : AppCompatActivity() {
 

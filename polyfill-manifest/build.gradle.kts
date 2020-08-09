@@ -3,8 +3,13 @@ import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
     `java-gradle-plugin`
-    id("kotlin")
+    id("org.jetbrains.kotlin.jvm")
 }
+
+val functionalTestSourceSet = sourceSets.create("functionalTest")
+gradlePlugin.testSourceSets(functionalTestSourceSet)
+configurations.getByName("functionalTestImplementation")
+        .extendsFrom(configurations.getByName("testImplementation"))
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
@@ -18,6 +23,11 @@ dependencies {
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)
+
+    testImplementation("com.android.tools.build:gradle:4.1.0-beta05")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    "functionalTestImplementation"(Deps.junit)
 }
 
 java {
@@ -25,11 +35,6 @@ java {
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
 }
 
-
-val functionalTestSourceSet = sourceSets.create("functionalTest")
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-configurations.getByName("functionalTestImplementation")
-        .extendsFrom(configurations.getByName("testImplementation"))
 
 // Add a task to run the functional tests
 val functionalTest by tasks.registering(Test::class) {
