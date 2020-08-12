@@ -3,13 +3,34 @@ import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
     `java-gradle-plugin`
-    id("org.jetbrains.kotlin.jvm")
+    id("kotlin")
+    idea
 }
 
-val functionalTestSourceSet = sourceSets.create("functionalTest")
-gradlePlugin.testSourceSets(functionalTestSourceSet)
-configurations.getByName("functionalTestImplementation")
-        .extendsFrom(configurations.getByName("testImplementation"))
+val integrationSourceSet = sourceSets.create("intTest") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+}
+
+
+val intTestImplementation by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+configurations["intTestImplementation"].extendsFrom(configurations.testImplementation.get())
+
+//val functionalTestSourceSet = sourceSets.getByName("functionalTest")
+gradlePlugin.testSourceSets(integrationSourceSet)
+//configurations.getByName("functionalTestImplementation")
+//        .extendsFrom(configurations.testImplementation.get())
+
+idea {
+    module {
+        testSourceDirs = integrationSourceSet.allSource.srcDirs
+        testResourceDirs = integrationSourceSet.resources.srcDirs
+//        scopes.TEST.plus += [ configurations.integrationTestCompile ]
+    }
+}
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
@@ -27,7 +48,6 @@ dependencies {
     testImplementation("com.android.tools.build:gradle:4.1.0-beta05")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    "functionalTestImplementation"(Deps.junit)
 }
 
 java {
@@ -35,14 +55,15 @@ java {
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
 }
 
-
-// Add a task to run the functional tests
-val functionalTest by tasks.registering(Test::class) {
-    testClassesDirs = functionalTestSourceSet.output.classesDirs
-    classpath = functionalTestSourceSet.runtimeClasspath
+// Add a task to run the integration tests
+val integrationTest by tasks.registering(Test::class) {
+    description = "Runs integration tests."
+    group = "verification"
+    testClassesDirs = integrationSourceSet.output.classesDirs
+    classpath = integrationSourceSet.runtimeClasspath
 }
 
 val check by tasks.getting(Task::class) {
-    // Run the functional tests as part of `check`
-    dependsOn(functionalTest)
+    // Run the integration tests as part of `check`
+    dependsOn(integrationTest)
 }
