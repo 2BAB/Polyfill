@@ -7,8 +7,7 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    implementation(kotlin("stdlib-jdk8"))
-
+    implementation(kotlin(Deps.ktStd))
     implementation(gradleApi())
 
     implementation(project(":polyfill-matrix"))

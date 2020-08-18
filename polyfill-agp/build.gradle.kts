@@ -7,10 +7,9 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    implementation(kotlin("stdlib-jdk8"))
-
+    implementation(kotlin(Deps.ktStd))
     implementation(gradleApi())
-    implementation("com.android.tools.build:gradle:${rootProject.extra["agpVersion"]}")
+    implementation(Deps.agp)
 
     implementation(project(":polyfill-gradle"))
     implementation(project(":polyfill-matrix"))

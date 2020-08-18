@@ -12,6 +12,10 @@ object BuildConfig {
     }
 
     object Deps {
+        const val ktStd = "stdlib-jdk8"
+        const val ktReflect = "reflect"
+        const val agp = "com.android.tools.build:gradle:4.1.0-rc01"
+
         // Test
         const val junit = "junit:junit:4.12"
         const val mockito = "org.mockito:mockito-core:3.3.1"
