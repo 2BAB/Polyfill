@@ -1,2 +1,3 @@
-rootProject.name = "polyfill-func-test"
+rootProject.name = "polyfill-func-test-project"
 include(":app") // Main Entry
+

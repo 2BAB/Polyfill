@@ -11,7 +11,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-3.6.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg)
+4.1.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg)
 
 
 ## Git Commit Check

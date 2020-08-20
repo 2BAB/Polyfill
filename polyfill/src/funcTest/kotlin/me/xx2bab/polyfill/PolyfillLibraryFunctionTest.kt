@@ -9,13 +9,23 @@ class PolyfillLibraryFunctionTest {
 
     @BeforeClass
     fun buildTestProject() {
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("assembleDebug", "clean", "--stacktrace")
-        runner.withProjectDir(File("/test-project"))
+        println("Preparing...")
+        GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "testBuild", "--stacktrace")
+                .withProjectDir(File("/test-project"))
 
-        runner.build()
+        println("Released polyfill to ./buildSrc/libs.")
+        println("Building...")
+        GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("clean", "assembleDebug", "cleanLibs", "--stacktrace")
+                .withProjectDir(File("/test-project"))
+                .build()
+
+        println("Testing...")
     }
 
     @Test
@@ -27,7 +37,6 @@ class PolyfillLibraryFunctionTest {
     fun manifestMergeDataProviderTest_success() {
 
     }
-
 
 
 }
