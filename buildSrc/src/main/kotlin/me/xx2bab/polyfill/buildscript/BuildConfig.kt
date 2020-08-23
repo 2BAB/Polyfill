@@ -7,8 +7,8 @@ object BuildConfig {
     object Versions {
         const val polyfillDevVersion = "0.1.0.2-SNAPSHOT"
 
-        val polyfillSourceCompatibilityVersion = JavaVersion.VERSION_1_7
-        val polyfillTargetCompatibilityVersion = JavaVersion.VERSION_1_7
+        val polyfillSourceCompatibilityVersion = JavaVersion.VERSION_1_8
+        val polyfillTargetCompatibilityVersion = JavaVersion.VERSION_1_8
     }
 
     object Deps {
