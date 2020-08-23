@@ -39,26 +39,21 @@ task("clean") {
     delete(rootProject.buildDir)
 }
 
-tasks.register<Copy>("testBuild") {
+tasks.register("testBuild") {
     val copy = this
     subprojects {
         copy.dependsOn(":${name}:assemble")
     }
-    from(rootProject.projectDir.absolutePath)
-    include("**/polyfill-*.jar")
-    into("./test-project/buildSrc/libs/")
-
-    // Flatten the hierarchy by setting the path
-    // of all files to their respective basename
-    eachFile {
-        path = name
+    doLast {
+        val output = File(rootProject.buildDir.absolutePath + File.separator + "libs")
+        output.mkdir()
+        subprojects {
+            File(buildDir.absolutePath + File.separator + "libs").walk()
+                    .filter { it.name.startsWith("polyfill-") && it.extension == "jar" }
+                    .forEach { it.copyTo(File(output, it.name)) }
+        }
     }
-
-    // Flattening the hierarchy leaves empty directories,
-    // do not copy those
-    includeEmptyDirs = false
 }
-
 
 fun configPublish(p: Project) {
     if (p.name == "polyfill-parent") {

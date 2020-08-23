@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "../../build/libs", "include" to arrayOf("*.jar"))))
     implementation(kotlin("stdlib"))
     implementation("com.android.tools.build:gradle:4.1.0-rc01")
 //    implementation("me.2bab:polyfill:test-version")
