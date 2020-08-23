@@ -3,16 +3,23 @@ package me.xx2bab.polyfill.manifest.source
 import com.android.build.api.artifact.ArtifactType
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.VariantProperties
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import me.xx2bab.polyfill.matrix.base.AGPTaskListener
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import java.io.File
 
-abstract class ManifestMergeTaskListener : AGPTaskListener {
+class ManifestMergeTaskListener : AGPTaskListener {
 
     private lateinit var beforeMergeAction: (Collection<File>) -> Unit
     private lateinit var afterMergeAction: (File) -> ByteArray
+
+    override fun onProjectEvaluated(project: Project, androidExtension: DomainObjectSet<out BaseVariant>) {
+
+    }
+
 
     override fun onVariantProperties(project: Project,
                                      androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
@@ -29,14 +36,20 @@ abstract class ManifestMergeTaskListener : AGPTaskListener {
     }
 
     override fun onVariantClassicProperties(project: Project,
-                                            androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
+                                            androidExtension: BaseExtension,
                                             variant: BaseVariant,
                                             variantCapitalizedName: String) {
         variant.outputs.all {
-            val processAppManifestTask = it.processManifestProvider.get() as ProcessApplicationManifest
-
-            processAppManifestTask.doFirst ("preUpdate${variantCapitalizedName}Manifest"){
-                beforeMergeAction.invoke(processAppManifestTask.getManifests().files)
+            project.afterEvaluate {
+                project.tasks.withType(ProcessApplicationManifest::class.java)
+                        .single {
+                            it.variantName.contains(variantCapitalizedName, ignoreCase = true)
+                        }
+                        .apply {
+                            doFirst("preUpdate${variantCapitalizedName}Manifest") {
+                                beforeMergeAction.invoke(this.getManifests().files)
+                            }
+                        }
             }
 
             // Deprecated, since we prefer to use the AGP public api if it works well.

@@ -2,7 +2,9 @@ package me.xx2bab.polyfill.matrix.base
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.VariantProperties
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.api.BaseVariant
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 
@@ -30,7 +32,7 @@ interface AGPTaskListener {
      * multiple variant calls or some custom logic.
      */
     fun onProjectEvaluated(project: Project,
-                           androidExtension: CommonExtension<*, *, *, *, *, *, *, *>)
+                           androidExtension: DomainObjectSet<out BaseVariant>)
 
     /**
      * Executes on Gradle Configuration stage which is provided by Android Gradle Plugin.
@@ -47,7 +49,7 @@ interface AGPTaskListener {
      * Will be invoked multiple times.
      */
     fun onVariantClassicProperties(project: Project,
-                                   androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
+                                   androidExtension: BaseExtension,
                                    variant: BaseVariant,
                                    variantCapitalizedName: String)
 
