@@ -1,3 +1,4 @@
+
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions.polyfillDevVersion
 
 buildscript {
@@ -39,7 +40,7 @@ task("clean") {
     delete(rootProject.buildDir)
 }
 
-tasks.register("testBuild") {
+val buildForFunctionTest by tasks.registering {
     val copy = this
     subprojects {
         copy.dependsOn(":${name}:assemble")
