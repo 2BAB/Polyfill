@@ -5,13 +5,18 @@ import org.junit.BeforeClass
 import org.junit.Test
 import java.io.File
 
-
 /**
  * To test all basic functions from polyfill libs including "TaskListener" / "DataProvider" / etc.
  *
  * Currently this function test sometime can not run from the IDE somehow,
- * not sure what settings is missing. As the workaround, we run from command line,
- * and used "check" gradle command to run all testing.
+ * not sure what settings is missing. As the workaround, we run ot from command line,
+ * and use `functionTest` or `check` gradle command to run all testing.
+ *
+ * If you want to trigger this test manually from IDE,
+ * please run `./gradlew clean buildForFunctionTest` before you start.
+ *
+ * All libs usage logic can be found from `rootProject/test-project/buildSrc/src/main/kotlin`.
+ * All test related scripts can be found from `rootProject/scripts/`.
  */
 class PolyfillLibraryFunctionTest {
 
@@ -36,7 +41,7 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun manifestBeforeMergeTaskListenerTest_FilterSuccessfully() {
-        println("Testing...")
+
     }
 
     @Test
