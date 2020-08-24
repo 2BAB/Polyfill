@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    implementation(gradleApi())
     implementation(Deps.agp)
     implementation(kotlin(Deps.ktStd))
 

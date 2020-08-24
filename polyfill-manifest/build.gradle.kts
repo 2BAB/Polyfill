@@ -47,7 +47,6 @@ dependencies {
     implementation(project(":polyfill-arsc"))
     implementation(project(":polyfill-matrix"))
 
-    testImplementation(Deps.agp)
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)

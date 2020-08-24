@@ -1,5 +1,6 @@
 package me.xx2bab.polyfill.arsc
 
+import com.google.common.io.Resources.getResource
 import me.xx2bab.polyfill.arsc.base.ResTable
 import me.xx2bab.polyfill.arsc.export.SimpleResource
 import me.xx2bab.polyfill.arsc.export.SupportedResConfig
@@ -17,7 +18,7 @@ class ResourceTableIntegrationTest {
 
     @Test
     fun simpleARSCTest() {
-        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val originArscFile = File(getResource("resources.arsc").toURI())
         val input = LittleEndianInputStream(originArscFile) // Used for validation
         val resTable = ResTable()
         resTable.read(originArscFile)
@@ -34,18 +35,18 @@ class ResourceTableIntegrationTest {
 
     @Test
     fun findResByIdTest_Regular() {
-        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val originArscFile = File(getResource("resources.arsc").toURI())
         val resTable = ResTable()
         resTable.read(originArscFile)
 
         val result = resTable.findResourceById(0x7f040036)
-        assertEquals(result[0]!!.value!!, "ff80cbc4")
+        assertEquals(result[0]!!.value!!, "#ff80cbc4")
     }
 
     @Test
     fun updateResByIdTest_DefaultConfig() {
         // Write
-        val originArscFile = File("/Users/2bab/Desktop/resources.arsc")
+        val originArscFile = File(getResource("resources.arsc").toURI())
         val resTable = ResTable()
         resTable.read(originArscFile)
 
