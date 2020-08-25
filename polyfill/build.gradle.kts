@@ -58,13 +58,10 @@ dependencies {
 
     testImplementation(gradleTestKit())
     testImplementation(Deps.agp)
-//    testImplementation(Deps.junit)
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+    testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)
+    testImplementation(Deps.fastJson)
 }
 
 java {

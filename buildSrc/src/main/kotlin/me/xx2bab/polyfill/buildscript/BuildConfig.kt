@@ -20,6 +20,8 @@ object BuildConfig {
         const val junit = "junit:junit:4.12"
         const val mockito = "org.mockito:mockito-core:3.3.1"
         const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
+
+        const val fastJson = "com.alibaba:fastjson:1.2.73"
     }
 
 }

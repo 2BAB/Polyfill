@@ -1,6 +1,7 @@
 package me.xx2bab.polyfill
 
 import org.gradle.testkit.runner.GradleRunner
+import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
 import java.io.File
@@ -41,7 +42,8 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun manifestBeforeMergeTaskListenerTest_FilterSuccessfully() {
-
+        val out = File("../test-project/build/functionTestOutput/manifest-merge-input.json")
+        Assert.assertTrue(out.exists())
     }
 
     @Test
