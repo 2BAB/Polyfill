@@ -9,5 +9,5 @@ project.afterEvaluate {
         manifestPathsOutput.createNewFile()
         manifestPathsOutput.writeText(JSON.toJSONString(list.map { it.absolutePath }))
     }
-    Polyfill(this).addOnAGPTaskListener(manifestTaskMergeTaskListener)
+    FunctionTestFixtures.getPolyfill(project).addOnAGPTaskListener(manifestTaskMergeTaskListener)
 }

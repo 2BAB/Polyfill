@@ -1,5 +1,7 @@
 package me.xx2bab.polyfill
 
+import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.TypeReference
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Assert
 import org.junit.BeforeClass
@@ -44,6 +46,8 @@ class PolyfillLibraryFunctionTest {
     fun manifestBeforeMergeTaskListenerTest_FilterSuccessfully() {
         val out = File("../test-project/build/functionTestOutput/manifest-merge-input.json")
         Assert.assertTrue(out.exists())
+        val list = JSON.parseObject(out.readText(), object: TypeReference<List<String>>(){})
+        Assert.assertTrue(list.any { it.contains("appcompat") })
     }
 
     @Test
