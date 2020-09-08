@@ -6,8 +6,8 @@ buildscript {
     // Set project ext values as the workaround to collect all values that can't be set in buildSrc,
     // because buildscript can not read anything from the scripts(buildSrc) that will be compiled
     // based on this buildscript
-    project.extra["kotlinVersion"] = "1.4.0"
-    project.extra["agpVersion"] = "4.1.0-rc01"
+    project.extra["kotlinVersion"] = "1.3.72"
+    project.extra["agpVersion"] = "4.2.0-alpha08"
     project.extra["brpVersion"] = "0.9.2"
 
     repositories {
