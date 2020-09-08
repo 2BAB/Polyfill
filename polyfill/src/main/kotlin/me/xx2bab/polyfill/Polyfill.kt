@@ -48,22 +48,25 @@ class Polyfill(val project: Project) {
         return true
     }
 
-    fun addOnAGPTaskListener(listener: AGPTaskListener) {
+    fun addAGPTaskListener(listener: AGPTaskListener) {
         listeners.add(listener)
-        project.afterEvaluate {
-            listener.onProjectEvaluated(project, variantsClassic)
+
+        androidExtension.onVariantProperties {
+            listener.onVariantProperties(project,
+                    androidExtension,
+                    this,
+                    this.name.capitalize())
         }
+
         variantsClassic.forEach { variant ->
             listener.onVariantClassicProperties(project,
                     androidExtensionClassic,
                     variant,
                     variant.name.capitalize())
         }
-        androidExtension.onVariantProperties {
-            listener.onVariantProperties(project,
-                    androidExtension,
-                    this,
-                    this.name.capitalize())
+
+        project.afterEvaluate {
+            listener.onProjectEvaluated(project, variantsClassic)
         }
     }
 

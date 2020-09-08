@@ -7,8 +7,9 @@ import com.android.build.gradle.tasks.ProcessApplicationManifest
 import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileSystemLocation
 
-class ManifestMergeInputProvider: SelfManageableProvider<FileCollection> {
+class ManifestMergeInputProvider: SelfManageableProvider<Set<FileSystemLocation>> {
 
     private lateinit var manifests: FileCollection
 
@@ -23,13 +24,10 @@ class ManifestMergeInputProvider: SelfManageableProvider<FileCollection> {
         }
     }
 
-    override fun get(defaultValue: FileCollection?): FileCollection? {
-        if (!::manifests.isInitialized) {
-            return null
-        }
-        return manifests
+    override fun get(defaultValue: Set<FileSystemLocation>?): Set<FileSystemLocation>? {
+        return manifests.elements.get()
     }
 
-    override fun isPresent() = ::manifests.isInitialized
+    override fun isPresent() = ::manifests.isInitialized && manifests.elements.isPresent
 
 }

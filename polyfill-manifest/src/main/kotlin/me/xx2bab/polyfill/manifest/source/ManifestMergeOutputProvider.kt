@@ -11,7 +11,7 @@ import org.gradle.api.provider.Provider
 
 class ManifestMergeOutputProvider: SelfManageableProvider<RegularFile> {
 
-    lateinit var mergedManifests: Provider<RegularFile>
+    private lateinit var mergedManifests: Provider<RegularFile>
 
     override fun initialize(project: Project,
                             androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
@@ -20,11 +20,7 @@ class ManifestMergeOutputProvider: SelfManageableProvider<RegularFile> {
         mergedManifests = variantProperties.artifacts.get(ArtifactType.MERGED_MANIFEST)
     }
 
-
     override fun get(defaultValue: RegularFile?): RegularFile? {
-        if (!::mergedManifests.isInitialized) {
-            return null
-        }
         return mergedManifests.get()
     }
 
