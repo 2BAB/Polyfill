@@ -2,8 +2,10 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+
     `env-init`
     `manifest-hook`
+//    id("me.2bab.polyfill.test.manifest")
 }
 
 android {
@@ -25,4 +27,6 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.extra["kotlinVersion"].toString()}")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:${rootProject.extra["kotlinVersion"].toString()}")
 }

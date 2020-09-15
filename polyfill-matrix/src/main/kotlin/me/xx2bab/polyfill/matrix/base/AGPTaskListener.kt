@@ -2,16 +2,12 @@ package me.xx2bab.polyfill.matrix.base
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.VariantProperties
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.api.BaseVariant
-import org.gradle.api.DomainObjectSet
 import org.gradle.api.Incubating
 import org.gradle.api.Project
 
 /**
- * To provide Android Gradle Plugin (AGP) Task Hook Entry Points.
- * The base listener here defines two variant-traversal and project evaluated callbacks
- * as general entrances for plugins.
+ * To provide Android Gradle Plugin (AGP) Task Hook Entry Points. The base listener here
+ * defines a new variant-traversal approach with CommonExtension.
  *
  * Below is a quote from the article of Android Developer Medium, describes the difference of
  * 2 variant callbacks:
@@ -28,13 +24,6 @@ import org.gradle.api.Project
 interface AGPTaskListener {
 
     /**
-     * Executes after project has been evaluated, in case of something need to be executed without
-     * multiple variant calls or some custom logic.
-     */
-    fun onProjectEvaluated(project: Project,
-                           androidExtension: DomainObjectSet<out BaseVariant>)
-
-    /**
      * Executes on Gradle Configuration stage which is provided by Android Gradle Plugin.
      * Will be invoked multiple times.
      */
@@ -43,14 +32,5 @@ interface AGPTaskListener {
                             androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
                             variant: VariantProperties,
                             variantCapitalizedName: String)
-
-    /**
-     * Executes on Gradle Configuration stage while the variant has been configured.
-     * Will be invoked multiple times.
-     */
-    fun onVariantClassicProperties(project: Project,
-                                   androidExtension: BaseExtension,
-                                   variant: BaseVariant,
-                                   variantCapitalizedName: String)
 
 }

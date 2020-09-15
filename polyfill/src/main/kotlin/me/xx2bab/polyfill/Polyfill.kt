@@ -1,19 +1,19 @@
 package me.xx2bab.polyfill
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.*
-import com.android.build.gradle.api.BaseVariant
+import com.android.build.api.variant.VariantProperties
 import me.xx2bab.polyfill.matrix.base.AGPTaskListener
-import org.gradle.api.DomainObjectSet
+import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
+import org.gradle.api.Action
 import org.gradle.api.Project
 
+typealias androidExt = CommonExtension<*, *, *, *, *, *, *, *>
 
-class Polyfill(val project: Project) {
+class Polyfill(private val project: Project) {
 
-    private val listeners = mutableListOf<AGPTaskListener>()
-    private val androidExtension: CommonExtension<*, *, *, *, *, *, *, *>
-    private val androidExtensionClassic: BaseExtension
-    private val variantsClassic: DomainObjectSet<out BaseVariant>
+    private val providers = ProviderCache()
+
+    private val androidExtension: androidExt
 
     init {
         if (!checkSupportedGradleVersion()) {
@@ -25,49 +25,25 @@ class Polyfill(val project: Project) {
         } else {
             androidExtension = project.extensions.findByType(CommonExtension::class.java)!!
         }
-
-        when {
-            project.plugins.hasPlugin(AppPlugin::class.java) -> {
-                androidExtensionClassic = project.extensions.findByType(AppExtension::class.java)!!
-                val app = androidExtensionClassic as AppExtension
-                variantsClassic = app.applicationVariants
-
-            }
-            project.plugins.hasPlugin(LibraryPlugin::class.java) -> {
-                androidExtensionClassic = project.extensions.findByType(LibraryExtension::class.java)!!
-                val lib = androidExtensionClassic as LibraryExtension
-                variantsClassic = lib.libraryVariants
-            }
-            else -> {
-                throw IllegalArgumentException("Required Application or Library Extensions.")
-            }
-        }
     }
 
     private fun checkSupportedGradleVersion(): Boolean {
         return true
     }
 
-    fun addAGPTaskListener(listener: AGPTaskListener) {
-        listeners.add(listener)
+    fun <T : SelfManageableProvider<*>> getProvider(variant: VariantProperties, clazz: Class<T>): T {
+        return providers.getProvider(clazz, project, androidExtension, variant)
+    }
 
-        androidExtension.onVariantProperties {
-            listener.onVariantProperties(project,
-                    androidExtension,
-                    this,
-                    this.name.capitalize())
-        }
+    fun onVariantProperties(action: Action<VariantProperties>) {
+        androidExtension.onVariantProperties { action.execute(this) }
+    }
 
-        variantsClassic.forEach { variant ->
-            listener.onVariantClassicProperties(project,
-                    androidExtensionClassic,
-                    variant,
-                    variant.name.capitalize())
-        }
-
-        project.afterEvaluate {
-            listener.onProjectEvaluated(project, variantsClassic)
-        }
+    fun addAGPTaskListener(variant: VariantProperties, listener: AGPTaskListener) {
+        listener.onVariantProperties(project,
+                androidExtension,
+                variant,
+                variant.name.capitalize())
     }
 
     class UnsupportedAGPVersionException(msg: String) : Exception(msg)
