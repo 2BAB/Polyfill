@@ -1,4 +1,4 @@
-<img src="./Polyfill.png" alt="Polyfill" width="507px" height="128px">
+<img src="./Polyfill.png" alt="Polyfill" width="auto" height="128vh">
 
 🚧 **Working on progress...**
 
