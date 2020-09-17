@@ -2,8 +2,7 @@
 
 🚧 **Working on progress...**
 
-A Toolset for hooking Android Gradle Plugin.
-
+Hook Toolset for Android App Build System.
 
 ## Compatible Specification
 
@@ -11,7 +10,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.1.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg)
+4.2.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg)
 
 
 ## Git Commit Check
