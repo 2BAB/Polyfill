@@ -6,9 +6,11 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 
 /**
- * To provide Android Gradle Plugin (AGP) Task Hook Entry Points. The base listener here
- * defines a new variant-traversal approach with CommonExtension.
+ * To provide Android Gradle Plugin (AGP) Task Hook Entry Points. If an TaskListener implement
+ * this interface directly, means it supports both Application and Library, or should
+ * use [ApplicationAGPTaskListener] and [LibraryAGPTaskListener] instead.
  *
+ * The base listener here defines a new variant-traversal approach with CommonExtension.
  * Below is a quote from the article of Android Developer Medium, describes the difference of
  * 2 variant callbacks:
  *

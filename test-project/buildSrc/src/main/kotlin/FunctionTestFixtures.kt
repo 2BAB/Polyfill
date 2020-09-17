@@ -9,7 +9,7 @@ object FunctionTestFixtures {
 
     fun getPolyfill(project: Project): Polyfill {
         return polyfill ?: synchronized(Polyfill::class.java) {
-            polyfill ?: Polyfill(project).also{
+            polyfill ?: Polyfill.createApplicationPolyfill(project).also{
                 polyfill = it
             }
         }
