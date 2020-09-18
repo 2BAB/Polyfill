@@ -107,12 +107,11 @@ class ManifestInBytesTweakerIntegrationTest {
 
         val newTweaker = ManifestBytesTweaker()
         newTweaker.read(generatedManifestFile)
-        val valueIndex = newTweaker.getAttrFromTagAttrs("package",
-                newTweaker.getSpecifyStartTagBodyByName("manifest")!!)!!
+        val valueIndex = newTweaker.getAttrFromTagAttrs(
+                newTweaker.getSpecifyStartTagBodyByName("manifest")!!, "package")!!
                 .valueIndex
         val value = newTweaker.getManifestBlock().stringBlock.strings[valueIndex]
         assertEquals(newPackageName, value)
-        generatedManifestFile.delete()
     }
 
 }

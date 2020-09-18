@@ -2,6 +2,8 @@ package me.xx2bab.polyfill
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.TypeReference
+import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBytesTweaker
+import net.lingala.zip4j.ZipFile
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Assert
 import org.junit.BeforeClass
@@ -12,7 +14,7 @@ import java.io.File
  * To test all basic functions from polyfill libs including "TaskListener" / "DataProvider" / etc.
  *
  * Currently this function test sometime can not run from the IDE somehow,
- * not sure what settings is missing. As the workaround, we run ot from command line,
+ * not sure what settings is missing. As a workaround, we run it from command line,
  * and use `functionTest` or `check` gradle command to run all testing.
  *
  * If you want to trigger this test manually from IDE,
@@ -24,6 +26,12 @@ import java.io.File
 class PolyfillLibraryFunctionTest {
 
     companion object {
+
+        private const val testProjectPath = "../test-project"
+        private const val testProjectJsonOutputPath = "${testProjectPath}/build/functionTestOutput"
+        private const val testProjectAppOutputPath = "${testProjectPath}/app/build/outputs/apk/debug"
+        private const val testProjectAppUnzipPath = "${testProjectPath}/app/build/outputs/apk/debug/unzipped"
+
         @BeforeClass
         @JvmStatic
         fun buildTestProject() {
@@ -37,22 +45,48 @@ class PolyfillLibraryFunctionTest {
                     .withProjectDir(File("../test-project"))
                     .build()
 
+            println("Unzipping...")
+            unzipApk()
+
             println("Testing...")
         }
 
+        private fun unzipApk() {
+            File(testProjectAppOutputPath)
+                    .walk()
+                    .filter { it.extension == "apk" }
+                    .first {
+                        val unzipFolder = File(testProjectAppUnzipPath)
+                        if (!unzipFolder.exists()) {
+                            unzipFolder.mkdir()
+                            ZipFile(it.absolutePath).extractAll(unzipFolder.absolutePath)
+                        }
+                        true
+                    }
+        }
+
+        fun Boolean.toInt() = if (this) 1 else 0
     }
+
 
     @Test
     fun manifestBeforeMergeTaskListenerTest_FilterSuccessfully() {
-        val out = File("../test-project/build/functionTestOutput/manifest-merge-input.json")
+        val out = File("${testProjectJsonOutputPath}/manifest-merge-input.json")
         Assert.assertTrue(out.exists())
-        val list = JSON.parseObject(out.readText(), object: TypeReference<List<String>>(){})
+        val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
         Assert.assertTrue(list.any { it.contains("appcompat") })
     }
 
     @Test
-    fun manifestMergeDataProviderTest_success() {
-
+    fun manifestAfterMergeTaskListenerTest_modifyAllowBackUpSuccessfully() {
+        val extractedAndroidManifest = File(testProjectAppUnzipPath, "AndroidManifest.xml")
+        Assert.assertTrue(extractedAndroidManifest.exists())
+        val newTweaker = ManifestBytesTweaker()
+        newTweaker.read(extractedAndroidManifest)
+        val applicationTag = newTweaker.getSpecifyStartTagBodyByName("application")
+        Assert.assertNotNull(applicationTag)
+        val value = newTweaker.getAttrFromTagAttrs(applicationTag!!, "allowBackup")!!.data
+        Assert.assertEquals(false.toInt(), value) // The core assert which we changed it to false
     }
 
 

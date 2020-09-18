@@ -22,6 +22,7 @@ object BuildConfig {
         const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
 
         const val fastJson = "com.alibaba:fastjson:1.2.73"
+        const val zip4j = "net.lingala.zip4j:zip4j:2.6.2"
     }
 
 }

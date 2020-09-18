@@ -62,6 +62,7 @@ dependencies {
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)
     testImplementation(Deps.fastJson)
+    testImplementation(Deps.zip4j)
 }
 
 java {

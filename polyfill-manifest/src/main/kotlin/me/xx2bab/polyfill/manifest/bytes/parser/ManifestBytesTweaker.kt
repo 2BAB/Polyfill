@@ -44,7 +44,7 @@ class ManifestBytesTweaker : IManifestBytesTweaker {
     override fun updatePackageName(newPackageName: String) {
         val applicationTag = getSpecifyStartTagBodyByName("manifest")
                 ?: throw IllegalStateException("Could not found <manifest> tag")
-        val ackageName = getAttrFromTagAttrs("package", applicationTag)
+        val ackageName = getAttrFromTagAttrs(applicationTag, "package")
                 ?: throw IllegalStateException("Could not found package")
         manifestBlock.stringBlock.strings[ackageName.valueIndex] = newPackageName
     }
@@ -60,7 +60,7 @@ class ManifestBytesTweaker : IManifestBytesTweaker {
         }
     }
 
-    fun getAttrFromTagAttrs(attrName: String, tag: StartTagXmlBody): Attribute? { // ignore the uri so far
+    fun getAttrFromTagAttrs(tag: StartTagXmlBody, attrName: String): Attribute? { // ignore the uri so far
         val res = tag.attrs.filter { manifestBlock.stringBlock.strings[it.nameIndex] == attrName }
         return if (res.isNullOrEmpty()) null else res[0]
     }
