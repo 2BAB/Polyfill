@@ -1,7 +1,7 @@
 buildscript {
 
     project.extra["kotlinVersion"] = "1.4.10"
-    project.extra["agpVersion"] = "4.2.0-alpha10"
+    project.extra["agpVersion"] = "4.2.0-alpha11"
     project.extra["brpVersion"] = "0.9.2"
 
     repositories {

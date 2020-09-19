@@ -7,7 +7,7 @@ buildscript {
     // because buildscript can not read anything from the scripts(buildSrc) that will be compiled
     // based on this buildscript
     project.extra["kotlinVersion"] = "1.4.10"
-    project.extra["agpVersion"] = "4.2.0-alpha08"
+    project.extra["agpVersion"] = "4.2.0-alpha11"
     project.extra["brpVersion"] = "0.9.2"
 
     repositories {
