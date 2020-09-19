@@ -76,7 +76,7 @@ var btApiKey: String?
 
 if (StringUtils.isNotBlank(System.getenv("BINTRAY_USER"))) {
     btUser = System.getenv("BINTRAY_USER")
-    btApiKey = System.getenv("BINTRAY_API_KEY")
+    btApiKey = System.getenv("BINTRAY_APIKEY")
 } else {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
