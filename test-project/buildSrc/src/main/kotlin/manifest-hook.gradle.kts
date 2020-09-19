@@ -5,7 +5,7 @@ import me.xx2bab.polyfill.manifest.source.ManifestMergeInputProvider
 import me.xx2bab.polyfill.manifest.source.ManifestMergeOutputProvider
 
 // 0. Gets Polyfill instance with Project instance
-val polyfill = FunctionTestFixtures.getPolyfill(project)
+val polyfill = FunctionTestFixtures.getApplicationPolyfill(project)
 
 // 1. Starts onVariantProperties
 polyfill.onVariantProperties {

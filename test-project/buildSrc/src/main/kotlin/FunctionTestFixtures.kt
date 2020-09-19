@@ -1,3 +1,4 @@
+import me.xx2bab.polyfill.ApplicationPolyfill
 import me.xx2bab.polyfill.Polyfill
 import org.gradle.api.Project
 import java.io.File
@@ -5,10 +6,10 @@ import java.io.File
 object FunctionTestFixtures {
 
     @Volatile
-    private var polyfill: Polyfill? = null
+    private var polyfill: ApplicationPolyfill? = null
 
-    fun getPolyfill(project: Project): Polyfill {
-        return polyfill ?: synchronized(Polyfill::class.java) {
+    fun getApplicationPolyfill(project: Project): ApplicationPolyfill {
+        return polyfill ?: synchronized(ApplicationPolyfill::class.java) {
             polyfill ?: Polyfill.createApplicationPolyfill(project).also{
                 polyfill = it
             }
