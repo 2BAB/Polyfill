@@ -66,13 +66,6 @@ open class Polyfill internal constructor(private val project: Project) {
         androidExtension.onVariantProperties { action.execute(this) }
     }
 
-    fun addAGPTaskListener(variant: VariantProperties, listener: AGPTaskListener) {
-        listener.onVariantProperties(project,
-                androidExtension,
-                variant,
-                variant.name.capitalize())
-    }
-
     class UnsupportedAGPVersionException(msg: String) : Exception(msg)
 
 }
