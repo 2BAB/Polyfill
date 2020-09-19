@@ -11,7 +11,7 @@ import org.junit.Test
 import java.io.File
 
 /**
- * To test all basic functions from polyfill libs including "TaskListener" / "DataProvider" / etc.
+ * To test all basic functions from polyfill libs including "AGPTaskListener" / "DataProvider" / etc.
  *
  * Currently this function test sometime can not run from the IDE somehow,
  * not sure what settings is missing. As a workaround, we run it from command line,
@@ -81,11 +81,11 @@ class PolyfillLibraryFunctionTest {
     fun manifestAfterMergeTaskListenerTest_modifyAllowBackUpSuccessfully() {
         val extractedAndroidManifest = File(testProjectAppUnzipPath, "AndroidManifest.xml")
         Assert.assertTrue(extractedAndroidManifest.exists())
-        val newTweaker = ManifestBytesTweaker()
-        newTweaker.read(extractedAndroidManifest)
-        val applicationTag = newTweaker.getSpecifyStartTagBodyByName("application")
+        val manifestBytesTweaker = ManifestBytesTweaker()
+        manifestBytesTweaker.read(extractedAndroidManifest)
+        val applicationTag = manifestBytesTweaker.getSpecifyStartTagBodyByName("application")
         Assert.assertNotNull(applicationTag)
-        val value = newTweaker.getAttrFromTagAttrs(applicationTag!!, "allowBackup")!!.data
+        val value = manifestBytesTweaker.getAttrFromTagAttrs(applicationTag!!, "allowBackup")!!.data
         Assert.assertEquals(false.toInt(), value) // The core assert which we changed it to false
     }
 
