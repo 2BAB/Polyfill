@@ -16,6 +16,7 @@ class ProviderCache {
             MutableMap<Class<out SelfManageableProvider<*>>, SelfManageableProvider<*>>>()
 
     // TODO: generate this helper function automatically during runtime
+    @Suppress("UNCHECKED_CAST")
     private fun <T : SelfManageableProvider<*>> newProviderInstance(clazz: Class<T>): T {
         return when (clazz) {
             AGPVersionProvider::class.java -> AGPVersionProvider() as T
@@ -27,6 +28,7 @@ class ProviderCache {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : SelfManageableProvider<*>> getProvider(clazz: Class<T>,
                                                     project: Project,
                                                     androidExtension: androidExt,
