@@ -8,7 +8,8 @@ import com.android.build.gradle.internal.scope.GlobalScope
 import com.android.sdklib.BuildToolInfo
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
-import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
+import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
+import me.xx2bab.polyfill.matrix.base.LibrarySelfManageableProvider
 import me.xx2bab.polyfill.matrix.ext.getField
 import org.gradle.api.Project
 
@@ -25,7 +26,8 @@ import org.gradle.api.Project
  * @see BuildToolInfo
  */
 @ProviderConfig(InitStage.PRE_BUILD)
-class BuildToolProvider : SelfManageableProvider<BuildToolInfo> {
+class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
+        LibrarySelfManageableProvider<BuildToolInfo> {
 
     private var bti: BuildToolInfo? = null
 

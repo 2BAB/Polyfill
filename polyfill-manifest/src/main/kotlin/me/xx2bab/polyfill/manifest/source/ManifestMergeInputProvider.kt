@@ -3,12 +3,12 @@ package me.xx2bab.polyfill.manifest.source
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.VariantProperties
 import com.android.build.gradle.tasks.ProcessApplicationManifest
-import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
+import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileSystemLocation
 
-class ManifestMergeInputProvider: SelfManageableProvider<Set<FileSystemLocation>> {
+class ManifestMergeInputProvider: ApplicationSelfManageableProvider<Set<FileSystemLocation>> {
 
     private lateinit var manifests: FileCollection
 

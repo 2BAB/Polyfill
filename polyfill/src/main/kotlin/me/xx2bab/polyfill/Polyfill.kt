@@ -7,7 +7,6 @@ import com.android.build.gradle.LibraryPlugin
 import me.xx2bab.polyfill.Polyfill.Companion.createApplicationPolyfill
 import me.xx2bab.polyfill.Polyfill.Companion.createLibraryPolyfill
 import me.xx2bab.polyfill.matrix.base.AGPTaskListener
-import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
 import org.gradle.api.Action
 import org.gradle.api.Project
 
@@ -55,11 +54,6 @@ open class Polyfill internal constructor(private val project: Project) {
         } else {
             androidExtension = project.extensions.findByType(CommonExtension::class.java)!!
         }
-    }
-
-
-    fun <T : SelfManageableProvider<*>> getProvider(variant: VariantProperties, clazz: Class<T>): T {
-        return providers.getProvider(clazz, project, androidExtension, variant)
     }
 
     fun onVariantProperties(action: Action<VariantProperties>) {

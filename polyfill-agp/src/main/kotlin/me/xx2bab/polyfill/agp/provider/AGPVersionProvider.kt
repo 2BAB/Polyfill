@@ -7,7 +7,8 @@ import com.android.build.api.variant.VariantProperties
 import me.xx2bab.polyfill.gradle.tool.SemanticVersionLite
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
-import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
+import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
+import me.xx2bab.polyfill.matrix.base.LibrarySelfManageableProvider
 import org.gradle.api.Project
 
 /**
@@ -17,7 +18,8 @@ import org.gradle.api.Project
  * The result will be formatted by [SemanticVersionLite].
  */
 @ProviderConfig(InitStage.PRE_BUILD)
-class AGPVersionProvider: SelfManageableProvider<SemanticVersionLite> {
+class AGPVersionProvider: ApplicationSelfManageableProvider<SemanticVersionLite>,
+        LibrarySelfManageableProvider<SemanticVersionLite> {
 
     private var agpVersion: SemanticVersionLite = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
