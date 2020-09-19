@@ -1,9 +1,9 @@
 name: Gradle Release CI
 
 on:
-push:
-tags:
-  - '*'
+  push:
+    tags:
+        - '*'
 
 jobs:
   polyfill-release:
