@@ -18,7 +18,7 @@ jobs:
           java-version: 1.8
 
       - name: Build & Release all Polyfill libraries using Gradle
-        run: chmod +x ./publish.sh | sh ./publish.sh
+        run: chmod +x ./publish.sh | ./publish.sh
         env:
           BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
           BINTRAY_APIKEY: ${{ secrets.BINTRAY_APIKEY }}
