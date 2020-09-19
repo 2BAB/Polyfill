@@ -1,8 +1,11 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
+version = Versions.polyfillDevVersion
+
 plugins {
     id("kotlin")
+    id("me.xx2bab.polyfill.buildscript.bintray-publish")
 }
 
 dependencies {
@@ -17,6 +20,7 @@ dependencies {
 }
 
 java {
+    withSourcesJar()
     sourceCompatibility = Versions.polyfillSourceCompatibilityVersion
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
 }

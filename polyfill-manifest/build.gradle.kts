@@ -1,41 +1,11 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
+version = Versions.polyfillDevVersion
+
 plugins {
     id("kotlin")
-    `java-gradle-plugin`
-    idea
-}
-
-val integrationSourceSet: SourceSet = sourceSets.create("intTest") {
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
-}
-
-val intTestImplementation: Configuration by configurations.getting {
-    extendsFrom(configurations.testImplementation.get())
-}
-
-gradlePlugin.testSourceSets(integrationSourceSet)
-
-idea {
-    module {
-        testSourceDirs = testSourceDirs.plus(integrationSourceSet.allSource.srcDirs)
-        testResourceDirs = testResourceDirs.plus(integrationSourceSet.resources.srcDirs)
-//        val plusCollection = scopes["TEST"]?.get("plus")
-//        plusCollection?.addAll(intTestImplementation.all)
-    }
-}
-
-val integrationTest by tasks.registering(Test::class) {
-    description = "Runs integration tests."
-    group = "verification"
-    testClassesDirs = integrationSourceSet.output.classesDirs
-    classpath = integrationSourceSet.runtimeClasspath
-}
-
-val check by tasks.getting(Task::class) {
-    dependsOn(integrationTest)
+    id("me.xx2bab.polyfill.buildscript.bintray-publish")
 }
 
 dependencies {
@@ -44,8 +14,13 @@ dependencies {
     implementation(Deps.agp)
     implementation(kotlin(Deps.ktStd))
 
-    implementation(project(":polyfill-arsc"))
-    implementation(project(":polyfill-matrix"))
+    if(hasProperty("polyfillPublish")) {
+        implementation("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
+        implementation("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
+    } else {
+        implementation(project(":polyfill-arsc"))
+        implementation(project(":polyfill-matrix"))
+    }
 
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
@@ -53,6 +28,7 @@ dependencies {
 }
 
 java {
+    withSourcesJar()
     sourceCompatibility = Versions.polyfillSourceCompatibilityVersion
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
 }

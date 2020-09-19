@@ -1,8 +1,11 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
+version = Versions.polyfillDevVersion
+
 plugins {
     id("kotlin")
+    id("me.xx2bab.polyfill.buildscript.bintray-publish")
 }
 
 dependencies {
@@ -11,8 +14,13 @@ dependencies {
     implementation(gradleApi())
     implementation(Deps.agp)
 
-    implementation(project(":polyfill-gradle"))
-    implementation(project(":polyfill-matrix"))
+    if(hasProperty("polyfillPublish")) {
+        implementation("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
+        implementation("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
+    } else {
+        implementation(project(":polyfill-gradle"))
+        implementation(project(":polyfill-matrix"))
+    }
 
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
@@ -20,6 +28,7 @@ dependencies {
 }
 
 java {
+    withSourcesJar()
     sourceCompatibility = Versions.polyfillSourceCompatibilityVersion
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
 }

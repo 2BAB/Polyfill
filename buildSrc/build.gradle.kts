@@ -14,10 +14,5 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.android.tools.build:gradle:4.2.0-alpha11")
-
-    // Github Release
-    implementation("gradle.plugin.com.github.breadmoirai:github-release:2.2.1")
-    implementation("com.squareup.okhttp3:okhttp:3.8.1")
-    implementation("com.j256.simplemagic:simplemagic:1.10")
-    implementation("org.zeroturnaround:zt-exec:1.10")
+    implementation ("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
 }

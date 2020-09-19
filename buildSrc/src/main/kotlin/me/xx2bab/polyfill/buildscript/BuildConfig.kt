@@ -5,7 +5,7 @@ import org.gradle.api.JavaVersion
 object BuildConfig {
 
     object Versions {
-        const val polyfillDevVersion = "0.1.0.2-SNAPSHOT"
+        const val polyfillDevVersion = "0.0.4"
 
         val polyfillSourceCompatibilityVersion = JavaVersion.VERSION_1_8
         val polyfillTargetCompatibilityVersion = JavaVersion.VERSION_1_8
