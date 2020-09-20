@@ -7,4 +7,4 @@ do
 ./gradlew -PpolyfillPublish="$module" :polyfill:clean :"$module":bintrayUpload
 done
 
-./gradlew aggregateJars
+./gradlew aggregateJars releaseArtifactsToGithub
