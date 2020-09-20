@@ -1,5 +1,7 @@
 <img src="./Polyfill.png" alt="Polyfill" width="507px">
 
+![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg) [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 🚧 **Working on progress...**
 
 Hook Toolset for Android App Build System.
