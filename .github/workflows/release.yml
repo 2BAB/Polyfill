@@ -22,6 +22,7 @@ jobs:
         env:
           BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
           BINTRAY_APIKEY: ${{ secrets.BINTRAY_APIKEY }}
+          GH_DEV_TOKEN: ${{ secrets.GH_DEV_TOKEN }}
 
       - name: Upload Github Artifacts
         uses: actions/upload-artifact@v2
