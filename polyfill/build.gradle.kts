@@ -50,17 +50,17 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
     if(hasProperty("polyfillPublish")) {
-        implementation("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
-        implementation("me.2bab:polyfill-manifest:${Versions.polyfillDevVersion}")
-        implementation("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
-        implementation("me.2bab:polyfill-agp:${Versions.polyfillDevVersion}")
-        implementation("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
+        api("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
+        api("me.2bab:polyfill-manifest:${Versions.polyfillDevVersion}")
+        api("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
+        api("me.2bab:polyfill-agp:${Versions.polyfillDevVersion}")
+        api("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
     } else {
-        implementation(project(":polyfill-arsc"))
-        implementation(project(":polyfill-manifest"))
-        implementation(project(":polyfill-gradle"))
-        implementation(project(":polyfill-agp"))
-        implementation(project(":polyfill-matrix"))
+        api(project(":polyfill-arsc"))
+        api(project(":polyfill-manifest"))
+        api(project(":polyfill-gradle"))
+        api(project(":polyfill-agp"))
+        api(project(":polyfill-matrix"))
     }
 
     implementation(gradleApi())
