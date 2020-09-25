@@ -1,7 +1,7 @@
 package me.xx2bab.polyfill.manifest.source
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.variant.VariantProperties
+import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import org.gradle.api.Project
@@ -13,7 +13,7 @@ class ManifestMergeOutputProvider: ApplicationSelfManageableProvider<RegularFile
 
     override fun initialize(project: Project,
                             androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
-                            variant: VariantProperties) {
+                            variant: Variant) {
         val t = project.tasks.withType(ProcessApplicationManifest::class.java)
         mergedManifests = t.first().mergedManifest.get()
     }

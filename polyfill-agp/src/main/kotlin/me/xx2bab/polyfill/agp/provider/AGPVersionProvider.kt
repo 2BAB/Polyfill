@@ -3,7 +3,7 @@ package me.xx2bab.polyfill.agp.provider
 
 import com.android.Version
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.variant.VariantProperties
+import com.android.build.api.variant.Variant
 import me.xx2bab.polyfill.gradle.tool.SemanticVersionLite
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
@@ -25,7 +25,7 @@ class AGPVersionProvider: ApplicationSelfManageableProvider<SemanticVersionLite>
 
     override fun initialize(project: Project,
                             androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
-                            variant: VariantProperties) {
+                            variant: Variant) {
         // Could be ignored
     }
 

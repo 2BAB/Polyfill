@@ -1,7 +1,7 @@
 buildscript {
 
     project.extra["kotlinVersion"] = "1.4.10"
-    project.extra["agpVersion"] = "4.2.0-alpha11"
+    project.extra["agpVersion"] = "4.2.0-alpha12"
 
     repositories {
         google()

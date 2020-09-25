@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill
 
-import com.android.build.api.variant.VariantProperties
+import com.android.build.api.variant.Variant
 import me.xx2bab.polyfill.agp.provider.AGPVersionProvider
 import me.xx2bab.polyfill.agp.provider.BuildToolProvider
 import me.xx2bab.polyfill.manifest.bytes.ManifestInBytesProvider
@@ -32,7 +32,7 @@ class ProviderCache {
     fun <T : SelfManageableProvider<*>> getProvider(clazz: Class<T>,
                                                     project: Project,
                                                     androidExtension: androidExt,
-                                                    variant: VariantProperties): T {
+                                                    variant: Variant): T {
         val variantName = variant.name
         if (!variantMap.containsKey(variantName)) {
             variantMap[variantName] = ConcurrentHashMap()

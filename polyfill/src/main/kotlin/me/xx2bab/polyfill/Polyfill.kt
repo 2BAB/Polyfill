@@ -1,7 +1,7 @@
 package me.xx2bab.polyfill
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.variant.VariantProperties
+import com.android.build.api.variant.Variant
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import me.xx2bab.polyfill.Polyfill.Companion.createApplicationPolyfill
@@ -56,7 +56,7 @@ open class Polyfill internal constructor(private val project: Project) {
         }
     }
 
-    fun onVariantProperties(action: Action<VariantProperties>) {
+    fun onVariantProperties(action: Action<Variant>) {
         androidExtension.onVariantProperties { action.execute(this) }
     }
 

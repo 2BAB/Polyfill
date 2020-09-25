@@ -1,7 +1,7 @@
 package me.xx2bab.polyfill.agp.provider
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.variant.VariantProperties
+import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.BasePlugin
 import com.android.build.gradle.internal.scope.GlobalScope
@@ -33,8 +33,8 @@ class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
 
     override fun initialize(project: Project,
                             androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
-                            variant: VariantProperties) {
-        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *>
+                            variant: Variant) {
+        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *, *>
         val scope = getField(BasePlugin::class.java, basePlugin,
                 "globalScope") as GlobalScope
         bti = scope.sdkComponents.get().buildToolInfoProvider.get()
