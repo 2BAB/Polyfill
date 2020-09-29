@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "../../build/libs", "include" to arrayOf("*.jar"))))
-//    implementation("me.2bab:polyfill:0.1.0")
+//    implementation("me.2bab:polyfill:0.1.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
     implementation("com.android.tools.build:gradle:4.2.0-alpha12")
