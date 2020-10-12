@@ -2,9 +2,12 @@
 
 ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg) [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-🚧 **目前还在孵化中...**
 
-Polyfill 是一个服务于 Android App 构建系统的工具集。
+[English] [[中文]](./README_zh.md)
+
+🚧 **It's currently under incubating...**
+
+Polyfill is a hook toolset for Android App Build System.
 
 ## Why need Polyfill?
 
