@@ -2,9 +2,9 @@
 
 ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg) [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-🚧 **It's currently under incubating...**
+🚧 **目前还在孵化中...**
 
-Polyfill is a hook toolset for Android App Build System.
+Polyfill 是一个服务于 Android App 构建系统的工具集。
 
 ## Why need Polyfill?
 
@@ -34,7 +34,7 @@ Find more Artifaces API news from links below:
 - It encapsulates AGP (Android Gradle Plugin) APIs, turn them to **Task Hook Points** (Listener) and **Task Inputs** for all 3rd plugin developer to easily interact with.
     - **Task Hook Points:** for instance, if the developer wants to intercept manifest merge input files, he/she should find producer task(s) and consumer task of input files, then add a new custom task that will be executed between them; here the Hook Points means we define a Listener who process the task order stuffs and make sure the new-added runs on the true timing, Polyfill provides many `AGPTaskListener.kt` (the impl such as `ManifestBeforeMergeListener.kt`) to complete this job.
     - **Task Inputs:** with the help of Hook Points, your task logic can now be executed during the right time, what you might miss is task input(s), for example, Manifest files, Android SDK locations, AGP versions, etc. To configure them easily, Polyfill provides `SelfManageableProvider.kt` (the impl such as `ManifestMergeInputProvider.kt`) to fetch the task input(s).
-- Meanwhile, it provides a bunch of tools working intermediates, such as binary parser and builder for `resources.arsc`, `AndroidManifest.xml`.
+- Meanwhile, it provides a bunch of tools working on build intermediates, such as binary parser and builder for `resources.arsc`, `AndroidManifest.xml`.
 
 ## Quick Start
 
@@ -129,6 +129,8 @@ Check more in `./test-project` and `./polyfill/src/funcTest`.
 ## Compatible Specification
 
 Polyfill is only supported & tested on latest **2** Minor versions of Android Gradle Plugin.
+
+**Changelog** can be found from [Github Releases](https://github.com/2BAB/Polyfill/releases).
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
