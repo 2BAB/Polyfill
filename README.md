@@ -52,13 +52,13 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.1.2")
+        classpath("me.2bab:polyfill:0.1.3")
     }
 }
 
 // If add to /buildSrc/build.gradle.kts or standalone plugin project, switch to implementation instead
 // dependencies {
-//     implementation("me.2bab:polyfill:0.1.2")
+//     implementation("me.2bab:polyfill:0.1.3")
 // }
 ```
 

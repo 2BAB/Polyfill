@@ -56,13 +56,13 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.1.2")
+        classpath("me.2bab:polyfill:0.1.3")
     }
 }
 
 // 如果添加到了 /buildSrc/build.gradle.kts 或者独立的插件项目，需要用implementation 代替之
 // dependencies {
-//     implementation("me.2bab:polyfill:0.1.2")
+//     implementation("me.2bab:polyfill:0.1.3")
 // }
 ```
 
