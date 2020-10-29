@@ -14,7 +14,7 @@ object BuildConfig {
     }
 
     object Versions {
-        const val polyfillDevVersion = "0.1.2"
+        const val polyfillDevVersion = "0.1.3"
 
         val polyfillSourceCompatibilityVersion = JavaVersion.VERSION_1_8
         val polyfillTargetCompatibilityVersion = JavaVersion.VERSION_1_8
@@ -23,7 +23,7 @@ object BuildConfig {
     object Deps {
         const val ktStd = "stdlib-jdk8"
         const val ktReflect = "reflect"
-        const val agp = "com.android.tools.build:gradle:4.2.0-alpha12"
+        const val agp = "com.android.tools.build:gradle:4.2.0-alpha15"
 
         // Test
         const val junit = "junit:junit:4.12"
