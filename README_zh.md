@@ -52,7 +52,7 @@ Polyfill 是一个服务于 Android App 构建系统的工具集。
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")

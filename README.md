@@ -48,7 +48,7 @@ Find more Artifaces API news from links below:
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")
