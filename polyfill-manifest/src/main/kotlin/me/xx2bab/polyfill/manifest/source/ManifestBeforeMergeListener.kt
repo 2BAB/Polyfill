@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill.manifest.source
 
-import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.extension.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.ProcessLibraryManifest
 import me.xx2bab.polyfill.matrix.base.ApplicationAGPTaskListener
@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskProvider
 class ManifestBeforeMergeListener(private val taskProvider: TaskProvider<*>) : ApplicationAGPTaskListener {
 
     override fun onVariantProperties(project: Project,
-                                     androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
+                                     androidExtension: AndroidComponentsExtension<*, *>,
                                      variant: Variant,
                                      variantCapitalizedName: String) {
         project.afterEvaluate {

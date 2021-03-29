@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill.matrix.base
 
-import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.extension.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -10,7 +10,7 @@ import org.gradle.api.Project
  * this interface directly, means it supports both Application and Library, or should
  * use [ApplicationAGPTaskListener] and [LibraryAGPTaskListener] instead.
  *
- * The base listener here defines a new variant-traversal approach with CommonExtension.
+ * The base listener here defines a new variant-traversal approach with AndroidComponentsExtension<*, *>.
  * Below is a quote from the article of Android Developer Medium, describes the difference of
  * 2 variant callbacks:
  *
@@ -31,7 +31,7 @@ interface AGPTaskListener {
      */
     @Incubating
     fun onVariantProperties(project: Project,
-                            androidExtension: CommonExtension<*, *, *, *, *, *, *, *>,
+                            androidExtension: AndroidComponentsExtension<*, *>,
                             variant: Variant,
                             variantCapitalizedName: String)
 

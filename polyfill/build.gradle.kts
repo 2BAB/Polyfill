@@ -7,6 +7,7 @@ plugins {
     id("kotlin")
     id("me.xx2bab.polyfill.buildscript.bintray-publish")
     `java-gradle-plugin`
+    `kotlin-dsl`
     idea
 }
 

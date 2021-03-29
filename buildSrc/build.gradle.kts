@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.android.tools.build:gradle:4.2.0-alpha15")
+    implementation("com.android.tools.build:gradle:4.2.0-beta06")
     implementation ("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
 
     // Github Release

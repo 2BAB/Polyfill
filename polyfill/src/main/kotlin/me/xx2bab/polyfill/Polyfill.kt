@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill
 
-import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.extension.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
@@ -10,7 +10,7 @@ import me.xx2bab.polyfill.matrix.base.AGPTaskListener
 import org.gradle.api.Action
 import org.gradle.api.Project
 
-typealias androidExt = CommonExtension<*, *, *, *, *, *, *, *>
+typealias androidExt = AndroidComponentsExtension<*, *>
 
 /**
  * The entry for overall API calls. Polyfill itself doesn't allow instance constructing,
@@ -49,15 +49,17 @@ open class Polyfill internal constructor(private val project: Project) {
     protected val androidExtension: androidExt
 
     init {
-        if (project.extensions.findByType(CommonExtension::class.java) == null) {
+        if (project.extensions.findByType(AndroidComponentsExtension::class.java) == null) {
             throw IllegalArgumentException("Required Application or Library Extensions.")
         } else {
-            androidExtension = project.extensions.findByType(CommonExtension::class.java)!!
+            androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
         }
     }
 
     fun onVariantProperties(action: Action<Variant>) {
-        androidExtension.onVariantProperties { action.execute(this) }
+        androidExtension.onVariants { variant ->
+            action.execute(variant)
+        }
     }
 
     class UnsupportedAGPVersionException(msg: String) : Exception(msg)
