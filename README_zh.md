@@ -55,8 +55,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.1.3")
+        classpath("com.android.tools.build:gradle:4.2.0-beta06")
+        classpath("me.2bab:polyfill:0.2.0")
     }
 }
 
@@ -135,11 +135,12 @@ abstract class ManifestAfterMergeTask : DefaultTask() {
 
 ## 兼容说明
 
-Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本（例如 4.2.x，4.3.x）进行测试。
+Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本（例如 4.2.x，7.0.x）进行测试。
 
 | AGP Version |                    Latest Support Version                    |
 | :---------: | :----------------------------------------------------------: |
-|    4.2.x    | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg) |
+4.2.0-beta06 | 0.2.0 (MavenCentral)
+4.2.0-alpha15 | 0.1.3 (JCenter)
 
 
 ## Git Commit Check

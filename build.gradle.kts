@@ -2,20 +2,18 @@ import me.xx2bab.polyfill.buildscript.BuildConfig.Path
 
 buildscript {
 
-    // Set project ext values as the workaround to collect all values that can't be set in buildSrc,
-    // because buildscript can not read anything from the scripts(buildSrc) that will be compiled
-    // based on this buildscript
-    project.extra["kotlinVersion"] = "1.4.31"
-    project.extra["agpVersion"] = "4.2.0-beta06"
+    val props = java.util.Properties()
+    file("./versions.properties").inputStream().use { props.load(it) }
 
     repositories {
         google()
         mavenCentral()
         mavenLocal()
     }
+
     dependencies {
-        classpath(kotlin("gradle-plugin", version = project.extra["kotlinVersion"].toString()))
-        classpath("com.android.tools.build:gradle:${project.extra["agpVersion"]}")
+        classpath(kotlin("gradle-plugin", version = props["kotlinVersion"]?.toString()))
+        classpath("com.android.tools.build:gradle:${props["agpVersion"]}")
     }
 
 }

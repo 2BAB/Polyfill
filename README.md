@@ -51,8 +51,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.1.3")
+        classpath("com.android.tools.build:gradle:4.2.0-beta06")
+        classpath("me.2bab:polyfill:0.2.0")
     }
 }
 
@@ -137,7 +137,8 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.2.x | ![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg)
+4.2.0-beta06 | 0.2.0 (MavenCentral)
+4.2.0-alpha15 | 0.1.3 (JCenter)
 
 
 ## Git Commit Check

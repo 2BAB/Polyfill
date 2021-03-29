@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
     `kotlin-dsl`
 }
@@ -10,9 +12,11 @@ repositories {
     }
 }
 
+val props = Properties()
+file("../versions.properties").inputStream().use { props.load(it) }
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.android.tools.build:gradle:4.2.0-beta06")
+    implementation("com.android.tools.build:gradle:${props["agpVersion"]}")
     implementation ("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5")
 
     // Github Release

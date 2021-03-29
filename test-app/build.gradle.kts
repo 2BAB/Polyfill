@@ -1,7 +1,9 @@
+import java.util.*
+
 buildscript {
 
-    project.extra["kotlinVersion"] = "1.4.31"
-    project.extra["agpVersion"] = "4.2.0-beta06"
+    val props = java.util.Properties()
+    file("../versions.properties").inputStream().use { props.load(it) }
 
     repositories {
         google()
@@ -10,9 +12,11 @@ buildscript {
     }
 
     dependencies {
-        classpath(kotlin("gradle-plugin", version = project.extra["kotlinVersion"].toString()))
-        classpath("com.android.tools.build:gradle:${project.extra["agpVersion"]}")
-        classpath("me.2bab:polyfill-test-plugin:+") // Will be replaced with project(":test-plugin") by includeBuild()
+        classpath(kotlin("gradle-plugin", version = props["kotlinVersion"]?.toString()))
+        classpath("com.android.tools.build:gradle:${props["agpVersion"]}")
+
+        // Will be replaced with project(":test-plugin") by includeBuild()
+        classpath("me.2bab:polyfill-test-plugin:+")
     }
 
 }
