@@ -1,15 +1,12 @@
 plugins {
     id("com.android.application")
-    kotlin("android")
-    kotlin("android.extensions")
-
-    `env-init`
-    `manifest-hook`
-//    id("me.2bab.polyfill.test.manifest")
+    id("kotlin-android")
+    id("polyfill-test-plugin")
 }
 
 android {
     compileSdkVersion(30)
+    buildToolsVersion("30.0.3")
     defaultConfig {
         applicationId = "me.xx2bab.polyfill.test"
         minSdkVersion(21)

@@ -11,4 +11,5 @@ if (polyfillPubModule != null) {
     include(":polyfill-arsc") // resource.arsc relevant features
     include(":polyfill-manifest") // AndroidManifest relevant features
     include(":polyfill-matrix") // Tools, Extensions, Resources
+    include(":test-plugin") // A test plugin that integrates polyfill
 }
