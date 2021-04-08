@@ -45,8 +45,8 @@ object BuildConfig {
 
         // Test
         const val junit = "junit:junit:4.12"
-        const val mockito = "org.mockito:mockito-core:3.3.1"
-        const val mockitoInline = "org.mockito:mockito-inline:3.3.1"
+        const val mockito = "org.mockito:mockito-core:3.9.0"
+        const val mockitoInline = "org.mockito:mockito-inline:3.9.0"
     }
 
 }

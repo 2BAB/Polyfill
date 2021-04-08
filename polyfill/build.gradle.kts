@@ -36,7 +36,7 @@ idea {
 }
 
 val functionTest by tasks.registering(Test::class) {
-    dependsOn(project.parent!!.tasks.getByPath("buildForFunctionTest"))
+//    dependsOn(project.parent!!.tasks.getByPath("buildForFunctionTest"))
     description = "Runs function tests."
     group = "verification"
     testClassesDirs = funcTestSourceSet.output.classesDirs

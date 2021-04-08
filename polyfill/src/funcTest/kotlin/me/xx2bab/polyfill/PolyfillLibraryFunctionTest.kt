@@ -27,7 +27,7 @@ class PolyfillLibraryFunctionTest {
 
     companion object {
 
-        private const val testProjectPath = "../test-project"
+        private const val testProjectPath = "../test-app"
         private const val testProjectJsonOutputPath = "${testProjectPath}/build/functionTestOutput"
         private const val testProjectAppOutputPath = "${testProjectPath}/app/build/outputs/apk/debug"
         private const val testProjectAppUnzipPath = "${testProjectPath}/app/build/outputs/apk/debug/unzipped"
@@ -36,13 +36,12 @@ class PolyfillLibraryFunctionTest {
         @JvmStatic
         fun buildTestProject() {
             // Must run it after libs deployed
-            println("Released polyfill to ./buildSrc/libs.")
             println("Building...")
             GradleRunner.create()
                     .forwardOutput()
                     .withPluginClasspath()
                     .withArguments("clean", "assembleDebug", "--stacktrace")
-                    .withProjectDir(File("../test-project"))
+                    .withProjectDir(File("../test-app"))
                     .build()
 
             println("Unzipping...")

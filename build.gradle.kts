@@ -34,23 +34,22 @@ task("clean") {
     delete(rootProject.buildDir)
 }
 
-// TODO: move task definition to buildSrc
-val aggregateJars by tasks.registering {
-    doLast {
-        val output = Path.getAggregatedJarDirectory(project)
-        output.mkdir()
-        subprojects {
-            File(buildDir.absolutePath + File.separator + "libs").walk()
-                    .filter { it.name.startsWith("polyfill") && it.extension == "jar" }
-                    .forEach { it.copyTo(File(output, it.name)) }
-        }
-    }
-}
-
-val buildForFunctionTest by tasks.registering {
-    val copy = this
-    subprojects {
-        copy.dependsOn(":${name}:assemble")
-    }
-    copy.finalizedBy(aggregateJars)
-}
+//val aggregateJars by tasks.registering {
+//    doLast {
+//        val output = Path.getAggregatedJarDirectory(project)
+//        output.mkdir()
+//        subprojects {
+//            File(buildDir.absolutePath + File.separator + "libs").walk()
+//                    .filter { it.name.startsWith("polyfill") && it.extension == "jar" }
+//                    .forEach { it.copyTo(File(output, it.name)) }
+//        }
+//    }
+//}
+//
+//val buildForFunctionTest by tasks.registering {
+//    val copy = this
+//    subprojects {
+//        copy.dependsOn(":${name}:assemble")
+//    }
+//    copy.finalizedBy(aggregateJars)
+//}
