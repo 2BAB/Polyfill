@@ -10,7 +10,14 @@ object BuildConfig {
     val props = Properties()
 
     init {
-        File("../versions.properties").inputStream().use { props.load(it) }
+        // The buildSrc may get built into test-app when using composite builds,
+        // so we need to handle all scenarios when using relative paths.
+        var curr = File("").absoluteFile
+        while (curr.listFiles() != null
+            && !curr.listFiles()!!.map { it.name }.contains("polyfill-agp")) {
+            curr = curr.parentFile
+        }
+        File(curr,"versions.properties").inputStream().use { props.load(it) }
     }
 
     object Path {
