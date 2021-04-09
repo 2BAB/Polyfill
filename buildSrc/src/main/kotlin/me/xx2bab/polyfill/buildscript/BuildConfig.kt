@@ -10,21 +10,13 @@ object BuildConfig {
     val props = Properties()
 
     init {
-        // The buildSrc may get built into test-app when using composite builds,
-        // so we need to handle all scenarios when using relative paths.
-        var curr = File("").absoluteFile
-        while (curr.listFiles() != null
-            && !curr.listFiles()!!.map { it.name }.contains("polyfill-agp")) {
-            curr = curr.parentFile
-        }
-        File(curr,"versions.properties").inputStream().use { props.load(it) }
+        javaClass.classLoader.getResourceAsStream("versions.properties")
+            .use { props.load(it) }
     }
 
     object Path {
-
         fun getAggregatedJarDirectory(project: Project) = File(
                 project.rootProject.buildDir.absolutePath + File.separator + "libs")
-
     }
 
     object Versions {
@@ -35,7 +27,6 @@ object BuildConfig {
     }
 
     object Deps {
-
         const val ktStd = "stdlib-jdk8"
         const val ktReflect = "reflect"
         val agp by lazy { "com.android.tools.build:gradle:${props["agpVersion"]}" }

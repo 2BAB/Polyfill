@@ -13,7 +13,7 @@ repositories {
 }
 
 val props = Properties()
-file("../versions.properties").inputStream().use { props.load(it) }
+file("./src/main/resources/versions.properties").inputStream().use { props.load(it) }
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.android.tools.build:gradle:${props["agpVersion"]}")

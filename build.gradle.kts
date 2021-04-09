@@ -1,9 +1,7 @@
-import me.xx2bab.polyfill.buildscript.BuildConfig.Path
-
 buildscript {
 
     val props = java.util.Properties()
-    file("./versions.properties").inputStream().use { props.load(it) }
+    file("./buildSrc/src/main/resources/versions.properties").inputStream().use { props.load(it) }
 
     repositories {
         google()

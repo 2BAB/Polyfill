@@ -7,7 +7,7 @@ plugins {
 }
 
 val props = Properties()
-file("../../versions.properties").inputStream().use { props.load(it) }
+file("../../buildSrc/src/main/resources/versions.properties").inputStream().use { props.load(it) }
 
 android {
     compileSdkVersion(30)
