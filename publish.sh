@@ -4,7 +4,7 @@
 MODULE_ARRAY=('polyfill-matrix' 'polyfill-gradle' 'polyfill-arsc' 'polyfill-manifest' 'polyfill-agp' 'polyfill')
 for module in "${MODULE_ARRAY[@]}"
 do
-./gradlew -PpolyfillPublish="$module" :polyfill:clean :"$module":bintrayUpload
+./gradlew :"$module":publishAllPublicationsToSonatypeRepository
 done
 
 ./gradlew aggregateJars releaseArtifactsToGithub

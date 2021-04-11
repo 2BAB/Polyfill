@@ -1,6 +1,7 @@
 <img src="./Polyfill.png" alt="Polyfill" width="507px">
 
-![JCenter](https://api.bintray.com/packages/2bab/maven/polyfill/images/download.svg) [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.2bab/polyfill/badge.svg)](https://search.maven.org/artifact/me.2bab/polyfill)
+ [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 
 [English] [[中文]](./README_zh.md)
@@ -51,14 +52,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0-beta06")
+        classpath("com.android.tools.build:gradle:4.2.0-rc01")
         classpath("me.2bab:polyfill:0.2.0")
     }
 }
 
 // If add to /buildSrc/build.gradle.kts or standalone plugin project, switch to implementation instead
 // dependencies {
-//     implementation("me.2bab:polyfill:0.1.3")
+//     implementation("me.2bab:polyfill:0.2.0")
 // }
 ```
 
@@ -137,7 +138,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.2.0-beta06 | 0.2.0 (MavenCentral)
+4.2.0-rc01 | 0.2.0 (MavenCentral)
 4.2.0-alpha15 | 0.1.3 (JCenter)
 
 
@@ -155,7 +156,7 @@ So far we haven't added any hook tool, but follow the regex below:
 ## License
 
 >
-> Copyright 2018-2020 2BAB
+> Copyright 2018-2021 2BAB
 >
 >Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

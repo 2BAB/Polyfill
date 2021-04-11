@@ -3,7 +3,6 @@ package me.xx2bab.polyfill.buildscript
 import com.github.breadmoirai.githubreleaseplugin.GithubReleaseTask
 import me.xx2bab.polyfill.buildscript.BuildConfig.Path
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
-import org.apache.commons.lang.StringUtils
 import java.util.*
 
 val taskName = "releaseArtifactsToGithub"
@@ -19,8 +18,9 @@ gradle.taskGraph.whenReady {
     }
 }
 
-val token: String = if (StringUtils.isNotBlank(System.getenv("GH_DEV_TOKEN"))) {
-    System.getenv("GH_DEV_TOKEN")
+val tokenFromEnv: String? = System.getenv("GH_DEV_TOKEN")
+val token: String = if (!tokenFromEnv.isNullOrBlank()) {
+    tokenFromEnv
 } else {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
@@ -34,12 +34,14 @@ val releaseNotes = ""
 createGithubReleaseTaskInternal(artifacts, token, repo, tagBranch, version, releaseNotes)
 
 
-fun createGithubReleaseTaskInternal(artifacts: DirectoryProperty,
-                                    token: String,
-                                    repo: String,
-                                    tagBranch: String,
-                                    version: String,
-                                    releaseNotes: String): TaskProvider<GithubReleaseTask> {
+fun createGithubReleaseTaskInternal(
+    artifacts: DirectoryProperty,
+    token: String,
+    repo: String,
+    tagBranch: String,
+    version: String,
+    releaseNotes: String
+): TaskProvider<GithubReleaseTask> {
 //    val id = version.replace(".", "")
     return project.tasks.register<GithubReleaseTask>("releaseArtifactsToGithub") {
         setAuthorization("Token $token")

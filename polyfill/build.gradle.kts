@@ -1,11 +1,9 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
-version = Versions.polyfillDevVersion
-
 plugins {
     id("kotlin")
-    id("me.xx2bab.polyfill.buildscript.bintray-publish")
+    id("me.xx2bab.polyfill.buildscript.maven-central-publish")
     `java-gradle-plugin`
     `kotlin-dsl`
     idea
@@ -50,19 +48,19 @@ val check by tasks.getting(Task::class) {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
-    if(hasProperty("polyfillPublish")) {
-        api("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
-        api("me.2bab:polyfill-manifest:${Versions.polyfillDevVersion}")
-        api("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
-        api("me.2bab:polyfill-agp:${Versions.polyfillDevVersion}")
-        api("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
-    } else {
+//    if(hasProperty("polyfillPublish")) {
+//        api("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
+//        api("me.2bab:polyfill-manifest:${Versions.polyfillDevVersion}")
+//        api("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
+//        api("me.2bab:polyfill-agp:${Versions.polyfillDevVersion}")
+//        api("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
+//    } else {
         api(project(":polyfill-arsc"))
         api(project(":polyfill-manifest"))
         api(project(":polyfill-gradle"))
         api(project(":polyfill-agp"))
         api(project(":polyfill-matrix"))
-    }
+//    }
 
     implementation(gradleApi())
     implementation(Deps.agp)

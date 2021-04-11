@@ -1,12 +1,41 @@
 package me.xx2bab.polyfill.buildscript
 
-import org.apache.commons.lang.StringUtils
-import java.util.*
-
 plugins{
     `maven-publish`
-    id("com.jfrog.bintray")
+    signing
 }
+
+
+// Stub secrets to let the project sync and build without the publication values set up
+ext["signing.keyId"] = null
+ext["signing.password"] = null
+ext["signing.secretKeyRingFile"] = null
+ext["ossrhUsername"] = null
+ext["ossrhPassword"] = null
+
+// Grabbing secrets from local.properties file or from environment variables,
+// which could be used on CI
+val secretPropsFile = project.rootProject.file("local.properties")
+if (secretPropsFile.exists()) {
+    secretPropsFile.reader().use {
+        java.util.Properties().apply {
+            load(it)
+        }
+    }.onEach { (name, value) ->
+        ext[name.toString()] = value
+    }
+} else {
+    ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+    ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+    ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_SECRET_KEY_RING_FILE")
+    ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
+    ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+}
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+fun getExtraString(name: String) = ext[name]?.toString()
+
 
 val groupName = "me.2bab"
 val projectName = "polyfill"
@@ -25,8 +54,10 @@ val username = "2BAB"
 
 
 publishing {
+
     publications {
         create<MavenPublication>("PolyfillArtifact") {
+            artifact(javadocJar.get())
             from(components["java"])
             pom {
                 // Description
@@ -63,6 +94,19 @@ publishing {
         }
     }
 
+    // Configure MavenCentral repository
+    repositories {
+        maven {
+            name = "sonatype"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = getExtraString("ossrhUsername")
+                password = getExtraString("ossrhPassword")
+            }
+        }
+    }
+
+    // Configure MavenLocal repository
     repositories {
         maven {
             name = "myMavenlocal"
@@ -71,33 +115,6 @@ publishing {
     }
 }
 
-var btUser: String?
-var btApiKey: String?
-
-if (StringUtils.isNotBlank(System.getenv("BINTRAY_USER"))) {
-    btUser = System.getenv("BINTRAY_USER")
-    btApiKey = System.getenv("BINTRAY_APIKEY")
-} else {
-    val properties = Properties()
-    properties.load(project.rootProject.file("local.properties").inputStream())
-    btUser = properties.getProperty("bintray.user")
-    btApiKey = properties.getProperty("bintray.apikey")
-}
-
-bintray{
-    user = btUser
-    key = btApiKey
-    setPublications("PolyfillArtifact")
-    pkg.apply {
-        repo = "maven"
-        name = project.name
-        desc = mavenDesc
-        websiteUrl = siteUrl
-        issueTrackerUrl = issueUrl
-        vcsUrl = gitUrl
-        setLabels("2BAB", "Polyfill", "Gradle", "Android Gradle Plugin", "AGP", "Hook")
-        setLicenses(licenseIds)
-        publish = true
-        publicDownloadNumbers = true
-    }
+signing {
+    sign(publishing.publications)
 }

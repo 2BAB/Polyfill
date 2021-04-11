@@ -1,3 +1,6 @@
+import me.xx2bab.polyfill.buildscript.BuildConfig.Path
+import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
+
 buildscript {
 
     val props = java.util.Properties()
@@ -21,6 +24,8 @@ plugins {
 }
 
 allprojects {
+    version = Versions.polyfillDevVersion
+    group = "me.2bab"
     repositories {
         google()
         mavenCentral()
@@ -32,22 +37,14 @@ task("clean") {
     delete(rootProject.buildDir)
 }
 
-//val aggregateJars by tasks.registering {
-//    doLast {
-//        val output = Path.getAggregatedJarDirectory(project)
-//        output.mkdir()
-//        subprojects {
-//            File(buildDir.absolutePath + File.separator + "libs").walk()
-//                    .filter { it.name.startsWith("polyfill") && it.extension == "jar" }
-//                    .forEach { it.copyTo(File(output, it.name)) }
-//        }
-//    }
-//}
-//
-//val buildForFunctionTest by tasks.registering {
-//    val copy = this
-//    subprojects {
-//        copy.dependsOn(":${name}:assemble")
-//    }
-//    copy.finalizedBy(aggregateJars)
-//}
+val aggregateJars by tasks.registering {
+    doLast {
+        val output = Path.getAggregatedJarDirectory(project)
+        output.mkdir()
+        subprojects {
+            File(buildDir.absolutePath + File.separator + "libs").walk()
+                    .filter { it.name.startsWith("polyfill") && it.extension == "jar" }
+                    .forEach { it.copyTo(File(output, it.name)) }
+        }
+    }
+}
