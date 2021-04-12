@@ -1,5 +1,7 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
+import me.xx2bab.polyfill.buildscript.BuildConfig.props
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("kotlin")
@@ -9,66 +11,83 @@ plugins {
     idea
 }
 
-val funcTestSourceSet: SourceSet = sourceSets.create("funcTest") {
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += sourceSets.main.get().output
+val fixtureClasspath: Configuration by configurations.creating
+tasks.pluginUnderTestMetadata {
+    pluginClasspath.from(fixtureClasspath)
 }
 
-val funcTestImplementation: Configuration by configurations.getting {
+val functionalTestSourceSet: SourceSet = sourceSets.create("functionalTest") {
+    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+    runtimeClasspath += output + compileClasspath
+}
+
+val functionalTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
 }
 
-gradlePlugin.testSourceSets(funcTestSourceSet)
+gradlePlugin.testSourceSets(functionalTestSourceSet)
 
 idea {
     module {
-        testSourceDirs = testSourceDirs.plus(funcTestSourceSet.allSource.srcDirs)
-        testResourceDirs = testResourceDirs.plus(funcTestSourceSet.resources.srcDirs)
+        testSourceDirs = testSourceDirs.plus(functionalTestSourceSet.allSource.srcDirs)
+        testResourceDirs = testResourceDirs.plus(functionalTestSourceSet.resources.srcDirs)
 
         val plusCollection = scopes["TEST"]?.get("plus")
-        plusCollection?.addAll(funcTestImplementation.all.filter {
+        plusCollection?.addAll(functionalTestImplementation.all.filter {
             it.name.contains("funcTestCompileClasspath")
                     || it.name.contains("funcTestRuntimeClasspath")
         })
     }
 }
 
-val functionTest by tasks.registering(Test::class) {
-//    dependsOn(project.parent!!.tasks.getByPath("buildForFunctionTest"))
-    description = "Runs function tests."
+val functionalTest by tasks.registering(Test::class) {
+    failFast = true
+    description = "Runs functional tests."
     group = "verification"
-    testClassesDirs = funcTestSourceSet.output.classesDirs
-    classpath = funcTestSourceSet.runtimeClasspath
+    testClassesDirs = functionalTestSourceSet.output.classesDirs
+    classpath = functionalTestSourceSet.runtimeClasspath
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
 }
 
 val check by tasks.getting(Task::class) {
-    dependsOn(functionTest)
+    dependsOn(functionalTest)
 }
+
+val test by tasks.getting(Test::class) {
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
+}
+
+@Suppress("UnstableApiUsage")
+val fixtureAgpVersion: String = providers
+    .environmentVariable("AGP_VERSION")
+    .forUseAtConfigurationTime()
+    .orElse(providers.gradleProperty("agpVersion").forUseAtConfigurationTime())
+    .getOrElse(props["agpVersion"].toString())
+
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
-//    if(hasProperty("polyfillPublish")) {
-//        api("me.2bab:polyfill-arsc:${Versions.polyfillDevVersion}")
-//        api("me.2bab:polyfill-manifest:${Versions.polyfillDevVersion}")
-//        api("me.2bab:polyfill-gradle:${Versions.polyfillDevVersion}")
-//        api("me.2bab:polyfill-agp:${Versions.polyfillDevVersion}")
-//        api("me.2bab:polyfill-matrix:${Versions.polyfillDevVersion}")
-//    } else {
-        api(project(":polyfill-arsc"))
-        api(project(":polyfill-manifest"))
-        api(project(":polyfill-gradle"))
-        api(project(":polyfill-agp"))
-        api(project(":polyfill-matrix"))
-//    }
+    api(project(":polyfill-arsc"))
+    api(project(":polyfill-manifest"))
+    api(project(":polyfill-gradle"))
+    api(project(":polyfill-agp"))
+    api(project(":polyfill-matrix"))
 
     implementation(gradleApi())
-    implementation(Deps.agp)
     implementation(kotlin(Deps.ktStd))
     implementation(kotlin(Deps.ktReflect))
+    compileOnly(Deps.agp) // Let the test resource or user decide
+
+    println(fixtureAgpVersion)
+    functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
+    fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
 
     testImplementation(gradleTestKit())
-    testImplementation(Deps.agp)
     testImplementation(Deps.junit)
     testImplementation(Deps.mockito)
     testImplementation(Deps.mockitoInline)
