@@ -17,8 +17,8 @@ dependencies {
     implementation(project(":polyfill"))
     implementation(kotlin(Deps.ktStd))
     implementation(kotlin(Deps.ktReflect))
-    implementation(Deps.agp)
     implementation(Deps.fastJson)
+    compileOnly(Deps.agp)
 }
 
 gradlePlugin {

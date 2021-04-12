@@ -9,7 +9,7 @@ plugins {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(gradleApi())
-    implementation(Deps.agp)
+    compileOnly(Deps.agp)
     implementation(kotlin(Deps.ktStd))
 
     implementation(project(":polyfill-matrix"))

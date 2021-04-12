@@ -10,7 +10,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(kotlin(Deps.ktStd))
     implementation(gradleApi())
-    implementation(Deps.agp)
+    compileOnly(Deps.agp)
 
     implementation(project(":polyfill-gradle"))
     implementation(project(":polyfill-matrix"))
