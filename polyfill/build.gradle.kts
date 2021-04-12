@@ -34,8 +34,8 @@ idea {
 
         val plusCollection = scopes["TEST"]?.get("plus")
         plusCollection?.addAll(functionalTestImplementation.all.filter {
-            it.name.contains("funcTestCompileClasspath")
-                    || it.name.contains("funcTestRuntimeClasspath")
+            it.name.contains("functionalTestCompileClasspath")
+                    || it.name.contains("functionalTestRuntimeClasspath")
         })
     }
 }

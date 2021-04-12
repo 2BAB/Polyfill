@@ -128,7 +128,7 @@ abstract class ManifestAfterMergeTask : DefaultTask() {
 }
 ```
 
-Check more in `./test-project` and `./polyfill/src/funcTest`.
+Check more in `./test-project` and `./polyfill/src/functionalTest`.
 
 ## Compatible Specification
 

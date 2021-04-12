@@ -130,7 +130,7 @@ abstract class ManifestAfterMergeTask : DefaultTask() {
 }
 ```
 
-更多信息可以查看 `./test-project` 和`./polyfill/src/funcTest`.
+更多信息可以查看 `./test-project` 和`./polyfill/src/functionalTest`.
 
 
 ## 兼容说明
