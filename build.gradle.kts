@@ -14,7 +14,6 @@ buildscript {
 
     dependencies {
         classpath(kotlin("gradle-plugin", version = props["kotlinVersion"]?.toString()))
-        classpath("com.android.tools.build:gradle:${props["agpVersion"]}")
     }
 
 }
