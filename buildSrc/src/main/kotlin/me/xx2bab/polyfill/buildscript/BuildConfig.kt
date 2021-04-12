@@ -31,6 +31,7 @@ object BuildConfig {
         const val ktReflect = "reflect"
         val agp by lazy { "com.android.tools.build:gradle:${props["agpVersion"]}" }
 
+        const val guava = "com.google.guava:guava:30.1.1-jre"
         const val fastJson = "com.alibaba:fastjson:1.2.73"
         const val zip4j = "net.lingala.zip4j:zip4j:2.6.2"
 

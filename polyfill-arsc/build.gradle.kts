@@ -10,6 +10,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(gradleApi())
     compileOnly(Deps.agp)
+    api(Deps.guava)
     implementation(kotlin(Deps.ktStd))
 
     implementation(project(":polyfill-matrix"))
