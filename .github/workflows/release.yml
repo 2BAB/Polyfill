@@ -23,7 +23,7 @@ jobs:
           SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
         run: |
           git fetch --unshallow
-          sudo bash -c "echo '$SIGNING_SECRET_KEY_CONTENT' | base64 -d > './polyfill/$SIGNING_SECRET_KEY_RING_FILE'"
+          sudo bash -c "echo '$SIGNING_SECRET_KEY_CONTENT' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
 
       - name: Build & Release all Polyfill libraries to MavenCentral
         run: chmod +x ./publish.sh | ./publish.sh
