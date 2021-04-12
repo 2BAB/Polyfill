@@ -142,6 +142,7 @@ Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本（例如 4.
 4.2.0-rc01 | 0.2.0 (MavenCentral)
 4.2.0-alpha15 | 0.1.3 (JCenter)
 
+（目前本工程基于 AGP 4.2 的最新版本进行开发，在 CI 环境下还会同时编译&测试 4.2/7.0 版本的兼容性）
 
 ## Git Commit Check
 
