@@ -21,10 +21,12 @@ gradle.taskGraph.whenReady {
 val tokenFromEnv: String? = System.getenv("GH_DEV_TOKEN")
 val token: String = if (!tokenFromEnv.isNullOrBlank()) {
     tokenFromEnv
-} else {
+} else if (project.rootProject.file("local.properties").exists()){
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
     properties.getProperty("github.devtoken")
+} else {
+    ""
 }
 
 val repo = "polyfill"

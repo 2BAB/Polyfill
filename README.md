@@ -1,7 +1,7 @@
 <img src="./Polyfill.png" alt="Polyfill" width="507px">
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/me.2bab/polyfill/badge.svg)](https://search.maven.org/artifact/me.2bab/polyfill)
- [![Actions Status](https://github.com/2bab/Polyfill/workflows/release/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+ [![Actions Status](https://github.com/2bab/Polyfill/workflows/CI/badge.svg)](https://github.com/2bab/Polyfill/actions) [![Apache 2](https://img.shields.io/badge/License-Apache%202-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 
 [English] [[中文]](./README_zh.md)
