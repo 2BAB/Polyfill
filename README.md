@@ -138,7 +138,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.2.0-rc01 | 0.2.0 (MavenCentral)
+4.2.0-rc01 | 0.2.1 (MavenCentral)
 4.2.0-alpha15 | 0.1.3 (JCenter)
 
 (The project currently compiles with the latest version of AGP 4.2, and compiles and tests against the both AGP 4.2 and 7.0 on CI.)
