@@ -8,15 +8,19 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileSystemLocation
 
-class ManifestMergeInputProvider: ApplicationSelfManageableProvider<Set<FileSystemLocation>> {
+class ManifestMergeInputProvider : ApplicationSelfManageableProvider<Set<FileSystemLocation>> {
 
     private lateinit var manifests: FileCollection
 
-    override fun initialize(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
-                            variant: Variant) {
+    override fun initialize(
+        project: Project,
+        androidExtension: AndroidComponentsExtension<*, *>,
+        variant: Variant
+    ) {
         val t = project.tasks.withType(ProcessApplicationManifest::class.java)
-        manifests = t.first().getManifests()
+        manifests = t.filter {
+            it.name.contains(variant.name, true)
+        }.first().getManifests()
     }
 
     override fun get(defaultValue: Set<FileSystemLocation>?): Set<FileSystemLocation>? {
