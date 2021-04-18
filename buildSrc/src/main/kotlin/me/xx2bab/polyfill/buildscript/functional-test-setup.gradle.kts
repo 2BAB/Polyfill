@@ -8,13 +8,16 @@ plugins {
     idea
 }
 
+val defaultAGPVer = BuildConfig.props["agpVersion"].toString()
+val defaultAGP = BuildConfig.Deps.agp
+
 val fixtureClasspath: Configuration by configurations.creating
 tasks.pluginUnderTestMetadata {
     pluginClasspath.from(fixtureClasspath)
 }
 
 val functionalTestSourceSet: SourceSet = sourceSets.create("functionalTest") {
-    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+    compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath.get()
     runtimeClasspath += output + compileClasspath
 }
 
@@ -63,11 +66,11 @@ val fixtureAgpVersion: String = providers
     .environmentVariable("AGP_VERSION")
     .forUseAtConfigurationTime()
     .orElse(providers.gradleProperty("agpVersion").forUseAtConfigurationTime())
-    .getOrElse(BuildConfig.props["agpVersion"].toString())
+    .getOrElse(defaultAGPVer)
 
 
 dependencies {
-    compileOnly(BuildConfig.Deps.agp) // Let the test resource or user decide
+    compileOnly(defaultAGP) // Let the test resource or user decide
 
     functionalTestImplementation("com.android.tools.build:gradle:${fixtureAgpVersion}")
     fixtureClasspath("com.android.tools.build:gradle:${fixtureAgpVersion}")
