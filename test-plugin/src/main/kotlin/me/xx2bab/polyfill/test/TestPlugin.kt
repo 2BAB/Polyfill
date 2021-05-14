@@ -60,7 +60,7 @@ class TestPlugin : Plugin<Project> {
         polyfill.onClassicVariants {
             val applicationVariant = this
             project.tasks
-                .register("makeCacheDir") {
+                .register("makePolyfillCacheDirs${applicationVariant.name.capitalize()}") {
                     // The versionName is only accessible by ApplicationVariant
                     project.logger.info(applicationVariant.versionName)
                 }
