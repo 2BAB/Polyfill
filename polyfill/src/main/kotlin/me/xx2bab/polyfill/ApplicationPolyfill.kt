@@ -17,7 +17,6 @@ class ApplicationPolyfill(project: Project) : Polyfill<ApplicationVariant,
     override fun onClassicVariants(action: Action<ApplicationVariant>) {
         appClassicExt.applicationVariants.all { v ->
             action.execute(v)
-            true
         }
     }
 

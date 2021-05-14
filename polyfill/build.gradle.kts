@@ -6,7 +6,7 @@ plugins {
     id("kotlin")
     id("me.xx2bab.polyfill.buildscript.maven-central-publish")
     id("me.xx2bab.polyfill.buildscript.functional-test-setup")
-    `kotlin-dsl`
+
 }
 
 dependencies {
