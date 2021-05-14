@@ -8,7 +8,7 @@
 
 🚧 **It's currently under incubating...**
 
-Polyfill is a hook toolset for Android App Build System.
+Polyfill is a middleware to assist writing Gradle Plugins for Android build system.
 
 ## Why need Polyfill?
 
@@ -35,8 +35,8 @@ Find more Artifaces API news from links below:
 
 ## What does Polyfill provide?
 
-- It encapsulates AGP (Android Gradle Plugin) APIs, turn them to **Task Hook Points** (Listener) and **Task Inputs** for all 3rd plugin developer to easily interact with.
-    - **Task Hook Points:** for instance, if the developer wants to intercept manifest merge input files, he/she should find producer task(s) and consumer task of input files, then add a new custom task that will be executed between them; here the Hook Points means we define a Listener who process the task order stuffs and make sure the new-added runs on the true timing, Polyfill provides many `AGPTaskListener.kt` (the impl such as `ManifestBeforeMergeListener.kt`) to complete this job.
+- It encapsulates AGP (Android Gradle Plugin) APIs, turn them to **Task Hook Points** (action) and **Task Inputs** for all 3rd plugin developer to easily interact with.
+    - **Task Hook Points:** for instance, if the developer wants to intercept manifest merge input files, he/she should find producer task(s) and consumer task of input files, then add a new custom task that will be executed between them; here the Hook Points means we define an action who process the task order stuffs and make sure the new-added runs on the true timing, Polyfill provides many `AGPTaskAction.kt` (the impl such as `ManifestBeforeMergeAction.kt`) to complete this job.
     - **Task Inputs:** with the help of Hook Points, your task logic can now be executed during the right time, what you might miss is task input(s), for example, Manifest files, Android SDK locations, AGP versions, etc. To configure them easily, Polyfill provides `SelfManageableProvider.kt` (the impl such as `ManifestMergeInputProvider.kt`) to fetch the task input(s).
 - Meanwhile, it provides a bunch of tools working on build intermediates, such as binary parser and builder for `resources.arsc`, `AndroidManifest.xml`.
 
@@ -52,14 +52,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.2.0-rc01")
-        classpath("me.2bab:polyfill:0.2.0")
+        classpath("com.android.tools.build:gradle:4.2.0")
+        classpath("me.2bab:polyfill:0.3.0")
     }
 }
 
-// If add to /buildSrc/build.gradle.kts or standalone plugin project, switch to implementation instead
+// If add to /buildSrc/build.gradle.kts or standalone plugin project, then:
 // dependencies {
-//     implementation("me.2bab:polyfill:0.2.0")
+//     implementation("me.2bab:polyfill:0.3.0")
 // }
 ```
 
@@ -69,21 +69,21 @@ buildscript {
 // 0. Create Polyfill instance (per project):
 
 // Create for application module
-val polyfill = Polyfill.createApplicationPolyfill(project)
+val polyfill = PolyfillFactory.createApplicationPolyfill(project)
 // Create for library module
 // Polyfill.createLibraryPolyfill(project)
 
 // 1. Start onVariantProperties
-polyfill.onVariantProperties {
+polyfill.onVariants {
     val variant = this
     // 3. Create & Config the hook task.
     val preUpdateTask = project.tasks.register("preUpdate${variant.name.capitalize()}Manifest",
             ManifestBeforeMergeTask::class.java) {
         beforeMergeInputs.set(polyfill.getProvider(variant, ManifestMergeInputProvider::class.java).get())
     }
-    // 4. Add it with the listener (which plays the role of entry for a hook).
-    val beforeMergeListener = ManifestBeforeMergeListener(preUpdateTask)
-    polyfill.addAGPTaskListener(variant, beforeMergeListener)
+    // 4. Add it with the action (which plays the role of entry for a hook).
+    val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
+    polyfill.addAGPTaskAction(variant, beforeMergeAction)
 
 
     // Let's try again with after merge hook
@@ -91,8 +91,8 @@ polyfill.onVariantProperties {
             ManifestAfterMergeTask::class.java) {
         afterMergeInputs.set(polyfill.getProvider(variant, ManifestMergeOutputProvider::class.java).get())
     }
-    val afterMergeListener = ManifestAfterMergeListener(postUpdateTask)
-    polyfill.addAGPTaskListener(variant, afterMergeListener)
+    val afterMergeAction = ManifestAfterMergeAction(postUpdateTask)
+    polyfill.addAGPTaskAction(variant, afterMergeAction)
 }
 
 // 2. Prepare the task containing specific hook logic.
@@ -126,9 +126,27 @@ abstract class ManifestAfterMergeTask : DefaultTask() {
     }
 
 }
+
+
+// Optional: if the new Variant API can not fulfill the requirement
+// or you want to migrate from an old project to Polyfill smoothly,
+// you can use onClassicVariants{} instead.
+// Here are 2 samples which their used APIs are accessible for ApplicationVariant only,
+// though `polyfill.onVariants` is preferred as it uses new Variant API (Old APIs may get depracted).
+//
+// @see com.android.build.api.variant.ApplicationVariant
+polyfill.onClassicVariants {
+    val applicationVariant = this
+    project.tasks
+        .register("makeCacheDir") {
+            // The versionName is only accessible by ApplicationVariant
+            project.logger.info(applicationVariant.versionName)
+        }
+        .dependsOn(this.preBuildProvider) // The AGP task providers is only available by ApplicationVariant
+}
 ```
 
-Check more in `./test-project` and `./polyfill/src/functionalTest`.
+Check more in `./test-plugin` and `./polyfill/src/functionalTest`.
 
 ## Compatible Specification
 
@@ -138,8 +156,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.2.0-rc01 | 0.2.1 (MavenCentral)
-4.2.0-alpha15 | 0.1.3 (JCenter)
+4.2.0 | 0.3.0 (MavenCentral)
 
 (The project currently compiles with the latest version of AGP 4.2, and compiles and tests against the both AGP 4.2 and 7.0 on CI.)
 
