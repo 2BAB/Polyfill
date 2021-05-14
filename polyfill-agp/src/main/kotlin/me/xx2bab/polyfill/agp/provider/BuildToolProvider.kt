@@ -10,7 +10,7 @@ import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import me.xx2bab.polyfill.matrix.base.LibrarySelfManageableProvider
-import me.xx2bab.polyfill.matrix.ext.getField
+import me.xx2bab.polyfill.matrix.tool.ReflectionKit
 import org.gradle.api.Project
 
 /**
@@ -35,7 +35,7 @@ class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
                             androidExtension: AndroidComponentsExtension<*, *>,
                             variant: Variant) {
         val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *, *>
-        val scope = getField(BasePlugin::class.java, basePlugin,
+        val scope = ReflectionKit.getField(BasePlugin::class.java, basePlugin,
                 "globalScope") as GlobalScope
         bti = scope.versionedSdkLoader.get().buildToolInfoProvider.get()
     }

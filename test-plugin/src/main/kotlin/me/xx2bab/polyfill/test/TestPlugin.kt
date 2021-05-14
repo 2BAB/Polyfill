@@ -1,9 +1,10 @@
 package me.xx2bab.polyfill.test
 
 import com.alibaba.fastjson.JSON
-import me.xx2bab.polyfill.Polyfill
-import me.xx2bab.polyfill.manifest.source.ManifestAfterMergeListener
-import me.xx2bab.polyfill.manifest.source.ManifestBeforeMergeListener
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import me.xx2bab.polyfill.PolyfillFactory
+import me.xx2bab.polyfill.manifest.source.ManifestAfterMergeAction
+import me.xx2bab.polyfill.manifest.source.ManifestBeforeMergeAction
 import me.xx2bab.polyfill.manifest.source.ManifestMergeInputProvider
 import me.xx2bab.polyfill.manifest.source.ManifestMergeOutputProvider
 import org.gradle.api.DefaultTask
@@ -25,19 +26,19 @@ class TestPlugin : Plugin<Project> {
         }
 
         // 0. Gets Polyfill instance with Project instance
-        val polyfill = Polyfill.createApplicationPolyfill(project)
+        val polyfill = PolyfillFactory.createApplicationPolyfill(project)
 
         // 1. Starts onVariantProperties
-        polyfill.onVariantProperties {
+        polyfill.onVariants {
             val variant = this
             // 3. Create & Config the hook task.
             val preUpdateTask = project.tasks.register("preUpdate${variant.name.capitalize()}Manifest",
                     ManifestBeforeMergeTask::class.java) {
                 beforeMergeInputs.set(polyfill.getProvider(variant, ManifestMergeInputProvider::class.java).get())
             }
-            // 4. Add it with the listener (which plays the role of entry for a hook).
-            val beforeMergeListener = ManifestBeforeMergeListener(preUpdateTask)
-            polyfill.addAGPTaskListener(variant, beforeMergeListener)
+            // 4. Add it with the action (which plays the role of entry for a hook).
+            val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
+            polyfill.addAGPTaskAction(variant, beforeMergeAction)
 
 
             // Let's try again with after merge hook
@@ -45,8 +46,25 @@ class TestPlugin : Plugin<Project> {
                     ManifestAfterMergeTask::class.java) {
                 afterMergeInputs.set(polyfill.getProvider(variant, ManifestMergeOutputProvider::class.java).get())
             }
-            val afterMergeListener = ManifestAfterMergeListener(postUpdateTask)
-            polyfill.addAGPTaskListener(variant, afterMergeListener)
+            val afterMergeAction = ManifestAfterMergeAction(postUpdateTask)
+            polyfill.addAGPTaskAction(variant, afterMergeAction)
+        }
+
+        // Optional: if the new Variant API can not fulfill the requirement
+        // or you want to migrate from an old project to Polyfill smoothly,
+        // you can use onClassicVariants{} instead.
+        // Here are 2 samples which their used APIs are accessible for ApplicationVariant only,
+        // though `polyfill.onVariants` is preferred as it uses new Variant API (Old APIs may get depracted).
+        //
+        // @see com.android.build.api.variant.ApplicationVariant
+        polyfill.onClassicVariants {
+            val applicationVariant = this
+            project.tasks
+                .register("makeCacheDir") {
+                    // The versionName is only accessible by ApplicationVariant
+                    project.logger.info(applicationVariant.versionName)
+                }
+                .dependsOn(this.preBuildProvider) // The AGP task providers is only available by ApplicationVariant
         }
     }
 

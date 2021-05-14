@@ -6,11 +6,11 @@ import org.gradle.api.Incubating
 import org.gradle.api.Project
 
 /**
- * To provide Android Gradle Plugin (AGP) Task Hook Entry Points. If an TaskListener implement
+ * To provide Android Gradle Plugin (AGP) Task Hook Entry Points. If a task action implement
  * this interface directly, means it supports both Application and Library, or should
- * use [ApplicationAGPTaskListener] and [LibraryAGPTaskListener] instead.
+ * use [ApplicationAGPTaskAction] and [LibraryAGPTaskAction] instead.
  *
- * The base listener here defines a new variant-traversal approach with AndroidComponentsExtension<*, *>.
+ * The base action here defines a new variant-traversal approach with AndroidComponentsExtension<*, *>.
  * Below is a quote from the article of Android Developer Medium, describes the difference of
  * 2 variant callbacks:
  *
@@ -23,16 +23,16 @@ import org.gradle.api.Project
  *
  * @see [New APIs in the Android Gradle Plugin](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614)
  */
-interface AGPTaskListener {
+interface AGPTaskAction {
 
     /**
      * Executes on Gradle Configuration stage which is provided by Android Gradle Plugin.
      * Will be invoked multiple times.
      */
     @Incubating
-    fun onVariantProperties(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
-                            variant: Variant,
-                            variantCapitalizedName: String)
+    fun onVariants(project: Project,
+                   androidExtension: AndroidComponentsExtension<*, *>,
+                   variant: Variant,
+                   variantCapitalizedName: String)
 
 }

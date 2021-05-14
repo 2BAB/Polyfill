@@ -2,11 +2,7 @@ package me.xx2bab.polyfill
 
 import com.android.build.api.extension.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.LibraryPlugin
-import me.xx2bab.polyfill.Polyfill.Companion.createApplicationPolyfill
-import me.xx2bab.polyfill.Polyfill.Companion.createLibraryPolyfill
-import me.xx2bab.polyfill.matrix.base.AGPTaskListener
+import com.android.build.gradle.api.BaseVariant
 import org.gradle.api.Action
 import org.gradle.api.Project
 
@@ -15,53 +11,40 @@ typealias androidExt = AndroidComponentsExtension<*, *>
 /**
  * The entry for overall API calls. Polyfill itself doesn't allow instance constructing,
  * should always create its subclasses via [createApplicationPolyfill] or [createLibraryPolyfill],
- * to support their own [AGPTaskListener] respectively.
+ * from [PolyfillFactory], to support their own [BaseVariant] [AGPTaskAction] respectively.
  */
-open class Polyfill internal constructor(private val project: Project) {
-
-    companion object {
-        fun createApplicationPolyfill(project: Project): ApplicationPolyfill {
-            if (!checkSupportedGradleVersion()) {
-                throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version is: ")
-            }
-            if (!project.plugins.hasPlugin(AppPlugin::class.java)) {
-                throw UnsupportedAGPVersionException("Required Android AppPlugin.")
-            }
-            return ApplicationPolyfill(project)
-        }
-
-        fun createLibraryPolyfill(project: Project): LibraryPolyfill {
-            if (!checkSupportedGradleVersion()) {
-                throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version is: ")
-            }
-            if (!project.plugins.hasPlugin(LibraryPlugin::class.java)) {
-                throw UnsupportedAGPVersionException("Required Android LibraryPlugin.")
-            }
-            return LibraryPolyfill(project)
-        }
-
-        private fun checkSupportedGradleVersion(): Boolean {
-            return true
-        }
-    }
+abstract class Polyfill<ClassicVariant, AGPTaskAction, SelfManageableProvider> internal constructor(val project: Project) {
 
     protected val providers = ProviderCache()
     protected val androidExtension: androidExt
+    protected val variants = mutableSetOf<Variant>()
 
     init {
         if (project.extensions.findByType(AndroidComponentsExtension::class.java) == null) {
             throw IllegalArgumentException("Required Application or Library Extensions.")
         } else {
             androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
+            androidExtension.onVariants { v -> variants.add(v) }
         }
     }
 
-    fun onVariantProperties(action: Action<Variant>) {
+    fun onVariants(action: Action<Variant>) {
         androidExtension.onVariants { variant ->
             action.execute(variant)
         }
     }
 
-    class UnsupportedAGPVersionException(msg: String) : Exception(msg)
+    abstract fun onClassicVariants(action: Action<ClassicVariant>)
 
+    abstract fun addAGPTaskAction(variant: Variant, action: AGPTaskAction)
+
+    abstract fun addAGPTaskAction(classicVariant: ClassicVariant, action: AGPTaskAction)
+
+    abstract fun <T : SelfManageableProvider> getProvider(variant: Variant, clazz: Class<T>): T
+
+    abstract fun <T : SelfManageableProvider> getProvider(classicVariant: ClassicVariant, clazz: Class<T>): T
+
+    abstract fun findVariantByClassicVariant(classicVariant: ClassicVariant): Variant
+
+    class UnsupportedAGPVersionException(msg: String) : Exception(msg)
 }

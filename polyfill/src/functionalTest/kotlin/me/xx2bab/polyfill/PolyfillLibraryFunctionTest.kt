@@ -11,7 +11,7 @@ import org.junit.Test
 import java.io.File
 
 /**
- * To test all basic functions from polyfill libs including "AGPTaskListener" / "DataProvider" / etc.
+ * To test all basic functions from polyfill libs including "AGPTaskAction" / "DataProvider" / etc.
  *
  * You can run this functional test from IDE or command line.
  * Use `functionalTest` or `check` gradle command to run all testing.
@@ -65,7 +65,7 @@ class PolyfillLibraryFunctionTest {
 
 
     @Test
-    fun manifestBeforeMergeTaskListenerTest_FilterSuccessfully() {
+    fun manifestBeforeMergeTaskActionTest_FilterSuccessfully() {
         val out = File("${testProjectJsonOutputPath}/manifest-merge-input.json")
         Assert.assertTrue(out.exists())
         val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
@@ -73,7 +73,7 @@ class PolyfillLibraryFunctionTest {
     }
 
     @Test
-    fun manifestAfterMergeTaskListenerTest_modifyAllowBackUpSuccessfully() {
+    fun manifestAfterMergeTaskActionTest_modifyAllowBackUpSuccessfully() {
         val extractedAndroidManifest = File(testProjectAppUnzipPath, "AndroidManifest.xml")
         Assert.assertTrue(extractedAndroidManifest.exists())
         val manifestBytesTweaker = ManifestBytesTweaker()
