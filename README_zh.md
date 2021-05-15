@@ -56,13 +56,13 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.3.0")
+        classpath("me.2bab:polyfill:0.3.1")
     }
 }
 
 // 如果添加到了 /buildSrc/build.gradle.kts 或者独立的插件项目，则是
 // dependencies {
-//     implementation("me.2bab:polyfill:0.3.0")
+//     implementation("me.2bab:polyfill:0.3.1")
 // }
 ```
 
@@ -156,7 +156,7 @@ Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本（例如 4.
 
 | AGP Version |                    Latest Support Version                    |
 | :---------: | :----------------------------------------------------------: |
-4.2.0 | 0.3.0 (MavenCentral)
+4.2.0 | 0.3.1 (MavenCentral)
 
 （目前本工程基于 AGP 4.2 的最新版本进行开发，在 CI 环境下还会同时编译&测试 4.2/7.0 版本的兼容性）
 

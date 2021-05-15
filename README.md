@@ -53,13 +53,13 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.0")
-        classpath("me.2bab:polyfill:0.3.0")
+        classpath("me.2bab:polyfill:0.3.1")
     }
 }
 
 // If add to /buildSrc/build.gradle.kts or standalone plugin project, then:
 // dependencies {
-//     implementation("me.2bab:polyfill:0.3.0")
+//     implementation("me.2bab:polyfill:0.3.1")
 // }
 ```
 
@@ -156,7 +156,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 AGP Version| Latest Support Version
 :-----------:|:-----------------:
-4.2.0 | 0.3.0 (MavenCentral)
+4.2.0 | 0.3.1 (MavenCentral)
 
 (The project currently compiles with the latest version of AGP 4.2, and compiles and tests against the both AGP 4.2 and 7.0 on CI.)
 
