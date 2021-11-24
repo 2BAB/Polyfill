@@ -30,6 +30,8 @@ object BuildConfig {
         const val ktStd = "stdlib-jdk8"
         const val ktReflect = "reflect"
         val agp by lazy { "com.android.tools.build:gradle:${props["agpVersion"]}" }
+        val androidToolsCommon by lazy { "com.android.tools:common:30.1.0-beta04" }
+        val androidToolsSDKLib by lazy { "com.android.tools:sdklib:30.1.0-beta04" }
 
         const val guava = "com.google.guava:guava:30.1.1-jre"
         const val fastJson = "com.alibaba:fastjson:1.2.73"

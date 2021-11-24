@@ -11,6 +11,8 @@ dependencies {
     implementation(kotlin(Deps.ktStd))
     implementation(gradleApi())
     compileOnly(Deps.agp)
+    compileOnly(Deps.androidToolsCommon)
+    compileOnly(Deps.androidToolsSDKLib)
 
     implementation(project(":polyfill-gradle"))
     implementation(project(":polyfill-matrix"))

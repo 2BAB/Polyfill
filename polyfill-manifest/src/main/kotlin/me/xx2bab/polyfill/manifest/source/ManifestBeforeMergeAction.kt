@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill.manifest.source
 
-import com.android.build.api.extension.AndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.ProcessLibraryManifest
 import me.xx2bab.polyfill.matrix.base.ApplicationAGPTaskAction
@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskProvider
 class ManifestBeforeMergeAction(private val taskProvider: TaskProvider<*>) : ApplicationAGPTaskAction {
 
     override fun onVariants(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
+                            androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant,
                             variantCapitalizedName: String) {
         project.afterEvaluate {

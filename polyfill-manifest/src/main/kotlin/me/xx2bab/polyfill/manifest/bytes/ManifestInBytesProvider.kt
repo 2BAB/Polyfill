@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill.manifest.bytes
 
-import com.android.build.api.extension.AndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import org.gradle.api.Project
@@ -9,7 +9,7 @@ import org.gradle.api.file.RegularFile
 class ManifestInBytesProvider: ApplicationSelfManageableProvider<RegularFile> {
 
     override fun initialize(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
+                            androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant) {
 
     }

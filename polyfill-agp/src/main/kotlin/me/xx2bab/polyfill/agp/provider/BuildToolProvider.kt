@@ -1,6 +1,6 @@
 package me.xx2bab.polyfill.agp.provider
 
-import com.android.build.api.extension.AndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.plugins.AppPlugin
 import com.android.build.gradle.internal.plugins.BasePlugin
@@ -32,9 +32,9 @@ class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
     private var bti: BuildToolInfo? = null
 
     override fun initialize(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
+                            androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant) {
-        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *, *>
+        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *, *, *>
         val scope = ReflectionKit.getField(BasePlugin::class.java, basePlugin,
                 "globalScope") as GlobalScope
         bti = scope.versionedSdkLoader.get().buildToolInfoProvider.get()

@@ -2,7 +2,7 @@ package me.xx2bab.polyfill.agp.provider
 
 
 import com.android.Version
-import com.android.build.api.extension.AndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import me.xx2bab.polyfill.gradle.tool.SemanticVersionLite
 import me.xx2bab.polyfill.matrix.annotation.InitStage
@@ -24,7 +24,7 @@ class AGPVersionProvider: ApplicationSelfManageableProvider<SemanticVersionLite>
     private var agpVersion: SemanticVersionLite = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
 
     override fun initialize(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *>,
+                            androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant) {
         // Could be ignored
     }

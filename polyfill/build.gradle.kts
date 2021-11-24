@@ -22,6 +22,7 @@ dependencies {
     implementation(kotlin(Deps.ktStd))
     implementation(kotlin(Deps.ktReflect))
     compileOnly(Deps.agp) // Let the test resource or user decide
+    compileOnly(Deps.androidToolsCommon)
 
     testImplementation(gradleTestKit())
     testImplementation(Deps.junit)

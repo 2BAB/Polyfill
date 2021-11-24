@@ -1,32 +1,35 @@
 package me.xx2bab.polyfill.manifest.source
 
-import com.android.build.api.extension.AndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.ProcessApplicationManifest
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import org.gradle.api.Project
-import org.gradle.api.file.FileCollection
 import org.gradle.api.file.FileSystemLocation
+import org.gradle.api.provider.Provider
 
-class ManifestMergeInputProvider : ApplicationSelfManageableProvider<Set<FileSystemLocation>> {
+class ManifestMergeInputProvider : ApplicationSelfManageableProvider<Provider<Set<FileSystemLocation>>> {
 
-    private lateinit var manifests: FileCollection
+    private lateinit var manifests: Provider<Set<FileSystemLocation>>
 
     override fun initialize(
         project: Project,
-        androidExtension: AndroidComponentsExtension<*, *>,
+        androidExtension: AndroidComponentsExtension<*, *, *>,
         variant: Variant
     ) {
-        val t = project.tasks.withType(ProcessApplicationManifest::class.java)
-        manifests = t.filter {
+        val tasks = project.tasks.withType(ProcessApplicationManifest::class.java)
+        val task = tasks.filter {
             it.name.contains(variant.name, true)
-        }.first().getManifests()
+        }.first()
+        manifests = task.mainManifest.map {
+            task.getManifests().elements.get()
+        }
     }
 
-    override fun get(defaultValue: Set<FileSystemLocation>?): Set<FileSystemLocation>? {
-        return manifests.elements.get()
+    override fun get(defaultValue: Provider<Set<FileSystemLocation>>?): Provider<Set<FileSystemLocation>>? {
+        return manifests
     }
 
-    override fun isPresent() = ::manifests.isInitialized && manifests.elements.isPresent
+    override fun isPresent() = ::manifests.isInitialized
 
 }
