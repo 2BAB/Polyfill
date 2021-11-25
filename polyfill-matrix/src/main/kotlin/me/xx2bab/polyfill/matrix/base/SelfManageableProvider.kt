@@ -10,8 +10,6 @@ interface SelfManageableProvider<T> {
                    androidExtension: AndroidComponentsExtension<*, *, *>,
                    variant: Variant)
 
-    fun get(defaultValue: T? = null): T?
-
-    fun isPresent(): Boolean
+    fun configureAndGet(defaultValue: T? = null): T
 
 }

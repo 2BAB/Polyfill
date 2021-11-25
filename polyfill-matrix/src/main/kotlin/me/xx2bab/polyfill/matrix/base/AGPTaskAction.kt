@@ -30,9 +30,9 @@ interface AGPTaskAction {
      * Will be invoked multiple times.
      */
     @Incubating
-    fun onVariants(project: Project,
-                   androidExtension: AndroidComponentsExtension<*, *, *>,
-                   variant: Variant,
-                   variantCapitalizedName: String)
+    fun orchestrate(project: Project,
+                    androidExtension: AndroidComponentsExtension<*, *, *>,
+                    variant: Variant,
+                    variantCapitalizedName: String)
 
 }

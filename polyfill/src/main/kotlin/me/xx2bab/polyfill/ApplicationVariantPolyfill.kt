@@ -10,7 +10,7 @@ class ApplicationVariantPolyfill(project: Project, variant: Variant) : Polyfill<
         ApplicationSelfManageableProvider<*>>(project, variant) {
 
     override fun addAGPTaskAction(action: ApplicationAGPTaskAction) {
-        action.onVariants(
+        action.orchestrate(
             project, androidExtension, variant, variant.name.capitalize()
         )
     }

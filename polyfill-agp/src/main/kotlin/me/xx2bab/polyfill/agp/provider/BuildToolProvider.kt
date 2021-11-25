@@ -3,7 +3,6 @@ package me.xx2bab.polyfill.agp.provider
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.plugins.AppPlugin
-import com.android.build.gradle.internal.plugins.BasePlugin
 import com.android.build.gradle.internal.scope.GlobalScope
 import com.android.sdklib.BuildToolInfo
 import me.xx2bab.polyfill.matrix.annotation.InitStage
@@ -29,24 +28,19 @@ import org.gradle.api.Project
 class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
         LibrarySelfManageableProvider<BuildToolInfo> {
 
-    private var bti: BuildToolInfo? = null
+    private lateinit var bti: BuildToolInfo
 
     override fun initialize(project: Project,
                             androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant) {
-        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java) as BasePlugin<*, *, *, *>
-        val scope = ReflectionKit.getField(BasePlugin::class.java, basePlugin,
+        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java)
+        val scope = ReflectionKit.getField(AppPlugin::class.java, basePlugin!!,
                 "globalScope") as GlobalScope
         bti = scope.versionedSdkLoader.get().buildToolInfoProvider.get()
     }
 
-    override fun get(defaultValue: BuildToolInfo?): BuildToolInfo? {
+    override fun configureAndGet(defaultValue: BuildToolInfo?): BuildToolInfo {
         return bti
     }
-
-    override fun isPresent(): Boolean {
-        return bti !== null
-    }
-
 
 }

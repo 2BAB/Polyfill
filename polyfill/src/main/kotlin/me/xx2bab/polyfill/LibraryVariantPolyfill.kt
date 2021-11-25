@@ -10,7 +10,7 @@ class LibraryVariantPolyfill(project: Project, variant: Variant) : Polyfill<
         LibrarySelfManageableProvider<*>>(project, variant) {
 
     override fun addAGPTaskAction(action: LibraryAGPTaskAction) {
-        action.onVariants(
+        action.orchestrate(
             project,
             androidExtension,
             variant,
@@ -19,7 +19,7 @@ class LibraryVariantPolyfill(project: Project, variant: Variant) : Polyfill<
     }
 
     override fun <T : LibrarySelfManageableProvider<*>> newProvider(clazz: Class<T>): T {
-        val instance = providers.newProviderInstance(clazz)
+        val instance = clazz.getDeclaredConstructor().newInstance()
         instance.initialize(project, androidExtension, variant)
         return instance
     }

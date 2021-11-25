@@ -26,10 +26,8 @@ class ManifestMergeInputProvider : ApplicationSelfManageableProvider<Provider<Se
         }
     }
 
-    override fun get(defaultValue: Provider<Set<FileSystemLocation>>?): Provider<Set<FileSystemLocation>>? {
+    override fun configureAndGet(defaultValue: Provider<Set<FileSystemLocation>>?): Provider<Set<FileSystemLocation>> {
         return manifests
     }
-
-    override fun isPresent() = ::manifests.isInitialized
 
 }

@@ -12,10 +12,10 @@ import org.gradle.api.tasks.TaskProvider
  */
 class ManifestBeforeMergeAction(private val taskProvider: TaskProvider<*>) : ApplicationAGPTaskAction {
 
-    override fun onVariants(project: Project,
-                            androidExtension: AndroidComponentsExtension<*, *, *>,
-                            variant: Variant,
-                            variantCapitalizedName: String) {
+    override fun orchestrate(project: Project,
+                             androidExtension: AndroidComponentsExtension<*, *, *>,
+                             variant: Variant,
+                             variantCapitalizedName: String) {
         project.afterEvaluate {
             project.tasks.named("process${variantCapitalizedName}MainManifest")
                     .apply { configure { it.dependsOn(taskProvider) } }

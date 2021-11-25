@@ -37,8 +37,8 @@ class TestPlugin : Plugin<Project> {
                 "preUpdate${variant.name.capitalize()}Manifest",
                 ManifestBeforeMergeTask::class.java
             ) {
-                val s = polyfill.newProvider(ManifestMergeInputProvider::class.java).get()
-                beforeMergeInputs.set(s!!)
+                val s = polyfill.newProvider(ManifestMergeInputProvider::class.java).configureAndGet()
+                beforeMergeInputs.set(s)
             }
 
             // 2. Add it with the action (which plays the role of entry for a hook).
@@ -49,7 +49,7 @@ class TestPlugin : Plugin<Project> {
             // Let's try again with after merge hook
             val postUpdateTask = project.tasks.register("postUpdate${variant.name.capitalize()}Manifest",
                     ManifestAfterMergeTask::class.java) {
-                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).get())
+                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).configureAndGet())
             }
             val afterMergeAction = ManifestAfterMergeAction(postUpdateTask)
             polyfill.addAGPTaskAction(afterMergeAction)

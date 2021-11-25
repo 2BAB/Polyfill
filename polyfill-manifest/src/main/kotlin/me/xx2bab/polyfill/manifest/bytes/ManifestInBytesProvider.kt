@@ -15,12 +15,9 @@ class ManifestInBytesProvider: ApplicationSelfManageableProvider<RegularFile> {
     }
 
 
-    override fun get(defaultValue: RegularFile?): RegularFile? {
-        return null
-    }
-
-    override fun isPresent(): Boolean {
-        return false
+    override fun configureAndGet(defaultValue: RegularFile?): RegularFile {
+        throw UnsupportedOperationException()
+        // return null
     }
 
 }

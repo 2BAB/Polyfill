@@ -12,8 +12,6 @@ plugins {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
 
-    api(project(":polyfill-arsc"))
-    api(project(":polyfill-manifest"))
     api(project(":polyfill-gradle"))
     api(project(":polyfill-agp"))
     api(project(":polyfill-matrix"))
