@@ -16,7 +16,7 @@ class ApplicationVariantPolyfill(project: Project, variant: Variant) : Polyfill<
     }
 
     override fun <T : ApplicationSelfManageableProvider<*>> newProvider(clazz: Class<T>): T {
-        val instance = providers.newProviderInstance(clazz)
+        val instance = clazz.getDeclaredConstructor().newInstance()
         instance.initialize(project, androidExtension, variant)
         return instance
     }

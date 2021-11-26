@@ -20,14 +20,12 @@ abstract class Polyfill<AGPTaskAction, Provider: SelfManageableProvider<*>> inte
 ) {
 
     protected val androidExtension: androidExt
-    protected val providers: Providers
 
     init {
         checkAndroidPlugin()
         checkSupportedGradleVersion()
 
         androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
-        providers = Providers()
     }
 
     abstract fun addAGPTaskAction(action: AGPTaskAction)
