@@ -2,12 +2,9 @@ import java.util.*
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    kotlin("android")
     id("polyfill-test-plugin")
 }
-
-val props = Properties()
-file("../../buildSrc/src/main/resources/versions.properties").inputStream().use { props.load(it) }
 
 android {
     compileSdkVersion(30)
@@ -17,7 +14,7 @@ android {
         minSdkVersion(21)
         targetSdkVersion(30)
         versionCode = 1
-        versionName = props["polyfillVersion"].toString()
+        versionName = "1.0"
     }
     buildTypes {
         getByName("debug") {
@@ -29,6 +26,6 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${props["kotlinVersion"]}")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:${props["kotlinVersion"]}")
+    implementation(deps.kotlin.std)
+    implementation(deps.kotlin.reflect)
 }

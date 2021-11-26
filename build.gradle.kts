@@ -1,23 +1,6 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Path
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
-buildscript {
-
-    val props = java.util.Properties()
-    file("./buildSrc/src/main/resources/versions.properties").inputStream().use { props.load(it) }
-
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-    }
-
-    dependencies {
-        classpath(kotlin("gradle-plugin", version = props["kotlinVersion"]?.toString()))
-    }
-
-}
-
 plugins {
     id("me.xx2bab.polyfill.buildscript.github-release")
 }
@@ -25,11 +8,6 @@ plugins {
 allprojects {
     version = Versions.polyfillDevVersion
     group = "me.2bab"
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-    }
 }
 
 task("clean") {

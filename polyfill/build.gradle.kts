@@ -1,33 +1,32 @@
 
-import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
-    id("kotlin")
+    kotlin("jvm")
     id("me.xx2bab.polyfill.buildscript.maven-central-publish")
     id("me.xx2bab.polyfill.buildscript.functional-test-setup")
-
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-
-    api(project(":polyfill-gradle"))
-    api(project(":polyfill-agp"))
-    api(project(":polyfill-matrix"))
+    api(projects.polyfillGradle)
+    api(projects.polyfillAgp)
+    api(projects.polyfillMatrix)
 
     implementation(gradleApi())
-    implementation(kotlin(Deps.ktStd))
-    implementation(kotlin(Deps.ktReflect))
-    compileOnly(Deps.agp) // Let the test resource or user decide
-    compileOnly(Deps.androidToolsCommon)
+    implementation(deps.kotlin.std)
+    implementation(deps.kotlin.reflect)
+
+    // Let the test resource or user decide
+    compileOnly(deps.android.gradle.plugin)
+    compileOnly(deps.android.tools.common)
 
     testImplementation(gradleTestKit())
-    testImplementation(Deps.junit)
-    testImplementation(Deps.mockito)
-    testImplementation(Deps.mockitoInline)
-    testImplementation(Deps.fastJson)
-    testImplementation(Deps.zip4j)
+    testImplementation(deps.junit)
+    testImplementation(deps.mockito)
+    testImplementation(deps.mockitoInline)
+    testImplementation(deps.fastJson)
+    testImplementation(deps.zip4j)
 
     // For functionalTestImplementation
     // please refer to the functional-test-setup script

@@ -1,5 +1,3 @@
-import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
-
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
@@ -14,11 +12,12 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":polyfill"))
-    implementation(kotlin(Deps.ktStd))
-    implementation(kotlin(Deps.ktReflect))
-    implementation(Deps.fastJson)
-    compileOnly(Deps.agp)
+    implementation(projects.polyfill)
+    implementation(projects.polyfillManifest)
+    implementation(deps.kotlin.std)
+    implementation(deps.kotlin.reflect)
+    implementation(deps.fastJson)
+    compileOnly(deps.android.gradle.plugin)
 }
 
 gradlePlugin {

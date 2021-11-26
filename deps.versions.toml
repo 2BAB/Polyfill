@@ -1,0 +1,27 @@
+[versions]
+kotlinVer = "1.5.31"
+# 7.1.0-beta04
+agpVer = "7.0.3"
+# 30.1.0-beta04
+androidToolVer = "30.0.3"
+mockitoVer = "3.9.0"
+
+[libraries]
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agpVer" }
+android-tools-common = { module = "com.android.tools:common", version.ref = "androidToolVer" }
+android-tools-sdklib = { module = "com.android.tools:sdklib", version.ref = "androidToolVer" }
+kotlin-std = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlinVer" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinVer" }
+guava = { module = "com.google.guava:guava", version = "30.1.1-jre" }
+fastJson = { module = "com.alibaba:fastjson", version = "1.2.73" }
+zip4j = { module = "net.lingala.zip4j:zip4j", version = "2.6.2" }
+junit = { module = "junit:junit", version = "4.12" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockitoVer" }
+mockitoInline = { module = "org.mockito:mockito-inline", version.ref = "mockitoVer" }
+
+[bundles]
+android-tools = ["android-tools-common", "android-tools-sdklib"]
+test-suite = []
+
+[plugins]
+kt = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVer" }

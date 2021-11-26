@@ -1,25 +1,26 @@
-import me.xx2bab.polyfill.buildscript.BuildConfig.Deps
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
-    id("kotlin")
+    kotlin("jvm")
     id("me.xx2bab.polyfill.buildscript.maven-central-publish")
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
-    implementation(kotlin(Deps.ktStd))
+    implementation(projects.polyfillGradle)
+    implementation(projects.polyfillMatrix)
+
     implementation(gradleApi())
-    compileOnly(Deps.agp)
-    compileOnly(Deps.androidToolsCommon)
-    compileOnly(Deps.androidToolsSDKLib)
+    implementation(deps.kotlin.std)
 
-    implementation(project(":polyfill-gradle"))
-    implementation(project(":polyfill-matrix"))
+    compileOnly(deps.android.gradle.plugin)
+    compileOnly(deps.android.tools.common)
+    compileOnly(deps.android.tools.sdklib)
 
-    testImplementation(Deps.junit)
-    testImplementation(Deps.mockito)
-    testImplementation(Deps.mockitoInline)
+
+    testImplementation(deps.junit)
+    testImplementation(deps.mockito)
+    testImplementation(deps.mockitoInline)
 }
 
 java {
