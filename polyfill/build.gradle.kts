@@ -22,6 +22,8 @@ dependencies {
     compileOnly(deps.android.tools.common)
 
     testImplementation(gradleTestKit())
+    testImplementation(projects.polyfillManifest)
+    testImplementation(projects.polyfillArsc)
     testImplementation(deps.junit)
     testImplementation(deps.mockito)
     testImplementation(deps.mockitoInline)
