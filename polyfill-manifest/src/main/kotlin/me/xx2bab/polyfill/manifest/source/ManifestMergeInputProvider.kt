@@ -2,7 +2,8 @@ package me.xx2bab.polyfill.manifest.source
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.tasks.ProcessApplicationManifest
+import com.android.build.gradle.internal.publishing.AndroidArtifacts
+import me.xx2bab.polyfill.agp.tool.toApkCreationConfigImpl
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import org.gradle.api.Project
 import org.gradle.api.file.FileSystemLocation
@@ -17,13 +18,17 @@ class ManifestMergeInputProvider : ApplicationSelfManageableProvider<Provider<Se
         androidExtension: AndroidComponentsExtension<*, *, *>,
         variant: Variant
     ) {
-        val tasks = project.tasks.withType(ProcessApplicationManifest::class.java)
-        val task = tasks.filter {
-            it.name.contains(variant.name, true)
-        }.first()
-        manifests = task.mainManifest.map {
-            task.getManifests().elements.get()
-        }
+        // ProcessApplicationManifest#configure(...)
+        manifests = variant.toApkCreationConfigImpl()
+            .config
+            .variantDependencies
+            .getArtifactCollection(
+                AndroidArtifacts.ConsumedConfigType.RUNTIME_CLASSPATH,
+                AndroidArtifacts.ArtifactScope.ALL,
+                AndroidArtifacts.ArtifactType.MANIFEST
+            )
+            .artifactFiles
+            .elements
     }
 
     override fun obtain(defaultValue: Provider<Set<FileSystemLocation>>?): Provider<Set<FileSystemLocation>> {
