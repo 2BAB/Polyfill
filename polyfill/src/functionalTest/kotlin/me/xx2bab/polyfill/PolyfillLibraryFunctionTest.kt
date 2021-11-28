@@ -66,7 +66,7 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun manifestBeforeMergeTaskActionTest_FilterSuccessfully() {
-        val out = File("${testProjectJsonOutputPath}/manifest-merge-input.json")
+        val out = File("${testProjectJsonOutputPath}/manifests-merge-input.json")
         Assert.assertTrue(out.exists())
         val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
         Assert.assertTrue(list.any { it.contains("appcompat") })
@@ -82,6 +82,14 @@ class PolyfillLibraryFunctionTest {
         Assert.assertNotNull(applicationTag)
         val value = manifestBytesTweaker.getAttrFromTagAttrs(applicationTag!!, "allowBackup")!!.data
         Assert.assertEquals(false.toInt(), value) // The core assert which we changed it to false
+    }
+
+    @Test
+    fun resourceBeforeMergeTaskActionTest_FilterSuccessfully() {
+        val out = File("${testProjectJsonOutputPath}/resources-merge-input.json")
+        Assert.assertTrue(out.exists())
+        val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
+        Assert.assertTrue(list.any { it.contains("appcompat") })
     }
 
 }

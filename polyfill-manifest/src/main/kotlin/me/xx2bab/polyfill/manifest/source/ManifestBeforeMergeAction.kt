@@ -17,6 +17,7 @@ class ManifestBeforeMergeAction(private val taskProvider: TaskProvider<*>) : App
         variant: Variant,
         variantCapitalizedName: String
     ) {
+        // `variant.toTaskContainer().processManifestTask` can not guarantee the impl class
         project.afterEvaluate {
             project.tasks.named("process${variantCapitalizedName}MainManifest")
                 .apply { configure { it.dependsOn(taskProvider) } }

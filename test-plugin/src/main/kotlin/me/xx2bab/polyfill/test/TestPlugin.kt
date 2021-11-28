@@ -7,6 +7,8 @@ import me.xx2bab.polyfill.manifest.source.ManifestAfterMergeAction
 import me.xx2bab.polyfill.manifest.source.ManifestBeforeMergeAction
 import me.xx2bab.polyfill.manifest.source.ManifestMergeInputProvider
 import me.xx2bab.polyfill.manifest.source.ManifestMergeOutputProvider
+import me.xx2bab.polyfill.res.ResourcesBeforeMergeAction
+import me.xx2bab.polyfill.res.ResourcesMergeInputProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -29,7 +31,7 @@ class TestPlugin : Plugin<Project> {
         val androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
         androidExtension.onVariants { variant ->
 
-            // 0. Gets Polyfill instance with Project instance
+            // 0. Get Polyfill instance with Project instance
             val polyfill = ApplicationVariantPolyfill(project, variant)
 
             // 1. Create & Config the hook task.
@@ -37,22 +39,34 @@ class TestPlugin : Plugin<Project> {
                 "preUpdate${variant.name.capitalize()}Manifest",
                 ManifestBeforeMergeTask::class.java
             ) {
-                val s = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
-                beforeMergeInputs.set(s)
+                val p = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
+                beforeMergeInputs.set(p)
             }
-
             // 2. Add it with the action (which plays the role of entry for a hook).
             val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
             polyfill.addAGPTaskAction(beforeMergeAction)
 
 
-            // Let's try again with after merge hook
-            val postUpdateTask = project.tasks.register("postUpdate${variant.name.capitalize()}Manifest",
-                    ManifestAfterMergeTask::class.java) {
+            // Should use Variant API to replace it.
+            // @see https://github.com/android/gradle-recipes/blob/agp-7.1/Kotlin/manifestTransformerTest/app/build.gradle.kts
+            // @Deprecated ~~Let's try again with after merge hook~~
+            val postUpdateTask = project.tasks.register(
+                "postUpdate${variant.name.capitalize()}Manifest",
+                ManifestAfterMergeTask::class.java
+            ) {
                 afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).obtain())
             }
-            val afterMergeAction = ManifestAfterMergeAction(postUpdateTask)
-            polyfill.addAGPTaskAction(afterMergeAction)
+            polyfill.addAGPTaskAction(ManifestAfterMergeAction(postUpdateTask))
+
+            // To test ResourcesMergeInputProvider & ResourcesBeforeMergeAction
+            val preUpdateResourceTask = project.tasks.register(
+                "preUpdate${variant.name.capitalize()}Resources",
+                ResourceBeforeMergeTask::class.java
+            ) {
+                val p = polyfill.newProvider(ResourcesMergeInputProvider::class.java).obtain()
+                beforeMergeInputs.set(p)
+            }
+            polyfill.addAGPTaskAction(ResourcesBeforeMergeAction(preUpdateResourceTask))
         }
 
         // Optional: if the new Variant API can not fulfill the requirement
@@ -81,7 +95,7 @@ class TestPlugin : Plugin<Project> {
 
         @TaskAction
         fun beforeMerge() {
-            val manifestPathsOutput = getOutputFile(project, "manifest-merge-input.json")
+            val manifestPathsOutput = getOutputFile(project, "manifests-merge-input.json")
             manifestPathsOutput.createNewFile()
             beforeMergeInputs.get().let { set ->
                 manifestPathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
@@ -104,6 +118,20 @@ class TestPlugin : Plugin<Project> {
             }
         }
 
+    }
+
+    abstract class ResourceBeforeMergeTask : DefaultTask() {
+        @get:InputFiles
+        abstract val beforeMergeInputs: SetProperty<FileSystemLocation>
+
+        @TaskAction
+        fun beforeMerge() {
+            val resourcePathsOutput = getOutputFile(project, "resources-merge-input.json")
+            resourcePathsOutput.createNewFile()
+            beforeMergeInputs.get().let { set ->
+                resourcePathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
+            }
+        }
     }
 
     companion object {

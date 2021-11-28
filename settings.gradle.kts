@@ -30,10 +30,11 @@ dependencyResolutionManagement {
     }
 }
 
-include(":polyfill") // Main Entry
-include(":polyfill-agp") // Android Gradle Plugin relevant features
+include(":polyfill") // Main entry
+include(":polyfill-agp") // Android Gradle Plugin basic features
 include(":polyfill-gradle") // Gradle relevant features
 include(":polyfill-arsc") // resource.arsc relevant features
-include(":polyfill-manifest") // AndroidManifest relevant features
-include(":polyfill-matrix") // Tools, Extensions, Resources
-include(":test-plugin") // A test plugin that integrates polyfill
+include(":polyfill-res") // Original resources(image/xml/raw/assets) relevant features
+include(":polyfill-manifest") // AndroidManifest.xml(text/binary) relevant features
+include(":polyfill-matrix") // Tools, extensions, interfaces
+include(":test-plugin") // A test plugin for testing polyfill function
