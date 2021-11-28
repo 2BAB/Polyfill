@@ -15,7 +15,7 @@ class ManifestInBytesProvider: ApplicationSelfManageableProvider<RegularFile> {
     }
 
 
-    override fun configureAndGet(defaultValue: RegularFile?): RegularFile {
+    override fun obtain(defaultValue: RegularFile?): RegularFile {
         throw UnsupportedOperationException()
         // return null
     }

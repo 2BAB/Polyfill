@@ -23,7 +23,7 @@ class ManifestMergeOutputProvider : ApplicationSelfManageableProvider<RegularFil
         mergedManifests = variant.artifacts.get(SingleArtifact.MERGED_MANIFEST).get()
     }
 
-    override fun configureAndGet(defaultValue: RegularFile?): RegularFile {
+    override fun obtain(defaultValue: RegularFile?): RegularFile {
         return mergedManifests
     }
 

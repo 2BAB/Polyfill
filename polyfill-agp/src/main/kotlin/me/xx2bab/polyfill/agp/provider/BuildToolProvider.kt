@@ -39,7 +39,7 @@ class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
         bti = scope.versionedSdkLoader.get().buildToolInfoProvider.get()
     }
 
-    override fun configureAndGet(defaultValue: BuildToolInfo?): BuildToolInfo {
+    override fun obtain(defaultValue: BuildToolInfo?): BuildToolInfo {
         return bti
     }
 

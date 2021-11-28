@@ -37,7 +37,7 @@ class TestPlugin : Plugin<Project> {
                 "preUpdate${variant.name.capitalize()}Manifest",
                 ManifestBeforeMergeTask::class.java
             ) {
-                val s = polyfill.newProvider(ManifestMergeInputProvider::class.java).configureAndGet()
+                val s = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
                 beforeMergeInputs.set(s)
             }
 
@@ -49,7 +49,7 @@ class TestPlugin : Plugin<Project> {
             // Let's try again with after merge hook
             val postUpdateTask = project.tasks.register("postUpdate${variant.name.capitalize()}Manifest",
                     ManifestAfterMergeTask::class.java) {
-                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).configureAndGet())
+                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).obtain())
             }
             val afterMergeAction = ManifestAfterMergeAction(postUpdateTask)
             polyfill.addAGPTaskAction(afterMergeAction)

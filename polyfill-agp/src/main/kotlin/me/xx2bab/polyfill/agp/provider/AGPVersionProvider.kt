@@ -29,7 +29,7 @@ class AGPVersionProvider: ApplicationSelfManageableProvider<SemanticVersionLite>
         // Could be ignored
     }
 
-    override fun configureAndGet(defaultValue: SemanticVersionLite?): SemanticVersionLite {
+    override fun obtain(defaultValue: SemanticVersionLite?): SemanticVersionLite {
         return agpVersion
     }
 
