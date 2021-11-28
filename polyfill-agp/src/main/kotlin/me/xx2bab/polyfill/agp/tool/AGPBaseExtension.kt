@@ -5,4 +5,8 @@ import com.android.build.api.variant.impl.ApplicationVariantImpl
 
 fun Variant.toApplicationVariantImpl() = (this as ApplicationVariantImpl)
 
-fun Variant.toApkCreationConfigImpl() = (this as ApplicationVariantImpl).delegate
+fun Variant.toApkCreationConfigImpl() = toApplicationVariantImpl().delegate
+
+fun Variant.toGlobalScope() = toApkCreationConfigImpl().globalScope
+
+fun Variant.toTaskContainer() = toApkCreationConfigImpl().config.taskContainer

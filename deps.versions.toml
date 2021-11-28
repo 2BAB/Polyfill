@@ -8,6 +8,7 @@ mockitoVer = "3.9.0"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agpVer" }
+android-tools-sdkcommon = { module = "com.android.tools:sdk-common", version.ref = "androidToolVer" }
 android-tools-common = { module = "com.android.tools:common", version.ref = "androidToolVer" }
 android-tools-sdklib = { module = "com.android.tools:sdklib", version.ref = "androidToolVer" }
 kotlin-std = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlinVer" }
