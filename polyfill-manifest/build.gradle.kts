@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(projects.polyfillArsc)
+    implementation(projects.polyfillAgp)
     implementation(projects.polyfillMatrix)
 
     implementation(gradleApi())
