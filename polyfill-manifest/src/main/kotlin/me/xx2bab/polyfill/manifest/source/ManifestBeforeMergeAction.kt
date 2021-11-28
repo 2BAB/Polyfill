@@ -2,7 +2,6 @@ package me.xx2bab.polyfill.manifest.source
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.tasks.ProcessLibraryManifest
 import me.xx2bab.polyfill.matrix.base.ApplicationAGPTaskAction
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
@@ -12,20 +11,23 @@ import org.gradle.api.tasks.TaskProvider
  */
 class ManifestBeforeMergeAction(private val taskProvider: TaskProvider<*>) : ApplicationAGPTaskAction {
 
-    override fun orchestrate(project: Project,
-                             androidExtension: AndroidComponentsExtension<*, *, *>,
-                             variant: Variant,
-                             variantCapitalizedName: String) {
+    override fun orchestrate(
+        project: Project,
+        androidExtension: AndroidComponentsExtension<*, *, *>,
+        variant: Variant,
+        variantCapitalizedName: String
+    ) {
         project.afterEvaluate {
             project.tasks.named("process${variantCapitalizedName}MainManifest")
-                    .apply { configure { it.dependsOn(taskProvider) } }
-            project.rootProject.subprojects { subProject ->
-                if (subProject !== project) {
-                    taskProvider.configure { task ->
-                        // TODO: check if :library:extractDeepLinksDebug is also required to be dependency
-                        val tasks = subProject.tasks.withType(ProcessLibraryManifest::class.java)
-                        if (tasks.size > 0) {
-                            tasks.configureEach { task.dependsOn(it) }
+                .apply { configure { it.dependsOn(taskProvider) } }
+        }
+        project.rootProject.subprojects { subProject ->
+            if (subProject !== project) {
+                subProject.tasks.whenTaskAdded { newTask ->
+                    if (newTask.name == "process${variantCapitalizedName}Manifest"
+                        || newTask.name == "extractDeepLinks${variantCapitalizedName}") {
+                        taskProvider.configure { preUpdateTask ->
+                            preUpdateTask.dependsOn(newTask)
                         }
                     }
                 }
