@@ -67,11 +67,11 @@ Artifacts : [SingleArtifact](https://developer.android.com/reference/tools/gradl
 dependencies {
     implementation("com.android.tools.build:gradle:7.0.3")
     // Core dependency 
-    implementation("me.2bab:polyfill:0.4.0")
+    implementation("me.2bab:polyfill:0.4.1")
     // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
-    classpath("me.2bab:polyfill-manifest:$latestVersion")
-    classpath("me.2bab:polyfill-res:$latestVersion")
-    classpath("me.2bab:polyfill-arsc:$latestVersion")
+    implementation("me.2bab:polyfill-manifest:$latestVersion")
+    implementation("me.2bab:polyfill-res:$latestVersion")
+    implementation("me.2bab:polyfill-arsc:$latestVersion")
     ...
 }
 
@@ -85,7 +85,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.3")
         // Core dependency 
-        classpath("me.2bab:polyfill:0.4.0")
+        classpath("me.2bab:polyfill:0.4.1")
         // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
         classpath("me.2bab:polyfill-manifest:$latestVersion")
         classpath("me.2bab:polyfill-res:$latestVersion")
@@ -141,7 +141,7 @@ Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本进行测试
 
 | AGP Version | Latest Support Version |
 |:-----------:|:----------------------:|
-|    7.0.x    |         0.4.0          |
+|    7.0.x    |         0.4.1          |
 |    4.2.0    |  0.3.1 (MavenCentral)  |
 
 （目前本工程基于 AGP 7.0 的最新版本进行开发，在 CI 环境下还会同时编译&测试 7.0/7.1 版本的兼容性）
