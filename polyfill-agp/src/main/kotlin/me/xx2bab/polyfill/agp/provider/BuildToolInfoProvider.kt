@@ -2,15 +2,14 @@ package me.xx2bab.polyfill.agp.provider
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.internal.plugins.AppPlugin
-import com.android.build.gradle.internal.scope.GlobalScope
 import com.android.sdklib.BuildToolInfo
+import me.xx2bab.polyfill.agp.tool.toGlobalScope
 import me.xx2bab.polyfill.matrix.annotation.InitStage
 import me.xx2bab.polyfill.matrix.annotation.ProviderConfig
 import me.xx2bab.polyfill.matrix.base.ApplicationSelfManageableProvider
 import me.xx2bab.polyfill.matrix.base.LibrarySelfManageableProvider
-import me.xx2bab.polyfill.matrix.tool.ReflectionKit
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 
 /**
  * To get the BuildTool obj, which is located at sdk dir like:
@@ -25,21 +24,18 @@ import org.gradle.api.Project
  * @see BuildToolInfo
  */
 @ProviderConfig(InitStage.PRE_BUILD)
-class BuildToolProvider : ApplicationSelfManageableProvider<BuildToolInfo>,
-        LibrarySelfManageableProvider<BuildToolInfo> {
+class BuildToolInfoProvider : ApplicationSelfManageableProvider<Provider<BuildToolInfo>>,
+        LibrarySelfManageableProvider<Provider<BuildToolInfo>> {
 
-    private lateinit var bti: BuildToolInfo
+    private lateinit var bti: Provider<BuildToolInfo>
 
     override fun initialize(project: Project,
                             androidExtension: AndroidComponentsExtension<*, *, *>,
                             variant: Variant) {
-        val basePlugin = project.plugins.findPlugin(AppPlugin::class.java)
-        val scope = ReflectionKit.getField(AppPlugin::class.java, basePlugin!!,
-                "globalScope") as GlobalScope
-        bti = scope.versionedSdkLoader.get().buildToolInfoProvider.get()
+        bti = variant.toGlobalScope().versionedSdkLoader.flatMap { it.buildToolInfoProvider }
     }
 
-    override fun obtain(defaultValue: BuildToolInfo?): BuildToolInfo {
+    override fun obtain(defaultValue: Provider<BuildToolInfo>?): Provider<BuildToolInfo> {
         return bti
     }
 

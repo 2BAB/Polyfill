@@ -74,11 +74,11 @@ Find more Variant/Artifact API news from links below:
 dependencies {
     implementation("com.android.tools.build:gradle:7.0.3")
     // Core dependency 
-    implementation("me.2bab:polyfill:0.4.0")
+    implementation("me.2bab:polyfill:0.4.1")
     // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
-    classpath("me.2bab:polyfill-manifest:$latestVersion")
-    classpath("me.2bab:polyfill-res:$latestVersion")
-    classpath("me.2bab:polyfill-arsc:$latestVersion")
+    implementation("me.2bab:polyfill-manifest:$latestVersion")
+    implementation("me.2bab:polyfill-res:$latestVersion")
+    implementation("me.2bab:polyfill-arsc:$latestVersion")
     ...
 }
 
@@ -92,7 +92,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:7.0.3")
         // Core dependency 
-        classpath("me.2bab:polyfill:0.4.0")
+        classpath("me.2bab:polyfill:0.4.1")
         // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
         classpath("me.2bab:polyfill-manifest:$latestVersion")
         classpath("me.2bab:polyfill-res:$latestVersion")
@@ -150,7 +150,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 | AGP Version | Latest Support Version |
 |:-----------:|:----------------------:|
-|    7.0.x    |         0.4.0          |
+|    7.0.x    |         0.4.1          |
 |    4.2.0    |  0.3.1 (MavenCentral)  |
 
 (The project currently compiles with the latest version of AGP 7.0, and compiles and tests against the both AGP 7.0 and

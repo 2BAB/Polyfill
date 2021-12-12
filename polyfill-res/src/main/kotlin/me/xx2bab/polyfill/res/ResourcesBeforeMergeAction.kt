@@ -16,8 +16,9 @@ class ResourcesBeforeMergeAction(private val taskProvider: TaskProvider<*>) : Ap
         variantCapitalizedName: String
     ) {
         project.afterEvaluate {
-            val mergeTask = variant.toTaskContainer().mergeResourcesTask.get()
-            mergeTask.dependsOn(taskProvider)
+            // Abuse of finalizedBy(...)
+            val mergeTaskProvider = variant.toTaskContainer().mergeResourcesTask
+            mergeTaskProvider.configure { it.finalizedBy(taskProvider) }
         }
     }
 

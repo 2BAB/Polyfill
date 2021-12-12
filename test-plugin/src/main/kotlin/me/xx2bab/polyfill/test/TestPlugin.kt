@@ -28,7 +28,7 @@ class TestPlugin : Plugin<Project> {
                         + File.separator + "functionTestOutput"
             )
         }
-        val androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
+        val androidExtension = project.extensions.getByType(AndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
 
             // 0. Get Polyfill instance with Project instance
