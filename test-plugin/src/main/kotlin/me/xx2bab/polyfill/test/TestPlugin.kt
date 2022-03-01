@@ -3,10 +3,10 @@ package me.xx2bab.polyfill.test
 import com.alibaba.fastjson.JSON
 import com.android.build.api.variant.AndroidComponentsExtension
 import me.xx2bab.polyfill.ApplicationVariantPolyfill
-import me.xx2bab.polyfill.manifest.source.ManifestAfterMergeAction
-import me.xx2bab.polyfill.manifest.source.ManifestBeforeMergeAction
-import me.xx2bab.polyfill.manifest.source.ManifestMergeInputProvider
-import me.xx2bab.polyfill.manifest.source.ManifestMergeOutputProvider
+import me.xx2bab.polyfill.manifest.ManifestAfterMergeAction
+import me.xx2bab.polyfill.manifest.ManifestBeforeMergeAction
+import me.xx2bab.polyfill.manifest.ManifestMergeInputProvider
+import me.xx2bab.polyfill.manifest.ManifestMergeOutputProvider
 import me.xx2bab.polyfill.res.ResourcesBeforeMergeAction
 import me.xx2bab.polyfill.res.ResourcesMergeInputProvider
 import org.gradle.api.DefaultTask

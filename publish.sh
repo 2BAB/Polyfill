@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Keep the order as followed one may depend on previous one
-MODULE_ARRAY=('polyfill-matrix' 'polyfill-gradle' 'polyfill-arsc' 'polyfill-res' 'polyfill-manifest' 'polyfill-agp' 'polyfill')
+MODULE_ARRAY=('android-xml-parser' 'android-manifest-parser' 'polyfill')
 for module in "${MODULE_ARRAY[@]}"
 do
 ./gradlew :"$module":publishAllPublicationsToSonatypeRepository

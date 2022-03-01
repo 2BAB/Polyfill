@@ -4,8 +4,8 @@ import com.android.Version
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.api.AndroidBasePlugin
-import me.xx2bab.polyfill.gradle.tool.SemanticVersionLite
-import me.xx2bab.polyfill.matrix.base.SelfManageableProvider
+import me.xx2bab.polyfill.base.SelfManageableProvider
+import me.xx2bab.polyfill.gradle.SemanticVersionLite
 import org.gradle.api.Project
 
 typealias androidExt = AndroidComponentsExtension<*, *, *>
@@ -42,10 +42,10 @@ abstract class Polyfill<AGPTaskAction, Provider: SelfManageableProvider<*>> inte
     }
     private fun checkSupportedGradleVersion() {
         val curr = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-        val min = SemanticVersionLite("7.0")
+        val min = SemanticVersionLite("7.1")
         val max = SemanticVersionLite("7.2")
         if (!(curr >= min && curr < max)) {
-            throw throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version ")
+            throw throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version 7.1")
         }
     }
 

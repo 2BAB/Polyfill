@@ -1,8 +1,8 @@
 package me.xx2bab.polyfill
 
 import com.android.build.api.variant.Variant
-import me.xx2bab.polyfill.matrix.base.LibraryAGPTaskAction
-import me.xx2bab.polyfill.matrix.base.LibrarySelfManageableProvider
+import me.xx2bab.polyfill.base.LibraryAGPTaskAction
+import me.xx2bab.polyfill.base.LibrarySelfManageableProvider
 import org.gradle.api.Project
 
 class LibraryVariantPolyfill(project: Project, variant: Variant) : Polyfill<

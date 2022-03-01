@@ -1,5 +1,4 @@
 rootProject.name = "polyfill-parent"
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -30,11 +29,7 @@ dependencyResolutionManagement {
     }
 }
 
-include(":polyfill") // Main entry
-include(":polyfill-agp") // Android Gradle Plugin basic features
-include(":polyfill-gradle") // Gradle relevant features
-include(":polyfill-arsc") // resource.arsc relevant features
-include(":polyfill-res") // Original resources(image/xml/raw/assets) relevant features
-include(":polyfill-manifest") // AndroidManifest.xml(text/binary) relevant features
-include(":polyfill-matrix") // Tools, extensions, interfaces
+include(":polyfill")
+include(":android-arsc-parser") // resource.arsc parser
+include(":android-manifest-parser") // AndroidManifest.xml parser
 include(":test-plugin") // A test plugin for testing polyfill function
