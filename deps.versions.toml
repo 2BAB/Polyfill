@@ -1,5 +1,5 @@
 [versions]
-kotlinVer = "1.5.31"
+kotlinVer = "1.6.10"
 # 7.2.0-beta03
 agpVer = "7.1.2"
 # 30.2.0-beta03

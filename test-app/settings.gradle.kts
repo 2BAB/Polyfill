@@ -16,6 +16,13 @@ pluginManagement {
         google()
         gradlePluginPortal()
     }
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "polyfill-test-plugin" -> useModule("me.2bab:polyfill-test-plugin:+")
+            }
+        }
+    }
 }
 dependencyResolutionManagement {
     repositories {

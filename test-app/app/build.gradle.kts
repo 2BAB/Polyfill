@@ -7,8 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("30.0.3")
+    compileSdkVersion(31)
     defaultConfig {
         applicationId = "me.xx2bab.polyfill.sample"
         minSdkVersion(21)

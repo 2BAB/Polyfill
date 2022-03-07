@@ -1,123 +1,79 @@
 package me.xx2bab.polyfill.test
 
 import com.alibaba.fastjson.JSON
-import com.android.build.api.variant.AndroidComponentsExtension
-import me.xx2bab.polyfill.ApplicationVariantPolyfill
-import me.xx2bab.polyfill.manifest.ManifestAfterMergeAction
-import me.xx2bab.polyfill.manifest.ManifestBeforeMergeAction
-import me.xx2bab.polyfill.manifest.ManifestMergeInputProvider
-import me.xx2bab.polyfill.manifest.ManifestMergeOutputProvider
-import me.xx2bab.polyfill.res.ResourcesBeforeMergeAction
-import me.xx2bab.polyfill.res.ResourcesMergeInputProvider
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import me.xx2bab.polyfill.ManifestCollection
+import me.xx2bab.polyfill.artifactsPolyfill
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileSystemLocation
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.register
 import java.io.File
 
 class TestPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        project.apply(plugin = "me.2bab.polyfill")
         project.afterEvaluate {
             mkdir(
                 project.rootProject.buildDir.absolutePath
                         + File.separator + "functionTestOutput"
             )
         }
-        val androidExtension = project.extensions.getByType(AndroidComponentsExtension::class.java)
+        val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
+            val preHookManifestTask = project.tasks.register<ManifestBeforeMergeTask>(
+                "preUpdate${variant.name.capitalize()}Manifest"
+            )
+            variant.artifactsPolyfill.use(
+                taskProvider = preHookManifestTask,
+                wiredWith = ManifestBeforeMergeTask::beforeMergeInputs,
+                toTransformInPlace = ManifestCollection
+            )
 
-            // 0. Get Polyfill instance with Project instance
-            val polyfill = ApplicationVariantPolyfill(project, variant)
-
-            // 1. Create & Config the hook task.
-            val preUpdateTask = project.tasks.register(
-                "preUpdate${variant.name.capitalize()}Manifest",
-                ManifestBeforeMergeTask::class.java
-            ) {
-                val p = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
-                beforeMergeInputs.set(p)
-            }
-            // 2. Add it with the action (which plays the role of entry for a hook).
-            val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
-            polyfill.addAGPTaskAction(beforeMergeAction)
-
-
-            // Should use Variant API to replace it.
-            // @see https://github.com/android/gradle-recipes/blob/agp-7.1/Kotlin/manifestTransformerTest/app/build.gradle.kts
-            // @Deprecated ~~Let's try again with after merge hook~~
-            val postUpdateTask = project.tasks.register(
-                "postUpdate${variant.name.capitalize()}Manifest",
-                ManifestAfterMergeTask::class.java
-            ) {
-                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).obtain())
-            }
-            polyfill.addAGPTaskAction(ManifestAfterMergeAction(postUpdateTask))
+            val preHookManifestTask2 = project.tasks.register<ManifestBeforeMergeTask>(
+                "preUpdate${variant.name.capitalize()}Manifest2"
+            )
+            variant.artifactsPolyfill.use(
+                taskProvider = preHookManifestTask2,
+                wiredWith = ManifestBeforeMergeTask::beforeMergeInputs,
+                toTransformInPlace = ManifestCollection
+            )
 
             // To test ResourcesMergeInputProvider & ResourcesBeforeMergeAction
-            val preUpdateResourceTask = project.tasks.register(
-                "preUpdate${variant.name.capitalize()}Resources",
-                ResourceBeforeMergeTask::class.java
-            ) {
-                val p = polyfill.newProvider(ResourcesMergeInputProvider::class.java).obtain()
-                beforeMergeInputs.set(p)
-            }
-            polyfill.addAGPTaskAction(ResourcesBeforeMergeAction(preUpdateResourceTask))
+//            val preUpdateResourceTask = project.tasks.register(
+//                "preUpdate${variant.name.capitalize()}Resources",
+//                ResourceBeforeMergeTask::class.java
+//            ) {
+//                val p = polyfill.newProvider(ResourcesMergeInputProvider::class.java).obtain()
+//                beforeMergeInputs.set(p)
+//            }
+//            polyfill.addAGPTaskAction(ResourcesBeforeMergeAction(preUpdateResourceTask))
         }
 
-        // Optional: if the new Variant API can not fulfill the requirement
-        // or you want to migrate from an old project to Polyfill smoothly,
-        // you can use onClassicVariants{} instead.
-        // Here are 2 samples which their used APIs are accessible for ApplicationVariant only,
-        // though `polyfill.onVariants` is preferred as it uses new Variant API (Old APIs may get depracted).
-        //
-        // @see com.android.build.api.variant.ApplicationVariant
-//        polyfill.onClassicVariants {
-//            val applicationVariant = this
-//            project.tasks
-//                .register("makePolyfillCacheDirs${applicationVariant.name.capitalize()}") {
-//                    // The versionName is only accessible by ApplicationVariant
-//                    project.logger.info(applicationVariant.versionName)
-//                }
-//                .dependsOn(this.preBuildProvider) // The AGP task providers is only available by ApplicationVariant
-//        }
     }
 
 
     // Prepare a task containing specific hook logic.
     abstract class ManifestBeforeMergeTask : DefaultTask() {
         @get:InputFiles
-        abstract val beforeMergeInputs: SetProperty<FileSystemLocation>
+        abstract val beforeMergeInputs: ListProperty<RegularFile>
 
         @TaskAction
         fun beforeMerge() {
             val manifestPathsOutput = getOutputFile(project, "manifests-merge-input.json")
             manifestPathsOutput.createNewFile()
-            beforeMergeInputs.get().let { set ->
-                manifestPathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
+            beforeMergeInputs.get().let { files ->
+                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
-    }
-
-    abstract class ManifestAfterMergeTask : DefaultTask() {
-
-        @get:InputFiles
-        abstract val afterMergeInputs: RegularFileProperty
-
-        @TaskAction
-        fun afterMerge() {
-            if (afterMergeInputs.isPresent) {
-                val file = afterMergeInputs.get().asFile
-                val modifiedManifest = file.readText()
-                    .replace("allowBackup=\"true\"", "allowBackup=\"false\"")
-                file.writeText(modifiedManifest)
-            }
-        }
-
     }
 
     abstract class ResourceBeforeMergeTask : DefaultTask() {

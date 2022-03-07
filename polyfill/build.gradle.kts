@@ -2,7 +2,8 @@
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {
-    kotlin("jvm")
+    `kotlin-dsl`
+    `java-gradle-plugin`
     id("me.xx2bab.polyfill.buildscript.maven-central-publish")
     id("me.xx2bab.polyfill.buildscript.functional-test-setup")
 }
@@ -11,7 +12,6 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
     implementation(projects.androidManifestParser)
     implementation(projects.androidArscParser)
-    api(projects.polyfillApi)
 
     implementation(gradleApi())
     implementation(deps.kotlin.std)
@@ -37,4 +37,11 @@ java {
     withSourcesJar()
     sourceCompatibility = Versions.polyfillSourceCompatibilityVersion
     targetCompatibility = Versions.polyfillTargetCompatibilityVersion
+}
+
+gradlePlugin {
+    plugins.register("me.2bab.polyfill") {
+        id = "me.2bab.polyfill"
+        implementationClass = "me.xx2bab.polyfill.PolyfillPlugin"
+    }
 }

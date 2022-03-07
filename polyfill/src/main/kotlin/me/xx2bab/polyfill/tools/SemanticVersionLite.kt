@@ -1,4 +1,4 @@
-package me.xx2bab.polyfill.gradle
+package me.xx2bab.polyfill.tools
 
 
 class SemanticVersionLite(private var version: String) : Comparable<SemanticVersionLite> {
