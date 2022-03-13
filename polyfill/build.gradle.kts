@@ -20,6 +20,7 @@ dependencies {
     // Let the test resource or user decide
     compileOnly(deps.android.gradle.plugin)
     compileOnly(deps.android.tools.common)
+    compileOnly(deps.android.tools.sdkcommon)
     compileOnly(deps.android.tools.sdklib)
 
     testImplementation(gradleTestKit())

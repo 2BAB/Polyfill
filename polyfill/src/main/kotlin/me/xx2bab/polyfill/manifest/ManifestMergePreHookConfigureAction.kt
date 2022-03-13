@@ -7,26 +7,20 @@ import me.xx2bab.polyfill.getCapitalizedName
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.register
 
 /**
  * Configurations for fetching required data and set up dependencies
  * through both explicit/implicit approaches.
  */
-class PreHookManifestConfigureAction(
+class ManifestMergePreHookConfigureAction(
     project: Project,
     variant: Variant,
-    lazyLastTaskProvider: () -> TaskProvider<*>
-) : MultipleArtifactPincerTaskConfiguration<RegularFile, PreHookManifestTask>(project, variant, lazyLastTaskProvider) {
-
-    override val initialTaskProvider: TaskProvider<PreHookManifestTask> = project.tasks.register<PreHookManifestTask>(
-        "preHookManifestFor${variant.getCapitalizedName()}Task"
-    )
-
-    override val from: (PreHookManifestTask) -> ListProperty<RegularFile> = PreHookManifestTask::inputManifests
+    headTaskProvider: TaskProvider<*>,
+    lazyLastTaskProvider: () -> TaskProvider<*>?
+) : MultipleArtifactPincerTaskConfiguration<RegularFile>
+    (project, variant, headTaskProvider, lazyLastTaskProvider) {
 
     override val data: Provider<List<RegularFile>> = variant.toApkCreationConfigImpl()
         .config
@@ -36,20 +30,16 @@ class PreHookManifestConfigureAction(
             AndroidArtifacts.ArtifactScope.ALL,
             AndroidArtifacts.ArtifactType.MANIFEST
         )
-        .artifactFiles
-        .elements
+        .resolvedArtifacts
         .map { set ->
             set.map {
-                // Default
                 val rp = project.objects.fileProperty()
-                rp.fileValue(it.asFile)
+                rp.fileValue(it.file)
                 rp.get()
             }
         }
 
-    override val tailTaskProviders: List<TaskProvider<*>> = listOf()
-
-    override fun orchestrate(): Pair<TaskProvider<*>, Provider<List<RegularFile>>> {
+    override fun orchestrate() {
         // `variant.toTaskContainer().processManifestTask` can not guarantee the impl class
         val variantCapitalizedName = variant.getCapitalizedName()
         project.tasks.whenTaskAdded {
@@ -66,15 +56,13 @@ class PreHookManifestConfigureAction(
                     if (targetTask.name == "process${variantCapitalizedName}Manifest"
                         || targetTask.name == "extractDeepLinks${variantCapitalizedName}"
                     ) {
-                        lazyLastTaskProvider().configure {
+                        headTaskProvider.configure {
                             dependsOn(targetTask)
                         }
                     }
                 }
             }
         }
-        return super.orchestrate()
     }
-
 
 }

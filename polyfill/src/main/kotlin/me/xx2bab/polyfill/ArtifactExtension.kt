@@ -6,11 +6,11 @@ import me.xx2bab.polyfill.artifact.ApplicationArtifactsStorage
 import me.xx2bab.polyfill.artifact.LibraryArtifactsStorage
 
 val ApplicationVariant.artifactsPolyfill: ApplicationArtifactsStorage
-    get() = getExtension(ApplicationArtifactsStorage::class.java)?.also { it.prepare(this) }
+    get() = getExtension(ApplicationArtifactsStorage::class.java)
         ?: throw PolyfillUninitializedException()
 
 val LibraryVariant.artifactsPolyfill: LibraryArtifactsStorage
-    get() = getExtension(LibraryArtifactsStorage::class.java)?.also { it.prepare(this) }
+    get() = getExtension(LibraryArtifactsStorage::class.java)
         ?: throw PolyfillUninitializedException()
 
 class PolyfillUninitializedException : Exception(

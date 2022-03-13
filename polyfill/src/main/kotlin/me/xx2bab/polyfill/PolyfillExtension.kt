@@ -1,6 +1,8 @@
 package me.xx2bab.polyfill
 
-import me.xx2bab.polyfill.manifest.PreHookManifestConfigureAction
+import me.xx2bab.polyfill.manifest.ManifestMergePreHookConfigureAction
+import me.xx2bab.polyfill.res.ResourceMergePostHookConfigureAction
+import me.xx2bab.polyfill.res.ResourceMergePreHookConfigureAction
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import me.xx2bab.polyfill.task.PincerTaskConfiguration
 import me.xx2bab.polyfill.task.SingleArtifactPincerTaskConfiguration
@@ -12,18 +14,19 @@ abstract class PolyfillExtension {
     internal val locked = AtomicBoolean(false)
 
     internal val singleArtifactMap = mutableMapOf<PolyfilledArtifact<*>,
-            KClass<out PincerTaskConfiguration<*, *, *>>>(
-
+            KClass<out PincerTaskConfiguration<*>>>(
+        PolyfilledSingleArtifact.MERGED_RESOURCES to ResourceMergePostHookConfigureAction::class
     )
 
     internal val multipleArtifactMap = mutableMapOf<PolyfilledArtifact<*>,
-            KClass<out PincerTaskConfiguration<*, *, *>>>(
-        ManifestCollection to PreHookManifestConfigureAction::class
+            KClass<out PincerTaskConfiguration<*>>>(
+        PolyfilledMultipleArtifact.ALL_MANIFESTS to ManifestMergePreHookConfigureAction::class,
+        PolyfilledMultipleArtifact.ALL_RESOURCES to ResourceMergePreHookConfigureAction::class
     )
 
     fun registerPincerTaskConfig(
         artifactType: PolyfilledSingleArtifact<*, *>,
-        kClass: KClass<out SingleArtifactPincerTaskConfiguration<*, *>>
+        kClass: KClass<out SingleArtifactPincerTaskConfiguration<*>>
     ) {
         if (locked.get()) {
             return
@@ -33,7 +36,7 @@ abstract class PolyfillExtension {
 
     fun registerPincerTaskConfig(
         artifactType: PolyfilledMultipleArtifact<*, *>,
-        kClass: KClass<out MultipleArtifactPincerTaskConfiguration<*, *>>
+        kClass: KClass<out MultipleArtifactPincerTaskConfiguration<*>>
     ) {
         if (locked.get()) {
             return
