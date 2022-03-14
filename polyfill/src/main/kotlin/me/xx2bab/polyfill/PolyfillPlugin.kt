@@ -60,7 +60,7 @@ class PolyfillPlugin : Plugin<Project> {
         val curr = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
         val min = SemanticVersionLite("7.1")
         val max = SemanticVersionLite("7.2")
-        if (!(curr >= min && curr < max)) {
+        if (!(curr in min..max)) {
             throw throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version 7.1")
         }
     }
