@@ -1,8 +1,8 @@
 package me.xx2bab.polyfill.manifest
 
-import com.android.build.api.variant.Variant
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
-import me.xx2bab.polyfill.agp.toApkCreationConfigImpl
+import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getCapitalizedName
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import org.gradle.api.Project
@@ -16,13 +16,13 @@ import org.gradle.api.tasks.TaskProvider
  */
 class ManifestMergePreHookConfigureAction(
     project: Project,
-    variant: Variant,
+    private val appVariant: ApplicationVariant,
     headTaskProvider: TaskProvider<*>,
     lazyLastTaskProvider: () -> TaskProvider<*>?
 ) : MultipleArtifactPincerTaskConfiguration<RegularFile>
-    (project, variant, headTaskProvider, lazyLastTaskProvider) {
+    (project, appVariant, headTaskProvider, lazyLastTaskProvider) {
 
-    override val data: Provider<List<RegularFile>> = variant.toApkCreationConfigImpl()
+    override val data: Provider<List<RegularFile>> = appVariant.getApkCreationConfigImpl()
         .config
         .variantDependencies
         .getArtifactCollection(

@@ -1,10 +1,10 @@
 package me.xx2bab.polyfill.res
 
-import com.android.build.api.variant.Variant
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.DependencyResourcesComputer
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.gradle.tasks.MergeResources
-import me.xx2bab.polyfill.agp.toTaskContainer
+import me.xx2bab.polyfill.getTaskContainer
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import me.xx2bab.polyfill.tools.ReflectionKit
 import org.gradle.api.Project
@@ -19,18 +19,17 @@ import java.io.File
  */
 class ResourceMergePreHookConfigureAction(
     project: Project,
-    variant: Variant,
+    private val appVariant: ApplicationVariant,
     headTaskProvider: TaskProvider<*>,
     lazyLastTaskProvider: () -> TaskProvider<*>
 ) : MultipleArtifactPincerTaskConfiguration<Directory>(
-    project, variant, headTaskProvider, lazyLastTaskProvider
+    project, appVariant, headTaskProvider, lazyLastTaskProvider
 ) {
 
     override val data: Provider<List<Directory>>
         get() {
             return project.provider {
-                println("ResourceMergePreHookConfigureAction provider")
-                val mergeTask = variant.toTaskContainer().mergeResourcesTask.get()
+                val mergeTask = appVariant.getTaskContainer().mergeResourcesTask.get()
                 val resourcesComputer = ReflectionKit.getField(
                     MergeResources::class.java,
                     mergeTask,
@@ -56,7 +55,7 @@ class ResourceMergePreHookConfigureAction(
     override fun orchestrate() {
         project.afterEvaluate {
             // Right flank
-            variant.toTaskContainer().mergeResourcesTask.dependsOn(lazyLastTaskProvider())
+            appVariant.getTaskContainer().mergeResourcesTask.dependsOn(lazyLastTaskProvider())
         }
     }
 

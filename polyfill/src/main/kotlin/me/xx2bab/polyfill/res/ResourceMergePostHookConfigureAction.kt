@@ -1,11 +1,11 @@
 package me.xx2bab.polyfill.res
 
-import com.android.build.api.variant.Variant
+import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.res.LinkApplicationAndroidResourcesTask
 import com.android.build.gradle.internal.scope.InternalArtifactType
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import me.xx2bab.polyfill.agp.toApkCreationConfigImpl
-import me.xx2bab.polyfill.agp.toTaskContainer
+import me.xx2bab.polyfill.getApkCreationConfigImpl
+import me.xx2bab.polyfill.getTaskContainer
 import me.xx2bab.polyfill.task.SingleArtifactPincerTaskConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -19,18 +19,18 @@ import org.gradle.kotlin.dsl.withType
  */
 class ResourceMergePostHookConfigureAction(
     project: Project,
-    variant: Variant,
+    private val appVariant: ApplicationVariant,
     headTaskProvider: TaskProvider<*>,
     lazyLastTaskProvider: () -> TaskProvider<*>
-) : SingleArtifactPincerTaskConfiguration<Directory>(project, variant, headTaskProvider, lazyLastTaskProvider) {
+) : SingleArtifactPincerTaskConfiguration<Directory>(project, appVariant, headTaskProvider, lazyLastTaskProvider) {
 
     override val data: Provider<Directory>
-        get() = variant.toApkCreationConfigImpl().config.artifacts.get(InternalArtifactType.MERGED_RES)
+        get() = appVariant.getApkCreationConfigImpl().config.artifacts.get(InternalArtifactType.MERGED_RES)
 
     override fun orchestrate() {
         project.afterEvaluate {
             // Left flank
-            val mergeTaskProvider = variant.toTaskContainer().mergeResourcesTask
+            val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
             headTaskProvider.dependsOn(mergeTaskProvider)
 
             // Right flank
