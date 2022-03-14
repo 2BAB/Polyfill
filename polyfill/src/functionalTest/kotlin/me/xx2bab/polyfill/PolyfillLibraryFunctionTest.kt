@@ -2,7 +2,6 @@ package me.xx2bab.polyfill
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.TypeReference
-import me.xx2bab.polyfill.manifest.bytes.parser.ManifestBytesTweaker
 import net.lingala.zip4j.ZipFile
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Assert
@@ -33,9 +32,9 @@ class PolyfillLibraryFunctionTest {
         fun buildTestProject() {
             // Must run it after libs deployed
             println("Building...")
+            File(testProjectJsonOutputPath).deleteRecursively()
             GradleRunner.create()
                     .forwardOutput()
-                    .withPluginClasspath()
                     .withArguments("clean", "assembleDebug", "--stacktrace")
                     .withProjectDir(File("../test-app"))
                     .build()
@@ -65,31 +64,33 @@ class PolyfillLibraryFunctionTest {
 
 
     @Test
-    fun manifestBeforeMergeTaskActionTest_FilterSuccessfully() {
-        val out = File("${testProjectJsonOutputPath}/manifests-merge-input.json")
+    fun manifestMergePreHookConfigureActionTest_TransformSuccessfully() {
+        val out = File("${testProjectJsonOutputPath}/all-manifests-by-preUpdateDebugManifest2.json")
         Assert.assertTrue(out.exists())
         val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
         Assert.assertTrue(list.any { it.contains("appcompat") })
     }
 
     @Test
-    fun manifestAfterMergeTaskActionTest_modifyAllowBackUpSuccessfully() {
-        val extractedAndroidManifest = File(testProjectAppUnzipPath, "AndroidManifest.xml")
-        Assert.assertTrue(extractedAndroidManifest.exists())
-        val manifestBytesTweaker = ManifestBytesTweaker()
-        manifestBytesTweaker.read(extractedAndroidManifest)
-        val applicationTag = manifestBytesTweaker.getSpecifyStartTagBodyByName("application")
-        Assert.assertNotNull(applicationTag)
-        val value = manifestBytesTweaker.getAttrFromTagAttrs(applicationTag!!, "allowBackup")!!.data
-        Assert.assertEquals(false.toInt(), value) // The core assert which we changed it to false
+    fun manifestMergePreHookConfigureActionTest_GetSuccessfully() {
+        val fileFromLastTransformMethod = File("${testProjectJsonOutputPath}/all-manifests-by-preUpdateDebugManifest2.json")
+        val fileFromGetMethod = File("${testProjectJsonOutputPath}/all-manifests-by-getAllInputManifestsForDebug.json")
+        Assert.assertTrue(fileFromLastTransformMethod.lastModified() < fileFromGetMethod.lastModified())
     }
 
     @Test
-    fun resourceBeforeMergeTaskActionTest_FilterSuccessfully() {
-        val out = File("${testProjectJsonOutputPath}/resources-merge-input.json")
+    fun generateAllResourcesBeforeMergeTest_FetchSuccessfully() {
+        val out = File("${testProjectJsonOutputPath}/all-resources.json")
         Assert.assertTrue(out.exists())
         val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
         Assert.assertTrue(list.any { it.contains("appcompat") })
+    }
+
+    @Test
+    fun getResourceMergeDirTest_FetchSuccessfully() {
+        val out = File("${testProjectJsonOutputPath}/merged-resource-dir.txt")
+        Assert.assertTrue(out.exists())
+        Assert.assertTrue(out.readText().contains("app/build/intermediates/merged_res/debug"))
     }
 
 }

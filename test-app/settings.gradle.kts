@@ -8,8 +8,8 @@ pluginManagement {
     val getVersion = { s: String -> regexPlaceHolder.format(s).toRegex().find(versions)!!.groupValues[1] }
 
     plugins {
-        kotlin("android") version getVersion("kotlinVer")
-        id("com.android.application") version getVersion("agpVer")
+        id("com.android.application") version getVersion("agpVer") apply false
+        kotlin("android") version getVersion("kotlinVer")  apply false
     }
     repositories {
         mavenCentral()

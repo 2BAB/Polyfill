@@ -5,8 +5,8 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import me.xx2bab.polyfill.PolyfilledMultipleArtifact
 import me.xx2bab.polyfill.PolyfilledSingleArtifact
-import me.xx2bab.polyfill.agp.toTaskContainer
 import me.xx2bab.polyfill.artifactsPolyfill
+import me.xx2bab.polyfill.getTaskContainer
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,7 +35,7 @@ class TestPlugin : Plugin<Project> {
         val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
             val printManifestTask = project.tasks.register<ManifestBeforeMergeTask>(
-                "printAllInputManifestsFor${variant.name.capitalize()}"
+                "getAllInputManifestsFor${variant.name.capitalize()}"
             ) {
                 beforeMergeInputs.set(
                     variant.artifactsPolyfill
@@ -43,11 +43,11 @@ class TestPlugin : Plugin<Project> {
                 )
             }
             project.afterEvaluate {
-                variant.toTaskContainer().assembleTask.dependsOn(printManifestTask)
+                variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
             }
 
             val preHookManifestTask2 = project.tasks.register<ManifestBeforeMergeTask>(
-                "preUpdate${variant.name.capitalize()}Manifest2"
+                "preUpdate${variant.name.capitalize()}Manifest1"
             )
             variant.artifactsPolyfill.use(
                 taskProvider = preHookManifestTask2,
@@ -56,7 +56,7 @@ class TestPlugin : Plugin<Project> {
             )
 
             val preHookManifestTask3 = project.tasks.register<ManifestBeforeMergeTask>(
-                "preUpdate${variant.name.capitalize()}Manifest3"
+                "preUpdate${variant.name.capitalize()}Manifest2"
             )
             variant.artifactsPolyfill.use(
                 taskProvider = preHookManifestTask3,
@@ -91,7 +91,7 @@ class TestPlugin : Plugin<Project> {
 
         @TaskAction
         fun beforeMerge() {
-            val manifestPathsOutput = getOutputFile(project, "manifests-merge-input-by-${name}.json")
+            val manifestPathsOutput = getOutputFile(project, "all-manifests-by-${name}.json")
             manifestPathsOutput.createNewFile()
             beforeMergeInputs.get().let { files ->
                 manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
@@ -109,12 +109,14 @@ class TestPlugin : Plugin<Project> {
 
         @TaskAction
         fun beforeMerge() {
-            val resourcePathsOutput = getOutputFile(project, "resources-merge-input.json")
-            resourcePathsOutput.createNewFile()
+            val allResourcesInputJSONFile = getOutputFile(project, "all-resources.json")
+            allResourcesInputJSONFile.createNewFile()
             beforeMergeInputs.get().let { set ->
-                resourcePathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
+                allResourcesInputJSONFile.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
             }
-            println("PostUpdateResourceTask: update with out dir - " + compiledFilesDir.get().asFile.absolutePath)
+            val resourcePathsOutput = getOutputFile(project, "merged-resource-dir.txt")
+            resourcePathsOutput.createNewFile()
+            resourcePathsOutput.writeText(compiledFilesDir.get().asFile.absolutePath)
         }
     }
 
