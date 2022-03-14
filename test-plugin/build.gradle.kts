@@ -13,8 +13,6 @@ repositories {
 
 dependencies {
     implementation(projects.polyfill)
-    implementation(projects.polyfillManifest)
-    implementation(projects.polyfillRes)
     implementation(deps.kotlin.std)
     implementation(deps.kotlin.reflect)
     implementation(deps.fastJson)

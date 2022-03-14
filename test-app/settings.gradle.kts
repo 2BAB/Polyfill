@@ -8,13 +8,20 @@ pluginManagement {
     val getVersion = { s: String -> regexPlaceHolder.format(s).toRegex().find(versions)!!.groupValues[1] }
 
     plugins {
-        kotlin("android") version getVersion("kotlinVer")
-        id("com.android.application") version getVersion("agpVer")
+        id("com.android.application") version getVersion("agpVer") apply false
+        kotlin("android") version getVersion("kotlinVer")  apply false
     }
     repositories {
         mavenCentral()
         google()
         gradlePluginPortal()
+    }
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "polyfill-test-plugin" -> useModule("me.2bab:polyfill-test-plugin:+")
+            }
+        }
     }
 }
 dependencyResolutionManagement {
