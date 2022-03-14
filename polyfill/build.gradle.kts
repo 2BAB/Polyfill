@@ -1,4 +1,3 @@
-
 import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 
 plugins {

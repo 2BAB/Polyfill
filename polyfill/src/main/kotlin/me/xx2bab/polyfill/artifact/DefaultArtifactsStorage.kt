@@ -29,11 +29,15 @@ abstract class DefaultArtifactsStorage<PluginTypeT : PolyfilledPluginType>(
             if (artifactType.kind == ArtifactKind.FILE) {
                 singleArtifactStorage[artifactType] = SingleArtifactContainer<RegularFile>(
                     artifactType, project, variant
-                )
+                ) {
+                    SinglePropertyAdapter(project.objects.fileProperty())
+                }
             } else if (artifactType.kind == ArtifactKind.DIRECTORY) {
                 singleArtifactStorage[artifactType] = SingleArtifactContainer<Directory>(
                     artifactType, project, variant
-                )
+                ) {
+                    SinglePropertyAdapter(project.objects.directoryProperty())
+                }
             }
         }
 
@@ -41,11 +45,15 @@ abstract class DefaultArtifactsStorage<PluginTypeT : PolyfilledPluginType>(
             if (artifactType.kind == ArtifactKind.FILE) {
                 multipleArtifactStorage[artifactType] = MultipleArtifactContainer<RegularFile>(
                     artifactType, project, variant
-                )
+                ) {
+                    MultiplePropertyAdapter(project.objects.listProperty(RegularFile::class.java))
+                }
             } else if (artifactType.kind == ArtifactKind.DIRECTORY) {
                 multipleArtifactStorage[artifactType] = MultipleArtifactContainer<Directory>(
                     artifactType, project, variant
-                )
+                ) {
+                    MultiplePropertyAdapter(project.objects.listProperty(Directory::class.java))
+                }
             }
         }
     }
