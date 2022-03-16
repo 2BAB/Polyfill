@@ -45,3 +45,8 @@ gradlePlugin {
         implementationClass = "me.xx2bab.polyfill.PolyfillPlugin"
     }
 }
+tasks.withType<Test> {
+    testLogging {
+        this.showStandardStreams = true
+    }
+}

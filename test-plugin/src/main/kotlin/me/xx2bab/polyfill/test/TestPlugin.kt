@@ -34,7 +34,7 @@ class TestPlugin : Plugin<Project> {
         }
         val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
-            val printManifestTask = project.tasks.register<ManifestBeforeMergeTask>(
+            val printManifestTask = project.tasks.register<PreUpdateManifestsTask>(
                 "getAllInputManifestsFor${variant.name.capitalize()}"
             ) {
                 beforeMergeInputs.set(
@@ -46,21 +46,21 @@ class TestPlugin : Plugin<Project> {
                 variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
             }
 
-            val preHookManifestTask2 = project.tasks.register<ManifestBeforeMergeTask>(
+            val preHookManifestTask2 = project.tasks.register<PreUpdateManifestsTask>(
                 "preUpdate${variant.name.capitalize()}Manifest1"
             )
             variant.artifactsPolyfill.use(
                 taskProvider = preHookManifestTask2,
-                wiredWith = ManifestBeforeMergeTask::beforeMergeInputs,
+                wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
 
-            val preHookManifestTask3 = project.tasks.register<ManifestBeforeMergeTask>(
+            val preHookManifestTask3 = project.tasks.register<PreUpdateManifestsTask>(
                 "preUpdate${variant.name.capitalize()}Manifest2"
             )
             variant.artifactsPolyfill.use(
                 taskProvider = preHookManifestTask3,
-                wiredWith = ManifestBeforeMergeTask::beforeMergeInputs,
+                wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
 
@@ -78,14 +78,17 @@ class TestPlugin : Plugin<Project> {
                 wiredWith = PostUpdateResourceTask::compiledFilesDir,
                 toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
             )
+        }
 
-
+        project.gradle.taskGraph.whenReady {
+            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
+            val taskDepsTxt = getOutputFile(project, "get-all-input-manifests-for-debug-task-deps.txt")
+            taskDepsTxt.createNewFile()
+            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
         }
     }
 
-
-    // Prepare a task containing specific hook logic.
-    abstract class ManifestBeforeMergeTask : DefaultTask() {
+    abstract class PreUpdateManifestsTask : DefaultTask() {
         @get:InputFiles
         abstract val beforeMergeInputs: ListProperty<RegularFile>
 

@@ -73,9 +73,10 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun manifestMergePreHookConfigureActionTest_GetSuccessfully() {
-        val fileFromLastTransformMethod = File("${testProjectJsonOutputPath}/all-manifests-by-preUpdateDebugManifest2.json")
         val fileFromGetMethod = File("${testProjectJsonOutputPath}/all-manifests-by-getAllInputManifestsForDebug.json")
-        Assert.assertTrue(fileFromLastTransformMethod.lastModified() < fileFromGetMethod.lastModified())
+        Assert.assertTrue(fileFromGetMethod.exists())
+        val getTaskDeps = File("${testProjectJsonOutputPath}/get-all-input-manifests-for-debug-task-deps.txt")
+        Assert.assertEquals(getTaskDeps.readText(), "preUpdateDebugManifest2")
     }
 
     @Test
