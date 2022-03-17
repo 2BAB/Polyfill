@@ -37,7 +37,7 @@ class ResourceMergePostHookConfigureAction(
             val linkTaskProvider = tasks.withType<LinkApplicationAndroidResourcesTask>().first {
                 it.name.contains(variant.name, true) && !it.name.contains("test", true)
             }
-            linkTaskProvider.dependsOn(lazyLastTaskProvider())
+            linkTaskProvider.dependsOn(lazyTailTaskProvider())
         }
     }
 

@@ -14,10 +14,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 
-abstract class DefaultArtifactsStorage<PluginTypeT : PolyfilledPluginType>(
+abstract class DefaultArtifactsRepository<PluginTypeT : PolyfilledPluginType>(
     private val project: Project,
     private val variant: Variant
-) : ArtifactsStorage<PluginTypeT>, VariantExtension {
+) : ArtifactsRepository<PluginTypeT>, VariantExtension {
 
     private val singleArtifactStorage = mutableMapOf<PolyfilledArtifact<*>, SingleArtifactContainer<*>>()
     private val multipleArtifactStorage = mutableMapOf<PolyfilledArtifact<*>, MultipleArtifactContainer<*>>()
@@ -97,8 +97,8 @@ abstract class DefaultArtifactsStorage<PluginTypeT : PolyfilledPluginType>(
 
 }
 
-class ApplicationArtifactsStorage(p: Project, v: Variant) :
-    DefaultArtifactsStorage<PolyfilledApplicationArtifact>(p, v)
+class ApplicationArtifactsRepository(p: Project, v: Variant) :
+    DefaultArtifactsRepository<PolyfilledApplicationArtifact>(p, v)
 
-class LibraryArtifactsStorage(p: Project, v: Variant) :
-    DefaultArtifactsStorage<PolyfilledLibraryArtifact>(p, v)
+class LibraryArtifactsRepository(p: Project, v: Variant) :
+    DefaultArtifactsRepository<PolyfilledLibraryArtifact>(p, v)

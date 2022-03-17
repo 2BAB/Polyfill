@@ -1,16 +1,39 @@
 package me.xx2bab.polyfill
 
+import com.android.build.api.artifact.Artifact
 import com.android.build.api.artifact.ArtifactKind
+import com.android.build.api.artifact.MultipleArtifact
+import com.android.build.api.artifact.SingleArtifact
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.file.RegularFile
 
+/**
+ * To define the plugin type that is associated with supported Artifact types.
+ */
 interface PolyfilledPluginType
+
+/**
+ * To indicate an Artifact can be used in Application module only.
+ */
 interface PolyfilledApplicationArtifact : PolyfilledPluginType
+
+/**
+ * To indicate an Artifact can be used in Library module only.
+ */
 interface PolyfilledLibraryArtifact : PolyfilledPluginType
 
+
+
+
+/**
+ * The polyfill version of [Artifact].
+ */
 abstract class PolyfilledArtifact<FileTypeT : FileSystemLocation>(val kind: ArtifactKind<FileTypeT>)
 
+/**
+ * The polyfill version of [SingleArtifact].
+ */
 sealed class PolyfilledSingleArtifact<FileTypeT : FileSystemLocation,
         PluginTypeT : PolyfilledPluginType>(kind: ArtifactKind<FileTypeT>) :
     PolyfilledArtifact<FileTypeT>(kind) {
@@ -24,6 +47,9 @@ sealed class PolyfilledSingleArtifact<FileTypeT : FileSystemLocation,
         PolyfilledSingleArtifact<Directory, PolyfilledApplicationArtifact>(ArtifactKind.DIRECTORY)
 }
 
+/**
+ * The polyfill version of [MultipleArtifact].
+ */
 sealed class PolyfilledMultipleArtifact<FileTypeT : FileSystemLocation,
         PluginTypeT : PolyfilledPluginType>(kind: ArtifactKind<FileTypeT>) :
     PolyfilledArtifact<FileTypeT>(kind) {

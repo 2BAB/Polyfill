@@ -45,7 +45,7 @@ class ManifestMergePreHookConfigureAction(
         project.tasks.whenTaskAdded {
             val targetTask = this
             if (this.name == "process${variantCapitalizedName}MainManifest") {
-                targetTask.dependsOn(lazyLastTaskProvider())
+                targetTask.dependsOn(lazyTailTaskProvider())
             }
         }
         project.rootProject.subprojects {

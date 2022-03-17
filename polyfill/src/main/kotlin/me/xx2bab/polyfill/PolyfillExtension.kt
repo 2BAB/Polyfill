@@ -24,6 +24,9 @@ abstract class PolyfillExtension {
         PolyfilledMultipleArtifact.ALL_RESOURCES to ResourceMergePreHookConfigureAction::class
     )
 
+    /**
+     * To register a custom [SingleArtifactPincerTaskConfiguration] for [PolyfilledSingleArtifact].
+     */
     fun registerPincerTaskConfig(
         artifactType: PolyfilledSingleArtifact<*, *>,
         kClass: KClass<out SingleArtifactPincerTaskConfiguration<*>>
@@ -34,6 +37,9 @@ abstract class PolyfillExtension {
         singleArtifactMap[artifactType] = kClass
     }
 
+    /**
+     * To register a custom [MultipleArtifactPincerTaskConfiguration] for [PolyfilledMultipleArtifact].
+     */
     fun registerPincerTaskConfig(
         artifactType: PolyfilledMultipleArtifact<*, *>,
         kClass: KClass<out MultipleArtifactPincerTaskConfiguration<*>>

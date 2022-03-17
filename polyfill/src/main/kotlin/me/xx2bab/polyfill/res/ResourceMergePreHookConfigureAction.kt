@@ -55,7 +55,7 @@ class ResourceMergePreHookConfigureAction(
     override fun orchestrate() {
         project.afterEvaluate {
             // Right flank
-            appVariant.getTaskContainer().mergeResourcesTask.dependsOn(lazyLastTaskProvider())
+            appVariant.getTaskContainer().mergeResourcesTask.dependsOn(lazyTailTaskProvider())
         }
     }
 

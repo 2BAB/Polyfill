@@ -46,20 +46,20 @@ class TestPlugin : Plugin<Project> {
                 variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
             }
 
-            val preHookManifestTask2 = project.tasks.register<PreUpdateManifestsTask>(
+            val preHookManifestTask1 = project.tasks.register<PreUpdateManifestsTask>(
                 "preUpdate${variant.name.capitalize()}Manifest1"
             )
             variant.artifactsPolyfill.use(
-                taskProvider = preHookManifestTask2,
+                taskProvider = preHookManifestTask1,
                 wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
 
-            val preHookManifestTask3 = project.tasks.register<PreUpdateManifestsTask>(
+            val preHookManifestTask2 = project.tasks.register<PreUpdateManifestsTask>(
                 "preUpdate${variant.name.capitalize()}Manifest2"
             )
             variant.artifactsPolyfill.use(
-                taskProvider = preHookManifestTask3,
+                taskProvider = preHookManifestTask2,
                 wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
@@ -138,3 +138,4 @@ class TestPlugin : Plugin<Project> {
     }
 
 }
+
