@@ -12,11 +12,12 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.polyfill)
     implementation(deps.kotlin.std)
     implementation(deps.kotlin.reflect)
     implementation(deps.fastJson)
+
     compileOnly(deps.android.gradle.plugin)
+    implementation(projects.polyfill)
 }
 
 gradlePlugin {

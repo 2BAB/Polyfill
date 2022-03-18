@@ -86,6 +86,9 @@ class TestPlugin : Plugin<Project> {
             taskDepsTxt.createNewFile()
             taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
         }
+
+        // project.extensions.getByType<PolyfillExtension>()
+        //    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
     }
 
     abstract class PreUpdateManifestsTask : DefaultTask() {
