@@ -20,7 +20,7 @@ val aggregateJars by tasks.registering {
         output.mkdir()
         subprojects {
             File(buildDir.absolutePath + File.separator + "libs").walk()
-                    .filter { it.name.startsWith("polyfill") && it.extension == "jar" }
+                    .filter { it.name.startsWith(this.name) && it.extension == "jar" }
                     .forEach { it.copyTo(File(output, it.name)) }
         }
     }

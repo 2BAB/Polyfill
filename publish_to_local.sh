@@ -4,5 +4,5 @@
 MODULE_ARRAY=('android-arsc-parser' 'android-manifest-parser' 'polyfill')
 for module in "${MODULE_ARRAY[@]}"
 do
-./gradlew clean :"$module":publishToMavenLocal
+./gradlew clean :"$module":publishPolyfillArtifactPublicationToMavenLocal
 done
