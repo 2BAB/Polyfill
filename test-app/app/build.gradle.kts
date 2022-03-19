@@ -7,8 +7,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("30.0.3")
+    compileSdkVersion(31)
     defaultConfig {
         applicationId = "me.xx2bab.polyfill.sample"
         minSdkVersion(21)
@@ -27,5 +26,4 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation(deps.kotlin.std)
-    implementation(deps.kotlin.reflect)
 }

@@ -8,139 +8,121 @@
 
 🚧 **It's currently under incubating...**
 
-Polyfill is a middleware to assist writing Gradle Plugins for Android build system.
+Polyfill is an artifact repository to assist writing Gradle Plugins for Android build system. It provides addtional artifacts in similar API styles of AGP Artifacts ones for third party plugin developers.
 
-## Why need Polyfill?
+If you are not familiar with new Artifact/Variant API of AGP (since 7.0), please check the tutorial [Gradle and AGP build APIs - MAD Skills](https://www.youtube.com/playlist?list=PLWz5rJ2EKKc8fyNmwKXYvA2CqxMhXqKXX) by @AndroidDevelopers. More information can be found on "Why Polyfill" section below.
 
-As its name suggests, the lib is a **middle-ware** between **AGP** (Android Gradle Plugin) and **3rd Gradle Plugin**
-based on AGP context. For example, the [ScratchPaper](https://github.com/2BAB/ScratchPaper) is a plugin to add an
-overlay to your app icons which based on AGP, it consumes:
-
-- SDK Locations / BuildToolInfo instance (to run aapt commands)
-- Merged AndroidManifest.xml (to get the resolved icon name)
-
-Those inputs usually caused problems:
-
-1. They are open-source but not exposed directly, sometimes you may need to use reflect to retrieve the input you need.
-2. They may change when updating to a new AGP version, again, because those are mainly for internal usage.
-
-In 2018, I started to consider if we can make a Polyfill layer for 3rd Android Gradle Plugin developers, and finally
-released the first version in 2020 as you can see here. The name "Polyfill" comes from the FrontEnd tech-stack, which
-makes the JS code compatible with old/odd browser APIs.
-
-To be noticed, starting from AGP 4.1.0, the AGP team provides a new public API set called **"Variant/Artifact API"**. ~~
-However, this is a very early stage that only provides less than 10 artifacts' API for developers to use.~~ **AGP
-released 2-3 minor versions per year, developers may need to stay tuned, expect their own requirement get quickly
-implemented in next few years. (Please raise your requests to AGP thread of issue tracker more.)**
-
-Check all latest exported Artifacts
-here: [SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact)
-, [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact)
-.(The "Known Direct Subclasses" portion)
-
-That's why I still insist to create Polyfill lib and wish one day we can 100% migrate to Artifacts API.
-
-Find more Variant/Artifact API news from links below:
-
-- [gradle-recipes](https://github.com/android/gradle-recipes): An official repo for Variant/Artifact API showcases.
-- [New APIs in the Android Gradle Plugin](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614) :
-  A brief orientation for new Variant/Artifact API.
-- [Extend the Android Gradle plugin](https://developer.android.com/studio/build/extend-agp): The official doc of
-  Variant/Artifact API that was released in Oct 2021.
-
-## What does Polyfill provide?
-
-- It encapsulates AGP (Android Gradle Plugin) APIs, turn them to **Task Hook Points** (action) and **Task Inputs** for
-  all 3rd plugin developer to easily interact with.
-    - **Task Hook Points:** for instance, if the developer wants to intercept manifest merge input files, he/she should
-      find producer task(s) and consumer task of input files, then add a new custom task that will be executed between
-      them; here the Hook Points means we define an action who process the task order stuffs and make sure the new-added
-      runs on the true timing, Polyfill provides many `AGPTaskAction.kt` (the impl such
-      as `ManifestBeforeMergeAction.kt`) to complete this job.
-    - **Task Inputs:** with the help of Hook Points, your task logic can now be executed during the right time, what you
-      might miss is task input(s), for example, Manifest files, Android SDK locations, AGP versions, etc. To configure
-      them easily, Polyfill provides `SelfManageableProvider.kt` (the impl such as `ManifestMergeInputProvider.kt`) to
-      fetch the task input(s).
-- Meanwhile, it provides a bunch of tools working on build intermediates, such as binary parser and builder
-  for `resources.arsc`, `AndroidManifest.xml`.
 
 ## Quick Start
 
-1. Add Polyfill to build classpath:
+1. Add Polyfill to dependencies of your Plugin project (standalone plugin project or `buildSrc`):
 
 ``` kotlin
-// If add to `buildSrc/build.gradle(.kts)` or standalone plugin project, 
-// add them to your project's `dependencies{}` block:
 dependencies {
-    implementation("com.android.tools.build:gradle:7.0.3")
-    // Core dependency 
-    implementation("me.2bab:polyfill:0.4.1")
-    // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
-    implementation("me.2bab:polyfill-manifest:$latestVersion")
-    implementation("me.2bab:polyfill-res:$latestVersion")
-    implementation("me.2bab:polyfill-arsc:$latestVersion")
-    ...
-}
-
-// If you only extend the build inside `build.gradle(.kts)` script, 
-// add them to Root project's `build.gradle.kts`.
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:7.0.3")
-        // Core dependency 
-        classpath("me.2bab:polyfill:0.4.1")
-        // Add one or more artiface(s)-provider as you want ($latestVersion -> same as the core version)
-        classpath("me.2bab:polyfill-manifest:$latestVersion")
-        classpath("me.2bab:polyfill-res:$latestVersion")
-        classpath("me.2bab:polyfill-arsc:$latestVersion")
-        ...
-    }
+    compileOnly("com.android.tools.build:gradle:7.1.2")
+    implementation("me.2bab:polyfill:0.5.0")  <--
 }
 ```
 
-2. Write some custom tasks based on Polyfill (follow the steps of comment):
+2. Apply the Polyfill plugin to your plugin before everything:
+
+``` Kotlin
+import org.gradle.kotlin.dsl.apply
+
+class TestPlugin : Plugin<Project> {
+    override fun apply(project: Project) {
+        project.apply(plugin = "me.2bab.polyfill")  <--
+        ...
+    }
+}    
+```
+
+3. Config your TaskProvider with the help of Polyfill's `variant.artifactsPolyfill.*`, which has similar API style with `variant.artifacts` one of AGP:
 
 ``` kotlin
-val androidExtension = project.extensions.findByType(AndroidComponentsExtension::class.java)!!
+val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
 androidExtension.onVariants { variant ->
 
-    // 0. Get Polyfill instance with Project instance
-    val polyfill = ApplicationVariantPolyfill(project, variant)
-
-    // 1. Create & Config the hook task.
-    val preUpdateTask = project.tasks.register(
-        "preUpdate${variant.name.capitalize()}Manifest",
-        TestPlugin.ManifestBeforeMergeTask::class.java
+    // get()/getAll()
+    val printManifestTask = project.tasks.register<PreUpdateManifestsTask>(
+        "getAllInputManifestsFor${variant.name.capitalize()}"
     ) {
-        val p = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
-        beforeMergeInputs.set(p)
+        beforeMergeInputs.set(
+            variant.artifactsPolyfill.getAll(PolyfilledMultipleArtifact.ALL_MANIFESTS)  <--
+        )
     }
-    // 2. Add it with the action (which plays the role of entry for a hook).
-    val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
-    polyfill.addAGPTaskAction(beforeMergeAction)
+    ...
+
+    // use()
+    val preHookManifestTask1 = project.tasks.register<PreUpdateManifestsTask>(
+        "preUpdate${variant.name.capitalize()}Manifest1"
+    )
+    variant.artifactsPolyfill.use(  <--
+        taskProvider = preHookManifestTask1,
+        wiredWith = TestPlugin.PreUpdateManifestsTask::beforeMergeInputs,
+        toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
+    )
 }
 
-// Prepare a task containing specific hook logic.
-abstract class ManifestBeforeMergeTask : DefaultTask() {
+...
+
+abstract class PreUpdateManifestsTask : DefaultTask() {
     @get:InputFiles
-    abstract val beforeMergeInputs: SetProperty<FileSystemLocation>
+    abstract val beforeMergeInputs: ListProperty<RegularFile>  <--
 
     @TaskAction
     fun beforeMerge() {
-        val manifestPathsOutput = TestPlugin.getOutputFile(project, "manifests-merge-input.json")
-        manifestPathsOutput.createNewFile()
-        beforeMergeInputs.get().let { set ->
-            manifestPathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
-        }
+        beforeMergeInputs.get().let { files -> ...}
     }
 }
 ```
 
+All supported Artifacts are listed below: 
+
+|PolyfilledSingleArtifact|Data Type|Description|
+|:---:|:---:|:---:|
+|MERGED_RESOURCES|`Provider<Directory>`|To retrieve merged `/res` directory.|
+
+
+|PolyfilledMultipleArtifact|Data Type|Description|
+|:---:|:---:|:---:|
+|ALL_MANIFESTS|`ListProvider<RegularFile>`|To retrieve all `AndroidManifest.xml` regular files that will paticipate resource merge.|
+|ALL_RESOURCES|`ListProvider<Directory>`|To retrieve all `/res` directories that will paticipate resource merge.|
+
+
+4. In addition, if aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are opening to customized Artifacts registry.（PR is welcome as well!)
+
+``` Kotlin
+project.extensions.getByType<PolyfillExtension>()
+    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
+```
+
+
 Check more in `./test-plugin` and `./polyfill/src/functionalTest`.
+
+
+
+## Why Polyfill?
+
+As its name suggests, the lib is a **middle-ware** between **AGP** (Android Gradle Plugin) and **3rd Gradle Plugin** based on AGP context. For example, the [ScratchPaper](https://github.com/2BAB/ScratchPaper) is a plugin to add an overlay to your app icons which based on AGP, it consumes:
+
+1. SDK Locations / BuildToolInfo instance (to run aapt2 commands)
+2. All input resource directories (to query the source of launcher icons)
+3. Merged AndroidManifest.xml (to get the resolved icon name)
+
+By the time I created ScratchPaper, AGP does not provide any public API for above 3 items, I had to deal them with a few hacky hooks. In 2018, I started to consider if we can make a Polyfill layer for 3rd Android Gradle Plugin developers, and finally released the first version in 2020 as you can see here. The name "Polyfill" comes from the FrontEnd tech-stack, which makes the JS code compatible with old/odd browser APIs.
+
+Since AGP 7.0.0, the AGP team provides a new public API set called **"Variant/Artifact API"**. You can check all latest AGP exported Artifacts here: [SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact), [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact) (On "Known Direct Subclasses" section). At this early stage AGP only provides less than 10 artifacts' API, **AGP released 2-3 minor versions per year, developers need to stay tuned for new Artifacts releasing.** Back to the example, only item 3 is provided by the new Artifacts API in public. For rest two items you may need to handle(hack) by yourself. to fulfill thoes requirements that are not satisfied by new Artifacts so far, probably we can:
+
+1. Raise requests to corresponding issue tracker thread of [AGP](https://issuetracker.google.com/issues?q=componentid:192709). 
+2. In the meantime, create a similar data pipeline to populate our hooks as what `artifacts.use()/get()/getAll()` looks like, it's a temporary workaround and easy to migrate to official Artifacts API once available.
+
+That's the reason why I created Polyfill and wish one day we can 100% migrate to Artifacts API. Find more Variant/Artifact API news from links below:
+
+- [gradle-recipes](https://github.com/android/gradle-recipes): An official repo for Variant/Artifact API showcases.
+- [New APIs in the Android Gradle Plugin](https://medium.com/androiddevelopers/new-apis-in-the-android-gradle-plugin-f5325742e614): A brief orientation for new Variant/Artifact API.
+- [Extend the Android Gradle plugin](https://developer.android.com/studio/build/extend-agp): The official doc of Variant/Artifact API that was released in Oct 2021.
+
 
 ## Compatible Specification
 
@@ -150,11 +132,12 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 | AGP Version | Latest Support Version |
 |:-----------:|:----------------------:|
+|    7.1.x    |         0.5.0          |
 |    7.0.x    |         0.4.1          |
-|    4.2.0    |  0.3.1 (MavenCentral)  |
+|    4.2.0    |  0.3.1 (Migrated to MavenCentral)  |
 
-(The project currently compiles with the latest version of AGP 7.0, and compiles and tests against the both AGP 7.0 and
-7.1 on CI.)
+(The project currently compiles with the latest version of AGP 7.0, and compiles and tests against the both AGP 7.0 and 7.1 on CI.)
+
 
 ## Git Commit Check
 
@@ -166,6 +149,7 @@ So far we haven't added any hook tool, but follow the regex below:
 ```
 (chore|feat|docs|fix|refactor|style|test|hack|release)(:)( )(.{0,80})
 ```
+
 
 ## License
 

@@ -1,136 +1,128 @@
 package me.xx2bab.polyfill.test
 
 import com.alibaba.fastjson.JSON
-import com.android.build.api.variant.AndroidComponentsExtension
-import me.xx2bab.polyfill.ApplicationVariantPolyfill
-import me.xx2bab.polyfill.manifest.source.ManifestAfterMergeAction
-import me.xx2bab.polyfill.manifest.source.ManifestBeforeMergeAction
-import me.xx2bab.polyfill.manifest.source.ManifestMergeInputProvider
-import me.xx2bab.polyfill.manifest.source.ManifestMergeOutputProvider
-import me.xx2bab.polyfill.res.ResourcesBeforeMergeAction
-import me.xx2bab.polyfill.res.ResourcesMergeInputProvider
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import me.xx2bab.polyfill.PolyfilledMultipleArtifact
+import me.xx2bab.polyfill.PolyfilledSingleArtifact
+import me.xx2bab.polyfill.artifactsPolyfill
+import me.xx2bab.polyfill.getTaskContainer
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.FileSystemLocation
-import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.SetProperty
+import org.gradle.api.file.Directory
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.register
 import java.io.File
 
 class TestPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        project.apply(plugin = "me.2bab.polyfill")
         project.afterEvaluate {
             mkdir(
                 project.rootProject.buildDir.absolutePath
                         + File.separator + "functionTestOutput"
             )
         }
-        val androidExtension = project.extensions.getByType(AndroidComponentsExtension::class.java)
+        val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
-
-            // 0. Get Polyfill instance with Project instance
-            val polyfill = ApplicationVariantPolyfill(project, variant)
-
-            // 1. Create & Config the hook task.
-            val preUpdateTask = project.tasks.register(
-                "preUpdate${variant.name.capitalize()}Manifest",
-                ManifestBeforeMergeTask::class.java
+            val printManifestTask = project.tasks.register<PreUpdateManifestsTask>(
+                "getAllInputManifestsFor${variant.name.capitalize()}"
             ) {
-                val p = polyfill.newProvider(ManifestMergeInputProvider::class.java).obtain()
-                beforeMergeInputs.set(p)
+                beforeMergeInputs.set(
+                    variant.artifactsPolyfill
+                        .getAll(PolyfilledMultipleArtifact.ALL_MANIFESTS)
+                )
             }
-            // 2. Add it with the action (which plays the role of entry for a hook).
-            val beforeMergeAction = ManifestBeforeMergeAction(preUpdateTask)
-            polyfill.addAGPTaskAction(beforeMergeAction)
+            project.afterEvaluate {
+                variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
+            }
+
+            val preHookManifestTask1 = project.tasks.register<PreUpdateManifestsTask>(
+                "preUpdate${variant.name.capitalize()}Manifest1"
+            )
+            variant.artifactsPolyfill.use(
+                taskProvider = preHookManifestTask1,
+                wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
+                toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
+            )
+
+            val preHookManifestTask2 = project.tasks.register<PreUpdateManifestsTask>(
+                "preUpdate${variant.name.capitalize()}Manifest2"
+            )
+            variant.artifactsPolyfill.use(
+                taskProvider = preHookManifestTask2,
+                wiredWith = PreUpdateManifestsTask::beforeMergeInputs,
+                toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
+            )
 
 
-            // Should use Variant API to replace it.
-            // @see https://github.com/android/gradle-recipes/blob/agp-7.1/Kotlin/manifestTransformerTest/app/build.gradle.kts
-            // @Deprecated ~~Let's try again with after merge hook~~
-            val postUpdateTask = project.tasks.register(
-                "postUpdate${variant.name.capitalize()}Manifest",
-                ManifestAfterMergeTask::class.java
+            val postUpdateResourceTask = project.tasks.register<PostUpdateResourceTask>(
+                "postUpdate${variant.name.capitalize()}Resources"
             ) {
-                afterMergeInputs.set(polyfill.newProvider(ManifestMergeOutputProvider::class.java).obtain())
+                beforeMergeInputs.set(
+                    variant.artifactsPolyfill
+                        .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
+                )
             }
-            polyfill.addAGPTaskAction(ManifestAfterMergeAction(postUpdateTask))
-
-            // To test ResourcesMergeInputProvider & ResourcesBeforeMergeAction
-            val preUpdateResourceTask = project.tasks.register(
-                "preUpdate${variant.name.capitalize()}Resources",
-                ResourceBeforeMergeTask::class.java
-            ) {
-                val p = polyfill.newProvider(ResourcesMergeInputProvider::class.java).obtain()
-                beforeMergeInputs.set(p)
-            }
-            polyfill.addAGPTaskAction(ResourcesBeforeMergeAction(preUpdateResourceTask))
+            variant.artifactsPolyfill.use(
+                taskProvider = postUpdateResourceTask,
+                wiredWith = PostUpdateResourceTask::compiledFilesDir,
+                toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
+            )
         }
 
-        // Optional: if the new Variant API can not fulfill the requirement
-        // or you want to migrate from an old project to Polyfill smoothly,
-        // you can use onClassicVariants{} instead.
-        // Here are 2 samples which their used APIs are accessible for ApplicationVariant only,
-        // though `polyfill.onVariants` is preferred as it uses new Variant API (Old APIs may get depracted).
-        //
-        // @see com.android.build.api.variant.ApplicationVariant
-//        polyfill.onClassicVariants {
-//            val applicationVariant = this
-//            project.tasks
-//                .register("makePolyfillCacheDirs${applicationVariant.name.capitalize()}") {
-//                    // The versionName is only accessible by ApplicationVariant
-//                    project.logger.info(applicationVariant.versionName)
-//                }
-//                .dependsOn(this.preBuildProvider) // The AGP task providers is only available by ApplicationVariant
-//        }
+        project.gradle.taskGraph.whenReady {
+            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
+            val taskDepsTxt = getOutputFile(project, "get-all-input-manifests-for-debug-task-deps.txt")
+            taskDepsTxt.createNewFile()
+            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
+        }
+
+        // project.extensions.getByType<PolyfillExtension>()
+        //    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
     }
 
-
-    // Prepare a task containing specific hook logic.
-    abstract class ManifestBeforeMergeTask : DefaultTask() {
+    abstract class PreUpdateManifestsTask : DefaultTask() {
         @get:InputFiles
-        abstract val beforeMergeInputs: SetProperty<FileSystemLocation>
+        abstract val beforeMergeInputs: ListProperty<RegularFile>
 
         @TaskAction
         fun beforeMerge() {
-            val manifestPathsOutput = getOutputFile(project, "manifests-merge-input.json")
+            val manifestPathsOutput = getOutputFile(project, "all-manifests-by-${name}.json")
             manifestPathsOutput.createNewFile()
-            beforeMergeInputs.get().let { set ->
-                manifestPathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
+            beforeMergeInputs.get().let { files ->
+                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
     }
 
-    abstract class ManifestAfterMergeTask : DefaultTask() {
-
+    abstract class PostUpdateResourceTask : DefaultTask() {
         @get:InputFiles
-        abstract val afterMergeInputs: RegularFileProperty
+        abstract val beforeMergeInputs: ListProperty<Directory>
 
-        @TaskAction
-        fun afterMerge() {
-            if (afterMergeInputs.isPresent) {
-                val file = afterMergeInputs.get().asFile
-                val modifiedManifest = file.readText()
-                    .replace("allowBackup=\"true\"", "allowBackup=\"false\"")
-                file.writeText(modifiedManifest)
-            }
-        }
-
-    }
-
-    abstract class ResourceBeforeMergeTask : DefaultTask() {
-        @get:InputFiles
-        abstract val beforeMergeInputs: SetProperty<FileSystemLocation>
+        @get:InputDirectory
+        @get:Optional
+        abstract val compiledFilesDir: DirectoryProperty
 
         @TaskAction
         fun beforeMerge() {
-            val resourcePathsOutput = getOutputFile(project, "resources-merge-input.json")
-            resourcePathsOutput.createNewFile()
+            val allResourcesInputJSONFile = getOutputFile(project, "all-resources.json")
+            allResourcesInputJSONFile.createNewFile()
             beforeMergeInputs.get().let { set ->
-                resourcePathsOutput.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
+                allResourcesInputJSONFile.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
             }
+            val resourcePathsOutput = getOutputFile(project, "merged-resource-dir.txt")
+            resourcePathsOutput.createNewFile()
+            resourcePathsOutput.writeText(compiledFilesDir.get().asFile.absolutePath)
         }
     }
 
@@ -149,3 +141,4 @@ class TestPlugin : Plugin<Project> {
     }
 
 }
+
