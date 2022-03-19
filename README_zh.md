@@ -109,7 +109,7 @@ project.extensions.getByType<PolyfillExtension>()
 2. 所有输入的 `res` 文件夹（用以查找启动图标文件来源）
 3. 合并后的 AndroidManifest.xml 文件（用以获取解析后的图标名字）
 
-在我刚创建 ScratchPaper 项目时，AGP 还未提供任何与上述三份数据有关的公开 API。2018 年时，我开始思考是否可以为第三方 Android Gradle 插件开发者做一个 Polyfill 层（中间层），并且最终在 2020 年我发布了第一个版本，也即您在这所看到的。Polyfill 这个名字来自于前端技术栈，一个使 JS code 可以和一些老的/罕见的浏览器 API 兼容的库。
+在我刚创建 ScratchPaper 项目时，AGP 还未提供任何与上述三份数据有关的公开 API，我们只能使用一些骇客式的 Hooks 来解决。2018 年时，我开始思考是否可以为第三方 Android Gradle 插件开发者做一个 Polyfill 层（中间层），并且最终在 2020 年我发布了第一个版本，也即您在这所看到的。Polyfill 这个名字来自于前端技术栈，一个使 JS code 可以和一些老的/罕见的浏览器 API 兼容的库。
 
 而从 AGP 7.0.0 开始，AGP 开发团队正式提供了一个新的公开 API 集，**"Artifacts"**。你可以从这里查看到最新公开的 Artifacts：[SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact)
 , [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact)
