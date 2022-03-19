@@ -114,7 +114,7 @@ project.extensions.getByType<PolyfillExtension>()
 而从 AGP 7.0.0 开始，AGP 开发团队正式提供了一个新的公开 API 集，**"Artifacts"**。你可以从这里查看到最新公开的 Artifacts：[SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact)
 , [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact)
 （"Known Direct Subclasses" 的部分）。新的 `Variant/Artifact` 还处在较为早期的阶段，只提供了不到 10 个的 Artifacts API
-给开发者们去使用。**由于 AGP 每年只发布 2-3 个小版本，开发者们需要紧跟更新，以期待获得自己的需求得到满足。**回到上述案例，目前仅第三项数据是被 Artifacts API 所支持，剩余的两项则需要开发者自行处理。为了满足这些不被公开数据集支持的开发需求，我们能做的是：
+给开发者们去使用。**由于 AGP 每年只发布 2-3 个小版本，开发者们需要紧跟更新，以期待获得自己的需求得到满足。** 回到上述案例，目前仅第三项数据是被 Artifacts API 所支持，剩余的两项则需要开发者自行处理。为了满足这些不被公开数据集支持的开发需求，我们能做的是：
 
 1. 在 [AGP](https://issuetracker.google.com/issues?q=componentid:192709) 的 issues tracker 板块提出我们的需求。
 2. 同时，构建一个非官方的数据管道用于承载我们的 hooks（借鉴 `artifacts.use()` 的机制），既作为临时的解决方案也方便未来过渡到官方的 Artifacts API。
