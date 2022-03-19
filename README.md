@@ -90,7 +90,7 @@ All supported Artifacts are listed below:
 |ALL_RESOURCES|`ListProvider<Directory>`|To retrieve all `/res` directories that will paticipate resource merge.|
 
 
-4. In addition, if aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are openning to customized Artifacts registry.
+4. In addition, if aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are opening to customized Artifacts registry.（PR is welcome as well!)
 
 ``` Kotlin
 project.extensions.getByType<PolyfillExtension>()
@@ -107,16 +107,15 @@ Check more in `./test-plugin` and `./polyfill/src/functionalTest`.
 As its name suggests, the lib is a **middle-ware** between **AGP** (Android Gradle Plugin) and **3rd Gradle Plugin** based on AGP context. For example, the [ScratchPaper](https://github.com/2BAB/ScratchPaper) is a plugin to add an overlay to your app icons which based on AGP, it consumes:
 
 1. SDK Locations / BuildToolInfo instance (to run aapt2 commands)
-2. All input resource directories (to query app icons)
+2. All input resource directories (to query the source of launcher icons)
 3. Merged AndroidManifest.xml (to get the resolved icon name)
 
 By the time I created ScratchPaper, AGP does not provide any public API for above 3 items. In 2018, I started to consider if we can make a Polyfill layer for 3rd Android Gradle Plugin developers, and finally released the first version in 2020 as you can see here. The name "Polyfill" comes from the FrontEnd tech-stack, which makes the JS code compatible with old/odd browser APIs.
 
-Since AGP 7.0.0, the AGP team provides a new public API set called **"Variant/Artifact API"**. You can check all latest AGP exported Artifacts here: [SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact), [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact) (On "Known Direct Subclasses" section). At this early stage AGP only provides less than 10 artifacts' API, for exmaple only item 3 is provided by the new [Artifacts](https://developer.android.com/studio/build/extend-agp) API in public. For rest two items you may need to handle(hack) by yourself.
-.to fulfill thoes requirements that are not satisfied by new Artifacts so far, probably we can:
+Since AGP 7.0.0, the AGP team provides a new public API set called **"Variant/Artifact API"**. You can check all latest AGP exported Artifacts here: [SingleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/SingleArtifact), [MultipleArtifact](https://developer.android.com/reference/tools/gradle-api/current/com/android/build/api/artifact/MultipleArtifact) (On "Known Direct Subclasses" section). At this early stage AGP only provides less than 10 artifacts' API, **AGP released 2-3 minor versions per year, developers need to stay tuned for new Artifacts releasing.** Back to the example, only item 3 is provided by the new Artifacts API in public. For rest two items you may need to handle(hack) by yourself. to fulfill thoes requirements that are not satisfied by new Artifacts so far, probably we can:
 
-1. Raise requests to corresponding issue tracker thread of [AGP](https://issuetracker.google.com/issues?q=componentid:192709), **AGP released 2-3 minor versions per year, developers need to stay tuned for new Artifacts releasing.** 
-2. In the mean time, create a similar data pipeline to populate our hooks as a temporary workaround.
+1. Raise requests to corresponding issue tracker thread of [AGP](https://issuetracker.google.com/issues?q=componentid:192709). 
+2. In the meantime, create a similar data pipeline to populate our hooks as what `artifacts.use()/get()/getAll()` looks like, it's a temporary workaround and easy to migrate to official Artifacts API once available.
 
 That's the reason why I created Polyfill and wish one day we can 100% migrate to Artifacts API. Find more Variant/Artifact API news from links below:
 
