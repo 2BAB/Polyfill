@@ -1,5 +1,5 @@
 rootProject.name = "polyfill-func-test-project"
-enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
 
@@ -9,6 +9,7 @@ pluginManagement {
 
     plugins {
         id("com.android.application") version getVersion("agpVer") apply false
+        id("com.android.library") version getVersion("agpVer") apply false
         kotlin("android") version getVersion("kotlinVer")  apply false
     }
     repositories {
@@ -38,7 +39,7 @@ dependencyResolutionManagement {
 }
 
 // Main test app
-include(":app")
+include(":app", ":android-lib")
 
 // Substitute the test plugin with a project(":test-plugin"),
 // also check ./build.gradle.kts

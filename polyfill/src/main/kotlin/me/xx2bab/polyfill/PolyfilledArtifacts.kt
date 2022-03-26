@@ -59,5 +59,8 @@ sealed class PolyfilledMultipleArtifact<FileTypeT : FileSystemLocation,
 
     object ALL_RESOURCES :
         PolyfilledMultipleArtifact<Directory, PolyfilledApplicationArtifact>(ArtifactKind.DIRECTORY)
+
+    object ALL_JAVA_RES :
+        PolyfilledMultipleArtifact<RegularFile, PolyfilledApplicationArtifact>(ArtifactKind.FILE)
 }
 
