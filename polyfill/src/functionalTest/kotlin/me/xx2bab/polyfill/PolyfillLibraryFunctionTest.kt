@@ -94,4 +94,11 @@ class PolyfillLibraryFunctionTest {
         Assert.assertTrue(out.readText().contains("app/build/intermediates/merged_res/debug"))
     }
 
+    @Test
+    fun javaResourceMergePreHookConfigureAction_TransformSuccessfully() {
+        val out = File("${testProjectJsonOutputPath}/all-java-res-by-preUpdateDebugJavaResources.json")
+        Assert.assertTrue(out.exists())
+        Assert.assertTrue(out.readText().contains("android-lib/build/intermediates/library_java_res/debug/res.jar"))
+    }
+
 }

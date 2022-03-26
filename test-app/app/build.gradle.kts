@@ -26,4 +26,5 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation(deps.kotlin.std)
+    implementation(projects.androidLib)
 }

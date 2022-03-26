@@ -34,6 +34,7 @@ class TestPlugin : Plugin<Project> {
         }
         val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
+            // ALL_MANIFESTS
             val printManifestTask = project.tasks.register<PreUpdateManifestsTask>(
                 "getAllInputManifestsFor${variant.name.capitalize()}"
             ) {
@@ -64,7 +65,7 @@ class TestPlugin : Plugin<Project> {
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
 
-
+            // ALL_RESOURCES & MERGED_RESOURCES
             val postUpdateResourceTask = project.tasks.register<PostUpdateResourceTask>(
                 "postUpdate${variant.name.capitalize()}Resources"
             ) {
@@ -77,6 +78,16 @@ class TestPlugin : Plugin<Project> {
                 taskProvider = postUpdateResourceTask,
                 wiredWith = PostUpdateResourceTask::compiledFilesDir,
                 toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
+            )
+
+            // ALL_JAVA_RES
+            val preUpdateJavaResTask = project.tasks.register<PreUpdateJavaResourcesTask>(
+                "preUpdate${variant.name.capitalize()}JavaResources"
+            )
+            variant.artifactsPolyfill.use(
+                taskProvider = preUpdateJavaResTask,
+                wiredWith = PreUpdateJavaResourcesTask::beforeMergeInputs,
+                toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_JAVA_RES
             )
         }
 
@@ -125,6 +136,22 @@ class TestPlugin : Plugin<Project> {
             resourcePathsOutput.writeText(compiledFilesDir.get().asFile.absolutePath)
         }
     }
+
+    abstract class PreUpdateJavaResourcesTask : DefaultTask() {
+        @get:InputFiles
+        abstract val beforeMergeInputs: ListProperty<RegularFile>
+
+        @TaskAction
+        fun beforeMerge() {
+            val javaResPathsOutput = getOutputFile(project, "all-java-res-by-${name}.json")
+            javaResPathsOutput.createNewFile()
+            beforeMergeInputs.get().let { files ->
+                javaResPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+            }
+        }
+    }
+
+
 
     companion object {
         fun getOutputFile(

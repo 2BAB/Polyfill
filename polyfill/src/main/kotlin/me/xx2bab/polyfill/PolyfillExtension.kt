@@ -1,5 +1,6 @@
 package me.xx2bab.polyfill
 
+import me.xx2bab.polyfill.jar.JavaResourceMergePreHookConfigureAction
 import me.xx2bab.polyfill.manifest.ManifestMergePreHookConfigureAction
 import me.xx2bab.polyfill.res.ResourceMergePostHookConfigureAction
 import me.xx2bab.polyfill.res.ResourceMergePreHookConfigureAction
@@ -21,7 +22,8 @@ abstract class PolyfillExtension {
     internal val multipleArtifactMap = mutableMapOf<PolyfilledArtifact<*>,
             KClass<out PincerTaskConfiguration<*>>>(
         PolyfilledMultipleArtifact.ALL_MANIFESTS to ManifestMergePreHookConfigureAction::class,
-        PolyfilledMultipleArtifact.ALL_RESOURCES to ResourceMergePreHookConfigureAction::class
+        PolyfilledMultipleArtifact.ALL_RESOURCES to ResourceMergePreHookConfigureAction::class,
+        PolyfilledMultipleArtifact.ALL_JAVA_RES to JavaResourceMergePreHookConfigureAction::class
     )
 
     /**
