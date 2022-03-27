@@ -20,7 +20,7 @@ If you are not familiar with new Artifact/Variant API of AGP (since 7.0), please
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.1.2")
-    implementation("me.2bab:polyfill:0.5.0")  <--
+    implementation("me.2bab:polyfill:0.6.0")  <--
 }
 ```
 
@@ -84,10 +84,11 @@ All supported Artifacts are listed below:
 |MERGED_RESOURCES|`Provider<Directory>`|To retrieve merged `/res` directory.|
 
 
-|PolyfilledMultipleArtifact|Data Type|Description|
-|:---:|:---:|:---:|
-|ALL_MANIFESTS|`ListProvider<RegularFile>`|To retrieve all `AndroidManifest.xml` regular files that will paticipate resource merge.|
-|ALL_RESOURCES|`ListProvider<Directory>`|To retrieve all `/res` directories that will paticipate resource merge.|
+| PolyfilledMultipleArtifact |Data Type|                                       Description                                       |
+|:--------------------------:|:---:|:---------------------------------------------------------------------------------------:|
+|       ALL_MANIFESTS        |`ListProvider<RegularFile>`| To retrieve all `AndroidManifest.xml` regular files that will paticipate merge process. |
+|       ALL_RESOURCES        |`ListProvider<Directory>`|         To retrieve all `/res` directories that will paticipate merge process.          |
+|        ALL_JAVA_RES        |`ListProvider<RegularFile>`|               To retrieve all Java Resources that will paticipate merge process.               |
 
 
 4. In addition, if aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are opening to customized Artifacts registry.（PR is welcome as well!)

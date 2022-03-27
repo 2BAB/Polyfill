@@ -20,7 +20,7 @@ Polyfill 是一个第三方的**工件仓库**，服务于编写 Android 构建�
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.1.2")
-    implementation("me.2bab:polyfill:0.5.0")  <--
+    implementation("me.2bab:polyfill:0.6.0")  <--
 }
 ```
 
@@ -88,8 +88,9 @@ abstract class PreUpdateManifestsTask : DefaultTask() {
 
 |PolyfilledMultipleArtifact|Data Type|Description|
 |:---:|:---:|:---:|
-|ALL_MANIFESTS|`ListProvider<RegularFile>`|To retrieve all `AndroidManifest.xml` regular files that will paticipate resource merge.|
-|ALL_RESOURCES|`ListProvider<Directory>`|To retrieve all `/res` directories that will paticipate resource merge.|
+|       ALL_MANIFESTS        |`ListProvider<RegularFile>`| To retrieve all `AndroidManifest.xml` regular files that will paticipate merge process. |
+|       ALL_RESOURCES        |`ListProvider<Directory>`|         To retrieve all `/res` directories that will paticipate merge process.          |
+|        ALL_JAVA_RES        |`ListProvider<RegularFile>`|               To retrieve all Java Resources that will paticipate merge process.               |
 
 4. 另外，如果上述 API 集无法满足你的需求，Polyfill 提供了其底层的数据管道机制以及获取数据的便捷工具，方便注册自定义的工件（同样欢迎直接提交 PR）。
 
