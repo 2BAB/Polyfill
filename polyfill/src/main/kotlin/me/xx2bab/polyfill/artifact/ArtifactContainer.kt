@@ -20,7 +20,7 @@ abstract class ArtifactContainer<CreationDataT, AdapterT : PropertyAdapter<Creat
 ) {
 
     private val headTaskProvider: TaskProvider<*> = project.tasks.register(
-        "dummyHeadWith${artifactType::class.simpleName}For${variant.getCapitalizedName()}"
+        "virtualHeadOf${artifactType::class.simpleName}For${variant.getCapitalizedName()}"
     )
     private var latestTaskProvider: TaskProvider<*> = headTaskProvider
     private val pincerTaskConfig: PincerTaskConfiguration<CreationDataT>

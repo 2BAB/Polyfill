@@ -3,8 +3,8 @@ package me.xx2bab.polyfill.jar
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.scope.getRegularFiles
 import com.android.build.gradle.internal.tasks.MergeJavaResourceTask
-import com.android.build.gradle.internal.tasks.ProcessJavaResTask
 import me.xx2bab.polyfill.getCapitalizedName
+import me.xx2bab.polyfill.getTaskContainer
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
@@ -28,22 +28,14 @@ class JavaResourceMergePreHookConfigureAction(
     override val data: Provider<List<RegularFile>> = project.objects.listProperty<RegularFile>() // A placeholder
 
     override fun orchestrate() {
+        val variantCapitalizedName = variant.getCapitalizedName()
         project.afterEvaluate {
-            val variantCapitalizedName = variant.getCapitalizedName()
             val mergeTask = project.tasks.withType<MergeJavaResourceTask>().first {
                 it.name.contains(variantCapitalizedName)
                         && !it.name.contains("test", true)
             }
 
-
             // Setup Data
-//            val subProjectsJavaResList = appVariant.getApplicationVariantImpl().variantDependencies
-//                .getArtifactFileCollection(
-//                    AndroidArtifacts.ConsumedConfigType.RUNTIME_CLASSPATH,
-//                    AndroidArtifacts.ArtifactScope.PROJECT,
-//                    AndroidArtifacts.ArtifactType.JAVA_RES
-//                )
-//                .getRegularFiles(project.rootProject.layout.projectDirectory)
             val subProjectsJavaResList = mergeTask.subProjectJavaRes
                 ?.getRegularFiles(project.rootProject.layout.projectDirectory)
                 ?: project.objects.listProperty()
@@ -56,26 +48,19 @@ class JavaResourceMergePreHookConfigureAction(
 
             // Setup dependencies
             // Left flank
-            project.rootProject.subprojects {
-                val subProject = this
-                if (subProject !== project) {
-                    subProject.tasks.whenTaskAdded {
-                        val targetTask = this
-                        if (targetTask is ProcessJavaResTask
-                            && targetTask.name.contains(variantCapitalizedName)
-                            && !targetTask.name.contains("test", true)
-                        ) {
-                            headTaskProvider.configure {
-                                dependsOn(targetTask)
-                            }
-                        }
-                    }
-                }
+            headTaskProvider.configure {
+                dependsOn(appVariant.getTaskContainer().preBuildTask) // For current module
+                // Initially it should use the Provider as the dependency directly,
+                // however some dependencies were lost during the transformation from `FileCollection` to `Provider`.
+                // dependsOn(data)
+                dependsOn(mergeTask.subProjectJavaRes)
+                dependsOn(mergeTask.externalLibJavaRes)
             }
 
             // Right flank
             mergeTask.dependsOn(lazyTailTaskProvider())
         }
+
     }
 
 
