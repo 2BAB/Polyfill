@@ -42,8 +42,8 @@ class JavaResourceMergePreHookConfigureAction(
             val externalDepJavaResList = mergeTask.externalLibJavaRes
                 ?.getRegularFiles(project.rootProject.layout.projectDirectory)
                 ?: project.objects.listProperty()
-            subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
-            (data as ListProperty<RegularFile>).set(subProjectsJavaResList)
+            val all = subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
+            (data as ListProperty<RegularFile>).set(all)
 
 
             // Setup dependencies
