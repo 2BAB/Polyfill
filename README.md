@@ -20,7 +20,7 @@ If you are not familiar with new Artifact/Variant API of AGP (since 7.0), please
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.1.2")
-    implementation("me.2bab:polyfill:0.6.0")  <--
+    implementation("me.2bab:polyfill:0.6.2")  <--
 }
 ```
 
