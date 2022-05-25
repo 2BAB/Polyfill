@@ -65,7 +65,7 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun manifestMergePreHookConfigureActionTest_TransformSuccessfully() {
-        val out = File("${testProjectJsonOutputPath}/all-manifests-by-preUpdateDebugManifest2.json")
+        val out = File("${testProjectJsonOutputPath}/all-manifests-by-preHookManifestTaskAction2.json")
         Assert.assertTrue(out.exists())
         val list = JSON.parseObject(out.readText(), object : TypeReference<List<String>>() {})
         Assert.assertTrue(list.any { it.contains("appcompat") })
@@ -76,7 +76,7 @@ class PolyfillLibraryFunctionTest {
         val fileFromGetMethod = File("${testProjectJsonOutputPath}/all-manifests-by-getAllInputManifestsForDebug.json")
         Assert.assertTrue(fileFromGetMethod.exists())
         val getTaskDeps = File("${testProjectJsonOutputPath}/get-all-input-manifests-for-debug-task-deps.txt")
-        Assert.assertEquals(getTaskDeps.readText(), "preUpdateDebugManifest2")
+        Assert.assertEquals(getTaskDeps.readText(), "processDebugManifest")
     }
 
     @Test
@@ -96,7 +96,7 @@ class PolyfillLibraryFunctionTest {
 
     @Test
     fun javaResourceMergePreHookConfigureAction_TransformSuccessfully() {
-        val out = File("${testProjectJsonOutputPath}/all-java-res-by-preUpdateDebugJavaResources.json")
+        val out = File("${testProjectJsonOutputPath}/all-java-res-by-preUpdateJavaResTaskAction.json")
         Assert.assertTrue(out.exists())
         Assert.assertTrue(out.readText().contains("android-lib/build/intermediates/library_java_res/debug/res.jar"))
     }

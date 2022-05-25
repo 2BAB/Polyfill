@@ -2,6 +2,7 @@ package me.xx2bab.polyfill.task
 
 import com.android.build.api.variant.Variant
 import me.xx2bab.polyfill.ArtifactsRepository
+import me.xx2bab.polyfill.DependentAction
 import me.xx2bab.polyfill.PolyfilledMultipleArtifact
 import me.xx2bab.polyfill.PolyfilledSingleArtifact
 import me.xx2bab.polyfill.artifact.ArtifactContainer
@@ -57,27 +58,26 @@ import org.gradle.api.tasks.TaskProvider
  *
  * We have made it clear for scenarios and how to retrieve *Input Data* on per section, now it comes
  * to *Task Dependencies*. The pipeline of InPlaceUpdateTasks can be easily set up using linked-list
- * approach, check the impl of [ArtifactContainer.transform]. However, if there is no transformation
+ * approach, check the impl of [ArtifactContainer.inPlaceUpdate]. However, if there is no transformation
  * tasks that were set from external, Get(All) tasks should inherit *Input Data* from data source directly.
  * To keep neat of the code base, we can leverage a common trick when solve linked-list problem - virtual head.
- * Thus, [headTaskProvider] is designed to be passed at all times, while [lazyTailTaskProvider] is a lazy
+ * Thus, [dependentTask] is designed to be passed at all times, while [lazyTailTaskProvider] is a lazy
  * variable that consumed later when the chain is ready.
  *
  * [orchestrate] is designed to schedule above two [TaskProvider]s. To be noticed, [orchestrate] is executed
- * immediately once the [PincerTaskConfiguration] instance is created, at this moment many other dependencies
+ * immediately once the [TaskExtendConfiguration] instance is created, at this moment many other dependencies
  * are not ready to interact with, developers who implement this function should put the logic into a post
  * Gradle lifecycle callback, such as [Project.afterEvaluate] / [TaskCollection.whenTaskAdded].
  *
  * In a nutshell, don't forget to set up both left/right flank of tasks -> a pincer-like configuration.
  *
- * @param headTaskProvider Head [TaskProvider] of InPlaceUpdateTask chain.
+ * @param dependentTask Head [TaskProvider] of InPlaceUpdateTask chain.
  * @param lazyTailTaskProvider Tail [TaskProvider] of InPlaceUpdateTask chain.
  */
-abstract class PincerTaskConfiguration<CreationDataT>(
+abstract class TaskExtendConfiguration<CreationDataT>(
     val project: Project,
     val variant: Variant,
-    val headTaskProvider: TaskProvider<*>,
-    var lazyTailTaskProvider: () -> TaskProvider<*>?
+    var actionList: () -> List<DependentAction<CreationDataT>>
 ) {
     /**
      * To retrieve data from AGP internal components and export it as an Artifact
@@ -87,30 +87,28 @@ abstract class PincerTaskConfiguration<CreationDataT>(
     abstract val data: Provider<CreationDataT>
 
     /**
-     * To set up task dependencies.
+     * To set up task/action dependencies or initialize data lazily.
      */
     abstract fun orchestrate()
 
 }
 
 /**
- *  A dedicated [PincerTaskConfiguration] for configuring [PolyfilledSingleArtifact].
+ *  A dedicated [TaskExtendConfiguration] for configuring [PolyfilledSingleArtifact].
  *  It provides data in `Provider<[FileTypeT]>` type.
  */
 abstract class SingleArtifactPincerTaskConfiguration<FileTypeT : FileSystemLocation>(
     project: Project,
     variant: Variant,
-    dummyHeadTaskProvider: TaskProvider<*>,
-    lazyLastTaskProvider: () -> TaskProvider<*>?
-) : PincerTaskConfiguration<FileTypeT>(project, variant, dummyHeadTaskProvider, lazyLastTaskProvider)
+    actionList: () -> List<DependentAction<FileTypeT>>
+) : TaskExtendConfiguration<FileTypeT>(project, variant, actionList)
 
 /**
- * A dedicated [PincerTaskConfiguration] for configuring [PolyfilledMultipleArtifact].
+ * A dedicated [TaskExtendConfiguration] for configuring [PolyfilledMultipleArtifact].
  * It provides data in `Provider<List<[FileTypeT]>>` type.
  */
 abstract class MultipleArtifactPincerTaskConfiguration<FileTypeT : FileSystemLocation>(
     project: Project,
     variant: Variant,
-    dummyHeadTaskProvider: TaskProvider<*>,
-    lazyLastTaskProvider: () -> TaskProvider<*>?
-) : PincerTaskConfiguration<List<FileTypeT>>(project, variant, dummyHeadTaskProvider, lazyLastTaskProvider)
+    actionList: () -> List<DependentAction<List<FileTypeT>>>
+) : TaskExtendConfiguration<List<FileTypeT>>(project, variant, actionList)
