@@ -1,13 +1,21 @@
 [versions]
 kotlinVer = "1.6.21"
-# 7.3.0-beta01
-agpVer = "7.1.3"
+buildConfigVer = "3.0.3"
+
+agpVer = "7.2.1"
+agpPatchIgnoredVer = "7.2.0" # To be used by backport version matching
+agpBackportVer = "7.1.3"
+agpBackportPatchIgnoredVer = "7.1.0" # To be used by backport version matching, e.g. apply backport patches when (7.1.0 <= ver < 7.2.0)
+agpNextBateVer = "7.3.0-beta01"
+
 # 30.2.0-beta03
 androidToolVer = "30.2.0"
+
 mockitoVer = "3.9.0"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agpVer" }
+android-gradle-backport = { module = "com.android.tools.build:gradle", version.ref = "agpBackportVer" }
 android-tools-sdkcommon = { module = "com.android.tools:sdk-common", version.ref = "androidToolVer" }
 android-tools-common = { module = "com.android.tools:common", version.ref = "androidToolVer" }
 android-tools-sdklib = { module = "com.android.tools:sdklib", version.ref = "androidToolVer" }

@@ -17,6 +17,7 @@ dependencies {
     implementation(deps.fastJson)
 
     compileOnly(deps.android.gradle.plugin)
+    compileOnly(deps.android.tools.sdklib)
     implementation(projects.polyfill)
 }
 

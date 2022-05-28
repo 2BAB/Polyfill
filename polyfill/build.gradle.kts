@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    implementation(projects.polyfillBackport)
     implementation(projects.androidManifestParser)
     implementation(projects.androidArscParser)
 
