@@ -90,6 +90,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-
 
+      - name: Prepare environment
+        env:
+          SIGNING_SECRET_KEY_CONTENT: ${{ secrets.SIGNING_SECRET_KEY_CONTENT }}
+          SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
+        run: |
+          git fetch --unshallow
+          sudo bash -c "echo '$SIGNING_SECRET_KEY_CONTENT' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
+
       - name: Build & Release all Polyfill libraries to MavenLocal
         run: chmod +x ./publish_to_local.sh | ./publish_to_local.sh
         env:
