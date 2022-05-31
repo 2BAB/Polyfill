@@ -21,7 +21,7 @@ abstract class BackportPatch<Result> {
         val targetVer = SemanticVersionLite(AGP_PATCH_IGNORED_VERSION)
         val backportVer = SemanticVersionLite(AGP_BACKPORT_PATCH_IGNORED_VERSION)
         val currVer = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-        return if (backportVer >= currVer && backportVer < targetVer) {
+        return if (currVer >= backportVer && currVer < targetVer) {
             apply()
         } else { // backportVer > targetVer
             action.invoke()
