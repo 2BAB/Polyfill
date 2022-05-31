@@ -1,10 +1,11 @@
 package me.xx2bab.polyfill
 
+import org.gradle.api.Task
 import org.gradle.api.provider.Provider
 
-interface DependentAction<ArtifactType> {
+interface PolyfillAction<ArtifactType> {
 
-    fun getDependentFiles(): List<Any>
+    fun onTaskConfigure(task: Task)
 
     fun onExecute(artifact: Provider<ArtifactType>)
 

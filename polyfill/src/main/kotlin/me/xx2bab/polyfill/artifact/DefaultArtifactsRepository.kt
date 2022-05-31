@@ -59,14 +59,14 @@ abstract class DefaultArtifactsRepository<PluginTypeT : PolyfilledPluginType>(
     ): Provider<List<FileTypeT>> = getMultipleArtifactContainer(type).get()
 
     override fun <FileTypeT : FileSystemLocation> use(
-        action: DependentAction<FileTypeT>,
+        action: PolyfillAction<FileTypeT>,
         toInPlaceUpdate: PolyfilledSingleArtifact<FileTypeT, PluginTypeT>
     ) {
         getSingleArtifactContainer(toInPlaceUpdate).inPlaceUpdate(action)
     }
 
     override fun <FileTypeT : FileSystemLocation> use(
-        action: DependentAction<List<FileTypeT>>,
+        action: PolyfillAction<List<FileTypeT>>,
         toInPlaceUpdate: PolyfilledMultipleArtifact<FileTypeT, PluginTypeT>
     ) {
         getMultipleArtifactContainer(toInPlaceUpdate).inPlaceUpdate(action)

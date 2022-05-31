@@ -2,7 +2,7 @@ package me.xx2bab.polyfill.manifest
 
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
-import me.xx2bab.polyfill.DependentAction
+import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getCapitalizedName
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
@@ -17,7 +17,7 @@ import org.gradle.api.provider.Provider
 class ManifestMergePreHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
-    actionList: () -> List<DependentAction<List<RegularFile>>>
+    actionList: () -> List<PolyfillAction<List<RegularFile>>>
 ) : MultipleArtifactPincerTaskConfiguration<RegularFile>
     (project, appVariant, actionList) {
 
@@ -45,7 +45,7 @@ class ManifestMergePreHookConfiguration(
             val targetTask = this
             if (this.name == "process${variantCapitalizedName}MainManifest") {
                 actionList().forEachIndexed { index, action ->
-                    targetTask.inputs.files(action.getDependentFiles())
+                    action.onTaskConfigure(targetTask)
                     targetTask.doFirst("ManifestMergePreHookByPolyfill$index") {
                         action.onExecute(data)
                     }

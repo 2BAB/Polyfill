@@ -1,7 +1,7 @@
 package me.xx2bab.polyfill.res
 
 import com.android.build.api.variant.ApplicationVariant
-import me.xx2bab.polyfill.DependentAction
+import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.ResourceMergePreHookPatch
 import me.xx2bab.polyfill.getTaskContainer
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
@@ -17,7 +17,7 @@ import java.io.File
 class ResourceMergePreHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
-    actionList: () -> List<DependentAction<List<Directory>>>
+    actionList: () -> List<PolyfillAction<List<Directory>>>
 ) : MultipleArtifactPincerTaskConfiguration<Directory>(
     project, appVariant, actionList
 ) {
@@ -52,10 +52,10 @@ class ResourceMergePreHookConfiguration(
     override fun orchestrate() {
         project.afterEvaluate {
             // Right flank
-            val mergeTask = appVariant.getTaskContainer().mergeResourcesTask
+            val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
             actionList().forEachIndexed { index, action ->
-                mergeTask.configure {
-                    inputs.files(action.getDependentFiles())
+                mergeTaskProvider.configure {
+                    action.onTaskConfigure(this)
                     doFirst("ResourceMergePreHookByPolyfill$index") {
                         action.onExecute(data)
                     }

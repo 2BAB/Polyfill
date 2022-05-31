@@ -1,7 +1,7 @@
 package me.xx2bab.polyfill.artifact
 
 import com.android.build.api.variant.Variant
-import me.xx2bab.polyfill.DependentAction
+import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.PolyfillExtension
 import me.xx2bab.polyfill.PolyfilledArtifact
 import me.xx2bab.polyfill.task.TaskExtendConfiguration
@@ -21,7 +21,7 @@ abstract class ArtifactContainer<CreationDataT>(
 ) {
 
     private val taskExtConfig: TaskExtendConfiguration<CreationDataT>
-    private val actionList: MutableList<DependentAction<CreationDataT>> = mutableListOf()
+    private val actionList: MutableList<PolyfillAction<CreationDataT>> = mutableListOf()
 
     init {
         val configureAction = map[artifactType]!! as (KClass<out TaskExtendConfiguration<CreationDataT>>)
@@ -35,7 +35,7 @@ abstract class ArtifactContainer<CreationDataT>(
         return taskExtConfig.data
     }
 
-    fun inPlaceUpdate(action: DependentAction<CreationDataT>) {
+    fun inPlaceUpdate(action: PolyfillAction<CreationDataT>) {
         actionList.add(action)
     }
 

@@ -3,7 +3,7 @@ package me.xx2bab.polyfill.jar
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.scope.getRegularFiles
 import com.android.build.gradle.internal.tasks.MergeJavaResourceTask
-import me.xx2bab.polyfill.DependentAction
+import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getCapitalizedName
 import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
 import org.gradle.api.Project
@@ -20,7 +20,7 @@ import org.gradle.kotlin.dsl.withType
 class JavaResourceMergePreHookConfiguration(
     project: Project,
     appVariant: ApplicationVariant,
-    actionList: () -> List<DependentAction<List<RegularFile>>>
+    actionList: () -> List<PolyfillAction<List<RegularFile>>>
 ) : MultipleArtifactPincerTaskConfiguration<RegularFile>(project, appVariant, actionList) {
 
     override val data: Provider<List<RegularFile>> = project.objects.listProperty<RegularFile>() // A placeholder
@@ -46,7 +46,7 @@ class JavaResourceMergePreHookConfiguration(
 
             // Setup in-place-update
             actionList().forEachIndexed { index, action ->
-                mergeTask.inputs.files(action.getDependentFiles())
+                action.onTaskConfigure(mergeTask)
                 mergeTask.doFirst("JavaResourceMergePreHookByPolyfill$index") {
                     action.onExecute(data)
                 }

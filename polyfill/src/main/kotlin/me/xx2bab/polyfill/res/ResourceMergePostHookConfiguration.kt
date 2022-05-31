@@ -2,7 +2,7 @@ package me.xx2bab.polyfill.res
 
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.scope.InternalArtifactType
-import me.xx2bab.polyfill.DependentAction
+import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getTaskContainer
 import me.xx2bab.polyfill.task.SingleArtifactPincerTaskConfiguration
@@ -17,7 +17,7 @@ import org.gradle.api.provider.Provider
 class ResourceMergePostHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
-    actionList: () -> List<DependentAction<Directory>>
+    actionList: () -> List<PolyfillAction<Directory>>
 ) : SingleArtifactPincerTaskConfiguration<Directory>(project, appVariant, actionList) {
 
     override val data: Provider<Directory>
@@ -28,7 +28,7 @@ class ResourceMergePostHookConfiguration(
             val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
             actionList().forEachIndexed { index, action ->
                 mergeTaskProvider.configure {
-                    inputs.files(action.getDependentFiles())
+                    action.onTaskConfigure(this)
                     doLast("ResourceMergePostHookByPolyfill$index") {
                         action.onExecute(data)
                     }

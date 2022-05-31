@@ -1,7 +1,6 @@
 package me.xx2bab.polyfill
 
 import com.android.build.api.artifact.Artifacts
-import com.android.build.api.artifact.TaskBasedOperation
 import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.provider.Provider
 
@@ -45,13 +44,11 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
     ): Provider<List<FileTypeT>>
 
     /**
-     * The polyfill version of [Artifacts.use], it also combines the [TaskBasedOperation] flow.
-     * It's not feasible for external plugins to provide `toTransform()` `toCreate()` `toAppend()`
+     * The polyfill version of [Artifacts.use] that update artifacts within a TaskAction.
+     * It's not feasible for external plugins to provide `toTransform()` `toCreate()` `toAppend()` tasks
      * since 3rd party developers can not modify the internal data flow of AGP tasks. Instead of the
-     * original pipeline, we could build a simple data flow which modifies files in place to make it
-     * easier for plugin authors to work on - that is about `toInPlaceUpdate`. We continue leverage
-     * the classic `dependsOn()` to orchestrate our flow and make sure [get] [getAll] related tasks are
-     * scheduled after `toInPlaceUpdate` tasks.
+     * original pipeline, we could build a simple data flow which modifies files in place by TaskAction to make it
+     * easier for plugin authors to work on - that is about `toInPlaceUpdate`.
      *
      * ``` Kotlin
      * val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
@@ -67,15 +64,18 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
      *
      * ...
      *
-     * abstract class PreUpdateManifestsTask : DefaultTask() {
-     *     @get:InputFiles
-     *     abstract val beforeMergeInputs: ListProperty<RegularFile>
-
-     *     @TaskAction
-     *     fun beforeMerge() {
-     *         beforeMergeInputs.get().forEach {
-     *             val path = it.asFile.absolutePath
-     *             ...
+     * class PreUpdateManifestsTask(
+     *     private val buildDir: File,
+     *     private val id: String
+     * ) : PolyfillAction<List<RegularFile>> {
+     *     override fun onTaskConfigure(task: Task) {
+     *     }
+     *
+     *     override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
+     *         val manifestPathsOutput = getOutputFile(buildDir, "all-manifests-by-${id}.json")
+     *         manifestPathsOutput.createNewFile()
+     *         beforeMergeInputs.get().let { files ->
+     *             manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
      *         }
      *     }
      * }
@@ -85,7 +85,7 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
      * @param toInPlaceUpdate The target artifact type, must be the internal object of [PolyfilledSingleArtifact].
      */
     fun <FileTypeT : FileSystemLocation> use(
-        action: DependentAction<FileTypeT>,
+        action: PolyfillAction<FileTypeT>,
         toInPlaceUpdate: PolyfilledSingleArtifact<FileTypeT, PluginTypeT>
     )
 
@@ -96,7 +96,7 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
      * @param toInPlaceUpdate The target artifact type, must be the internal object of [PolyfilledMultipleArtifact].
      */
     fun <FileTypeT : FileSystemLocation> use(
-        action: DependentAction<List<FileTypeT>>,
+        action: PolyfillAction<List<FileTypeT>>,
         toInPlaceUpdate: PolyfilledMultipleArtifact<FileTypeT, PluginTypeT>
     )
 
