@@ -99,7 +99,7 @@ project.extensions.getByType<PolyfillExtension>()
 ```
 
 
-Check more in `./test-plugin` and `./polyfill/src/functionalTest`.
+Check more in `./polyfill-test-plugin` and `./polyfill/src/functionalTest`.
 
 
 

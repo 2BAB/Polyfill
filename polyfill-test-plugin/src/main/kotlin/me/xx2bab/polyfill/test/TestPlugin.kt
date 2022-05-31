@@ -3,14 +3,17 @@ package me.xx2bab.polyfill.test
 import com.alibaba.fastjson.JSON
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
+import com.android.sdklib.BuildToolInfo
 import me.xx2bab.polyfill.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -31,6 +34,17 @@ class TestPlugin : Plugin<Project> {
         val buildDir = project.rootProject.buildDir
         val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
         androidExtension.onVariants { variant ->
+            // BuildToolInfo
+            val buildToolInfo = variant.getBuildToolInfo(project).get()
+            val aapt2PathGenTask = project.tasks.register<WorkingWithAapt2Task>(
+                "writeAapt2PathFor${variant.name.capitalize()}") {
+                aapt2 = buildToolInfo.getPath(BuildToolInfo.PathId.AAPT2)
+                this.buildDir = buildDir
+            }
+            project.afterEvaluate {
+                variant.getTaskContainer().assembleTask.dependsOn(aapt2PathGenTask)
+            }
+
             // ALL_MANIFESTS
             val printManifestTask = project.tasks.register<PrintAllManifestsTask>(
                 "getAllInputManifestsFor${variant.name.capitalize()}"
@@ -86,6 +100,22 @@ class TestPlugin : Plugin<Project> {
     }
 
 
+    abstract class WorkingWithAapt2Task: DefaultTask() {
+        @get:Input
+        var aapt2: String = ""
+
+        @get:Internal
+        var buildDir: File? = null
+
+        @TaskAction
+        fun beforeMerge() {
+            val aapt2PathOutput = getOutputFile(buildDir!!, "aapt2-path.txt")
+            aapt2PathOutput.createNewFile()
+            aapt2PathOutput.writeText(aapt2)
+        }
+    }
+
+
     abstract class PrintAllManifestsTask: DefaultTask() {
         @get:InputFiles
         abstract val beforeMergeInputs: ListProperty<RegularFile>
@@ -107,9 +137,8 @@ class TestPlugin : Plugin<Project> {
     class PreUpdateManifestsTask(
         private val buildDir: File,
         private val id: String
-    ) : DependentAction<List<RegularFile>> {
-        override fun getDependentFiles(): List<Any> {
-            return emptyList()
+    ) : PolyfillAction<List<RegularFile>> {
+        override fun onTaskConfigure(task: Task) {
         }
 
         override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
@@ -124,9 +153,8 @@ class TestPlugin : Plugin<Project> {
     class PostUpdateResourceTask(
         private val buildDir: File,
         private val beforeMergeInputs: Provider<List<Directory>>
-    ) : DependentAction<Directory> {
-        override fun getDependentFiles(): List<Any> {
-            return listOf(beforeMergeInputs)
+    ) : PolyfillAction<Directory> {
+        override fun onTaskConfigure(task: Task) {
         }
 
         override fun onExecute(compiledFilesDir: Provider<Directory>) {
@@ -144,9 +172,8 @@ class TestPlugin : Plugin<Project> {
     class PreUpdateJavaResourcesTask(
         private val buildDir: File,
         private val id: String
-    ) : DependentAction<List<RegularFile>> {
-        override fun getDependentFiles(): List<Any> {
-            return emptyList()
+    ) : PolyfillAction<List<RegularFile>> {
+        override fun onTaskConfigure(task: Task) {
         }
 
         override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {

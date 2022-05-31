@@ -1,6 +1,7 @@
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
+    id("me.xx2bab.polyfill.buildscript.maven-central-publish")
 }
 
 repositories {

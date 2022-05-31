@@ -99,7 +99,7 @@ project.extensions.getByType<PolyfillExtension>()
     .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
 ```
 
-更多信息请查看 `./test-plugin` 和`./polyfill/src/functionalTest`.
+更多信息请查看 `./polyfill-test-plugin` 和`./polyfill/src/functionalTest`.
 
 
 ## 为什么需要 Polyfill？

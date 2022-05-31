@@ -1,9 +1,12 @@
 rootProject.name = "polyfill-func-test-project"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-pluginManagement {
+val externalDependencyBaseDir = extra["externalDependencyBaseDir"].toString()
+val enabledCompositionBuild = true
 
-    val versions = file("../deps.versions.toml").readText()
+pluginManagement {
+    extra["externalDependencyBaseDir"] = "../"
+    val versions = file(extra["externalDependencyBaseDir"].toString() + "deps.versions.toml").readText()
     val regexPlaceHolder = "%s\\s\\=\\s\\\"([A-Za-z0-9\\.\\-]+)\\\""
     val getVersion = { s: String -> regexPlaceHolder.format(s).toRegex().find(versions)!!.groupValues[1] }
 
@@ -16,6 +19,7 @@ pluginManagement {
         mavenCentral()
         google()
         gradlePluginPortal()
+        mavenLocal()
     }
     resolutionStrategy {
         eachPlugin {
@@ -33,7 +37,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("deps") {
-            from(files("../deps.versions.toml"))
+            from(files(externalDependencyBaseDir + "deps.versions.toml"))
         }
     }
 }
@@ -41,11 +45,13 @@ dependencyResolutionManagement {
 // Main test app
 include(":app", ":android-lib")
 
-// Substitute the test plugin with a project(":test-plugin"),
+// Substitute the test plugin with a project(":polyfill-test-plugin"),
 // also check ./build.gradle.kts
-includeBuild("../") {
-    dependencySubstitution {
-        substitute(module("me.2bab:polyfill-test-plugin"))
-            .with(project(":test-plugin"))
+if (enabledCompositionBuild) {
+    includeBuild(externalDependencyBaseDir) {
+        dependencySubstitution {
+            substitute(module("me.2bab:polyfill-test-plugin"))
+                .with(project(":polyfill-test-plugin"))
+        }
     }
 }
