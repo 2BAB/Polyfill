@@ -90,4 +90,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-
       - run: |
+          chmod +x ./publish_to_local.sh | ./publish_to_local.sh
           ./gradlew functionalTest

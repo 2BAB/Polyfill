@@ -29,16 +29,18 @@ class SampleProjectTest {
         }
 
         private fun buildTestProject(agpVer: String) {
-            println("Publishing libraries to MavenLocal...")
-            ("./gradlew" +
-                    " :android-arsc-parser:publishAllPublicationsToMyMavenlocalRepository" +
-                    " :android-manifest-parser:publishAllPublicationsToMyMavenlocalRepository" +
-                    " :polyfill-backport:publishAllPublicationsToMyMavenlocalRepository" +
-                    " :polyfill:publishAllPublicationsToMyMavenlocalRepository" +
-                    " :polyfill-test-plugin:publishAllPublicationsToMyMavenlocalRepository" +
-                    " --stacktrace"
-                    ).runCommand(File("../"))
-            println("All libraries published.")
+            if (File("../local.properties").exists()) {
+                println("Publishing libraries to MavenLocal...")
+                ("./gradlew" +
+                        " :android-arsc-parser:publishAllPublicationsToMyMavenlocalRepository" +
+                        " :android-manifest-parser:publishAllPublicationsToMyMavenlocalRepository" +
+                        " :polyfill-backport:publishAllPublicationsToMyMavenlocalRepository" +
+                        " :polyfill:publishAllPublicationsToMyMavenlocalRepository" +
+                        " :polyfill-test-plugin:publishAllPublicationsToMyMavenlocalRepository" +
+                        " --stacktrace"
+                        ).runCommand(File("../"))
+                println("All libraries published.")
+            }
 
             println(
                 "Copying project for AGP [${agpVer}] from ${
