@@ -17,14 +17,12 @@ class SampleProjectTest {
 
         private const val baseTestProjectPath = "../test-app"
         private const val testProjectJsonOutputPath = "build/functionTestOutput"
-        private const val testProjectAppOutputPath = "app/build/outputs/apk/debug"
-        private const val testProjectAppUnzipPath = "app/build/outputs/apk/debug/unzipped"
 
 
         @BeforeAll
         @JvmStatic
         fun setup() {
-            // TODO: run each of them in parallel (will require using remote dependency)
+            // TODO: run each of them in parallel (will require using released dependency)
             agpVerProvider().forEach { buildTestProject(it) }
         }
 
