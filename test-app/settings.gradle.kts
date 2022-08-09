@@ -16,10 +16,9 @@ pluginManagement {
         kotlin("android") version getVersion("kotlinVer")  apply false
     }
     repositories {
-        mavenCentral()
+        mavenLocal()
         google()
         gradlePluginPortal()
-        mavenLocal()
     }
     resolutionStrategy {
         eachPlugin {
@@ -31,9 +30,9 @@ pluginManagement {
 }
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
-        mavenLocal()
     }
     versionCatalogs {
         create("deps") {

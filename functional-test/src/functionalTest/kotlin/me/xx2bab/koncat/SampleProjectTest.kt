@@ -109,6 +109,7 @@ class SampleProjectTest {
     }
 
 
+
     @ParameterizedTest
     @MethodSource("agpVerProvider")
     fun buildToolInfoTest_getAAPT2Successfully(agpVer: String) {

@@ -24,5 +24,5 @@ android {
 }
 
 dependencies {
-    implementation(deps.kotlin.std)
+
 }
