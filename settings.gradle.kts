@@ -9,6 +9,8 @@ pluginManagement {
 
     plugins {
         kotlin("jvm") version getVersion("kotlinVer")
+        id("com.github.gmazzo.buildconfig") version getVersion("buildConfigVer") apply false
+        kotlin("plugin.serialization") version getVersion("kotlinVer") apply false
     }
     repositories {
         mavenCentral()
@@ -30,6 +32,8 @@ dependencyResolutionManagement {
 }
 
 include(":polyfill")
+include(":polyfill-backport")
 include(":android-arsc-parser") // resource.arsc parser
 include(":android-manifest-parser") // AndroidManifest.xml parser
-include(":test-plugin") // A test plugin for testing polyfill function
+include(":polyfill-test-plugin") // A test plugin for testing polyfill function
+include(":functional-test")

@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to arrayOf("*.jar"))))
+    implementation(projects.polyfillBackport)
     implementation(projects.androidManifestParser)
     implementation(projects.androidArscParser)
 
@@ -21,16 +22,6 @@ dependencies {
     compileOnly(deps.android.tools.common)
     compileOnly(deps.android.tools.sdkcommon)
     compileOnly(deps.android.tools.sdklib)
-
-    testImplementation(gradleTestKit())
-    testImplementation(deps.junit)
-    testImplementation(deps.mockito)
-    testImplementation(deps.mockitoInline)
-    testImplementation(deps.fastJson)
-    testImplementation(deps.zip4j)
-
-    // For functionalTestImplementation
-    // please refer to the functional-test-setup script
 }
 
 java {

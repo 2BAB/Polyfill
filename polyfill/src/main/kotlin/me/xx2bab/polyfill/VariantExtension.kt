@@ -9,10 +9,13 @@ import com.android.build.api.variant.LibraryVariant
 import com.android.build.api.variant.Variant
 import com.android.build.api.variant.impl.ApplicationVariantImpl
 import com.android.build.api.variant.impl.LibraryVariantImpl
-import com.android.build.gradle.internal.scope.GlobalScope
+import com.android.build.gradle.internal.plugins.BasePlugin
 import com.android.build.gradle.internal.scope.MutableTaskContainer
+import com.android.build.gradle.internal.services.VersionedSdkLoaderService
 import com.android.sdklib.BuildToolInfo
+import me.xx2bab.polyfill.tools.ReflectionKit
 import me.xx2bab.polyfill.tools.SemanticVersionLite
+import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.configurationcache.extensions.capitalized
@@ -34,23 +37,29 @@ fun Variant.getAgpVersion() = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_
 
 /**
  * To get BuildToolInfo instance provider, later you can use like below to retrieve some tools' information.
- * `buildToolInfoProvider.get().getPath(BuildToolInfo.PathId.AAPT2)`
+ * e.g. `buildToolInfoProvider.get().getPath(BuildToolInfo.PathId.AAPT2)`
  *
  * @return [BuildToolInfo] wrapped by [Provider].
  */
-fun Variant.getBuildToolInfo(): Provider<BuildToolInfo> {
-    val globalScope = when (this) {
-        is ApplicationVariant -> {
-            this.getGlobalScope()
+fun Variant.getBuildToolInfo(project: Project): Provider<BuildToolInfo> {
+    return BuildToolInfoPatch(this).applyOrDefault {
+        val plugin = when (this) {
+            is ApplicationVariant -> {
+                project.plugins.getPlugin(com.android.build.gradle.internal.plugins.AppPlugin::class.java)
+            }
+            is LibraryVariant -> {
+                project.plugins.getPlugin(com.android.build.gradle.internal.plugins.LibraryPlugin::class.java)
+            }
+            else -> {
+                throw UnsupportedOperationException("Can not find corresponding plugin associated to $this.")
+            }
         }
-        is LibraryVariant -> {
-            this.getGlobalScope()
-        }
-        else -> {
-            throw UnsupportedOperationException("Can not convert $this to either ApplicationVariantImpl or LibraryVariantImpl.")
-        }
+        val sdkLoaderService = ReflectionKit.getField(
+            BasePlugin::class.java,
+            plugin, "versionedSdkLoaderService"
+        ) as VersionedSdkLoaderService
+        sdkLoaderService.versionedSdkLoader.get().buildToolInfoProvider
     }
-    return globalScope.versionedSdkLoader.flatMap { it.buildToolInfoProvider }
 }
 
 
@@ -87,14 +96,6 @@ fun ApplicationVariant.getApplicationVariantImpl(): ApplicationVariantImpl {
  */
 fun ApplicationVariant.getApkCreationConfigImpl() = getApplicationVariantImpl().delegate
 
-/**
- * [GlobalScope] contains some build services / data providers. It's a supplementary entry
- * to our hooks, because some of its scope has been replaced by other components. This is a
- * common object that can be seen in all plugins.
- *
- * @return [GlobalScope]
- */
-fun ApplicationVariant.getGlobalScope() = getApkCreationConfigImpl().globalScope
 
 /**
  * To access partial common used AGP [TaskProvider]s.
@@ -125,7 +126,3 @@ fun LibraryVariant.getLibraryVariantImpl(): LibraryVariantImpl {
         }
     }
 }
-
-//fun LibraryVariant.getLibCreationConfigImpl() = getLibraryVariantImpl()
-
-fun LibraryVariant.getGlobalScope() = getLibraryVariantImpl().globalScope

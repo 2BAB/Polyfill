@@ -1,13 +1,8 @@
 package me.xx2bab.polyfill
 
 import com.android.build.api.artifact.Artifacts
-import com.android.build.api.artifact.TaskBasedOperation
-import org.gradle.api.Task
 import org.gradle.api.file.FileSystemLocation
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskProvider
 
 /**
  * The polyfill version of [Artifacts], to access more intermediate artifacts
@@ -49,13 +44,11 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
     ): Provider<List<FileTypeT>>
 
     /**
-     * The polyfill version of [Artifacts.use], it also combines the [TaskBasedOperation] flow.
-     * It's not feasible for external plugins to provide `toTransform()` `toCreate()` `toAppend()`
+     * The polyfill version of [Artifacts.use] that update artifacts within a TaskAction.
+     * It's not feasible for external plugins to provide `toTransform()` `toCreate()` `toAppend()` tasks
      * since 3rd party developers can not modify the internal data flow of AGP tasks. Instead of the
-     * original pipeline, we could build a simple data flow which modifies files in place to make it
-     * easier for plugin authors to work on - that is about `toInPlaceUpdate`. We continue leverage
-     * the classic `dependsOn()` to orchestrate our flow and make sure [get] [getAll] related tasks are
-     * scheduled after `toInPlaceUpdate` tasks.
+     * original pipeline, we could build a simple data flow which modifies files in place by TaskAction to make it
+     * easier for plugin authors to work on - that is about `toInPlaceUpdate`.
      *
      * ``` Kotlin
      * val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
@@ -71,40 +64,39 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
      *
      * ...
      *
-     * abstract class PreUpdateManifestsTask : DefaultTask() {
-     *     @get:InputFiles
-     *     abstract val beforeMergeInputs: ListProperty<RegularFile>
-
-     *     @TaskAction
-     *     fun beforeMerge() {
-     *         beforeMergeInputs.get().forEach {
-     *             val path = it.asFile.absolutePath
-     *             ...
+     * class PreUpdateManifestsTask(
+     *     private val buildDir: File,
+     *     private val id: String
+     * ) : PolyfillAction<List<RegularFile>> {
+     *     override fun onTaskConfigure(task: Task) {
+     *     }
+     *
+     *     override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
+     *         val manifestPathsOutput = getOutputFile(buildDir, "all-manifests-by-${id}.json")
+     *         manifestPathsOutput.createNewFile()
+     *         beforeMergeInputs.get().let { files ->
+     *             manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
      *         }
      *     }
      * }
      * ```
      *
-     * @param taskProvider The task provider which would like to modify/update the target artifact.
-     * @param wiredWith The property of the Task input that will be used to set the target artifact.
+     * @param action The Action which will be added to a target task to modify/update target artifact.
      * @param toInPlaceUpdate The target artifact type, must be the internal object of [PolyfilledSingleArtifact].
      */
-    fun <TaskT : Task, FileTypeT : FileSystemLocation> use(
-        taskProvider: TaskProvider<TaskT>,
-        wiredWith: (TaskT) -> Property<FileTypeT>,
+    fun <FileTypeT : FileSystemLocation> use(
+        action: PolyfillAction<FileTypeT>,
         toInPlaceUpdate: PolyfilledSingleArtifact<FileTypeT, PluginTypeT>
     )
 
     /**
      * The polyfill version of [Artifacts.use], same as [use] above.
      *
-     * @param taskProvider The task provider which would like to modify/update target artifacts.
-     * @param wiredWith The property of the Task input that will be used to set target artifacts.
+     * @param action The Action which will be added to a target task to modify/update target artifacts.
      * @param toInPlaceUpdate The target artifact type, must be the internal object of [PolyfilledMultipleArtifact].
      */
-    fun <TaskT : Task, FileTypeT : FileSystemLocation> use(
-        taskProvider: TaskProvider<TaskT>,
-        wiredWith: (TaskT) -> ListProperty<FileTypeT>,
+    fun <FileTypeT : FileSystemLocation> use(
+        action: PolyfillAction<List<FileTypeT>>,
         toInPlaceUpdate: PolyfilledMultipleArtifact<FileTypeT, PluginTypeT>
     )
 

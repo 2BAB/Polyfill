@@ -19,8 +19,8 @@ If you are not familiar with new Artifact/Variant API of AGP (since 7.0), please
 
 ``` kotlin
 dependencies {
-    compileOnly("com.android.tools.build:gradle:7.1.2")
-    implementation("me.2bab:polyfill:0.6.2")  <--
+    compileOnly("com.android.tools.build:gradle:7.2.2")
+    implementation("me.2bab:polyfill:0.7.0")  <--
 }
 ```
 
@@ -37,7 +37,7 @@ class TestPlugin : Plugin<Project> {
 }    
 ```
 
-3. Config your TaskProvider with the help of Polyfill's `variant.artifactsPolyfill.*`, which has similar API style with `variant.artifacts` one of AGP:
+3. Config your `TaskProvider` (for `get/getAll()`) or `PolyfillAction`(for `use()` as well as `get/getAll()`) with the help of Polyfill's `variant.artifactsPolyfill.*` AIs, which has similar style with `variant.artifacts` ones of AGP:
 
 ``` kotlin
 val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
@@ -54,25 +54,27 @@ androidExtension.onVariants { variant ->
     ...
 
     // use()
-    val preHookManifestTask1 = project.tasks.register<PreUpdateManifestsTask>(
-        "preUpdate${variant.name.capitalize()}Manifest1"
-    )
-    variant.artifactsPolyfill.use(  <--
-        taskProvider = preHookManifestTask1,
-        wiredWith = TestPlugin.PreUpdateManifestsTask::beforeMergeInputs,
+    val preHookManifestTaskAction1 = PreUpdateManifestsTaskAction(buildDir, id = "preHookManifestTaskAction1")
+    variant.artifactsPolyfill.use(
+        action = preHookManifestTaskAction1,
         toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
     )
 }
 
 ...
 
-abstract class PreUpdateManifestsTask : DefaultTask() {
-    @get:InputFiles
-    abstract val beforeMergeInputs: ListProperty<RegularFile>  <--
+class PreUpdateManifestsTaskAction(
+    private val buildDir: File,
+    private val id: String
+) : PolyfillAction<List<RegularFile>> {
+    override fun onTaskConfigure(task: Task) {}
 
-    @TaskAction
-    fun beforeMerge() {
-        beforeMergeInputs.get().let { files -> ...}
+    override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
+        val manifestPathsOutput = TestPlugin.getOutputFile(buildDir, "all-manifests-by-${id}.json")
+        manifestPathsOutput.createNewFile()
+        beforeMergeInputs.get().let { files ->
+            manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+        }
     }
 }
 ```
@@ -95,11 +97,11 @@ All supported Artifacts are listed below:
 
 ``` Kotlin
 project.extensions.getByType<PolyfillExtension>()
-    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
+    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
 ```
 
 
-Check more in `./test-plugin` and `./polyfill/src/functionalTest`.
+Check more in `./polyfill-test-plugin` and `./polyfill/src/functionalTest`.
 
 
 
@@ -131,13 +133,12 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 **Changelog** can be found from [Github Releases](https://github.com/2BAB/Polyfill/releases).
 
-| AGP Version | Latest Support Version |
-|:-----------:|:----------------------:|
-|    7.1.x    |         0.5.0          |
-|    7.0.x    |         0.4.1          |
-|    4.2.0    |  0.3.1 (Migrated to MavenCentral)  |
-
-(The project currently compiles with the latest version of AGP 7.0, and compiles and tests against the both AGP 7.0 and 7.1 on CI.)
+|  AGP Version  |      Latest Support Version      |
+|:-------------:|:--------------------------------:|
+| 7.2.x / 7.1.x |              0.7.0               |
+|     7.1.x     |              0.6.2               |
+|     7.0.x     |              0.4.1               |
+|     4.2.0     | 0.3.1 (Migrated to MavenCentral) |
 
 
 ## Git Commit Check

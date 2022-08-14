@@ -65,14 +65,10 @@ jobs:
       - run: |
           ./gradlew test
   functional-tests:
-    name: Functional tests
+    name: Functional Tests
     runs-on: ubuntu-latest
     env:
       JAVA_TOOL_OPTIONS: -Xmx4g
-      AGP_VERSION: ${{ matrix.agp-version }}
-    strategy:
-      matrix:
-        agp-version: [ 7.1.2, 7.2.0-beta04 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -89,5 +85,25 @@ jobs:
           key: ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-${{ matrix.agp-version }}-
+
+      - name: Prepare environment
+        env:
+          SIGNING_SECRET_KEY_CONTENT: ${{ secrets.SIGNING_SECRET_KEY_CONTENT }}
+          SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
+        run: |
+          git fetch --unshallow
+          sudo bash -c "echo '$SIGNING_SECRET_KEY_CONTENT' | base64 -d > '$SIGNING_SECRET_KEY_RING_FILE'"
+
+      - name: Build & Release all Polyfill libraries to MavenLocal
+        run: chmod +x ./publish_to_local.sh | ./publish_to_local.sh
+        env:
+          SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_SECRET_KEY_RING_FILE: ${{ secrets.SIGNING_SECRET_KEY_RING_FILE }}
+          SIGNING_SECRET_KEY_CONTENT: ${{ secrets.SIGNING_SECRET_KEY_CONTENT }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GH_DEV_TOKEN: ${{ secrets.GH_DEV_TOKEN }}
+
       - run: |
           ./gradlew functionalTest

@@ -1,6 +1,7 @@
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
+    id("me.xx2bab.polyfill.buildscript.maven-central-publish")
 }
 
 repositories {
@@ -17,6 +18,7 @@ dependencies {
     implementation(deps.fastJson)
 
     compileOnly(deps.android.gradle.plugin)
+    compileOnly(deps.android.tools.sdklib)
     implementation(projects.polyfill)
 }
 

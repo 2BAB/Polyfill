@@ -15,12 +15,12 @@ Polyfill 是一个第三方的**工件仓库**，服务于编写 Android 构建�
 
 ## 快速上手
 
-1. 添加 Polyfill 至你的插件工程（独立的插件工程或者 `buildSrc`）：
+1. 添加 Polyfill 至你的 Gradle 插件工程（独立的插件工程或者 `buildSrc`）：
 
 ``` kotlin
 dependencies {
-    compileOnly("com.android.tools.build:gradle:7.1.2")
-    implementation("me.2bab:polyfill:0.6.2")  <--
+    compileOnly("com.android.tools.build:gradle:7.2.2")
+    implementation("me.2bab:polyfill:0.7.0")  <--
 }
 ```
 
@@ -38,7 +38,7 @@ class TestPlugin : Plugin<Project> {
 }    
 ```
 
-3. 借助 Polyfill 的 `variant.artifactsPolyfill.*` 配置你的 `TaskProvider`，其 API 风格与 AGP 的 `variant.artifacts` 相近：
+3. 借助 Polyfill 的 `variant.artifactsPolyfill.*` 相关 API 配置你的 `TaskProvider`(仅获取 Artifact 时) 或 `PolyfillAction`（需要修改 Artifact 时），其风格与 AGP 的 `variant.artifacts` 相近：
 
 ``` kotlin
 val androidExtension = project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
@@ -55,25 +55,27 @@ androidExtension.onVariants { variant ->
     ...
 
     // use()
-    val preHookManifestTask1 = project.tasks.register<PreUpdateManifestsTask>(
-        "preUpdate${variant.name.capitalize()}Manifest1"
-    )
-    variant.artifactsPolyfill.use(  <--
-        taskProvider = preHookManifestTask1,
-        wiredWith = TestPlugin.PreUpdateManifestsTask::beforeMergeInputs,
+    val preHookManifestTaskAction1 = PreUpdateManifestsTaskAction(buildDir, id = "preHookManifestTaskAction1")
+    variant.artifactsPolyfill.use(
+        action = preHookManifestTaskAction1,
         toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
     )
 }
 
 ...
 
-abstract class PreUpdateManifestsTask : DefaultTask() {
-    @get:InputFiles
-    abstract val beforeMergeInputs: ListProperty<RegularFile>  <--
+class PreUpdateManifestsTaskAction(
+    private val buildDir: File,
+    private val id: String
+) : PolyfillAction<List<RegularFile>> {
+    override fun onTaskConfigure(task: Task) {}
 
-    @TaskAction
-    fun beforeMerge() {
-        beforeMergeInputs.get().let { files -> ...}
+    override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
+        val manifestPathsOutput = TestPlugin.getOutputFile(buildDir, "all-manifests-by-${id}.json")
+        manifestPathsOutput.createNewFile()
+        beforeMergeInputs.get().let { files ->
+            manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+        }
     }
 }
 ```
@@ -96,10 +98,10 @@ abstract class PreUpdateManifestsTask : DefaultTask() {
 
 ``` Kotlin
 project.extensions.getByType<PolyfillExtension>()
-    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
+    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
 ```
 
-更多信息请查看 `./test-plugin` 和`./polyfill/src/functionalTest`.
+更多信息请查看 `./polyfill-test-plugin` 和`./polyfill/src/functionalTest`.
 
 
 ## 为什么需要 Polyfill？
@@ -129,15 +131,14 @@ project.extensions.getByType<PolyfillExtension>()
 
 ## 兼容说明
 
-Polyfill 只支持并在最新的两个 Android Gradle Plugin 版本进行测试。
+Polyfill 只支持并在最新的两个 Android Gradle Plugin (minor) 版本进行测试。
 
-| AGP Version | Latest Support Version |
-|:-----------:|:----------------------:|
-|    7.1.x    |         0.5.0          |
-|    7.0.x    |         0.4.1          |
-|    4.2.0    |  0.3.1 (MavenCentral)  |
-
-（目前本工程基于 AGP 7.0 的最新版本进行开发，在 CI 环境下还会同时编译&测试 7.0/7.1 版本的兼容性）
+|  AGP Version  |      Latest Support Version      |
+|:-------------:|:--------------------------------:|
+| 7.2.x / 7.1.x |              0.7.0               |
+|     7.1.x     |              0.6.2               |
+|     7.0.x     |              0.4.1               |
+|     4.2.0     | 0.3.1 (Migrated to MavenCentral) |
 
 
 ## Git Commit Check
