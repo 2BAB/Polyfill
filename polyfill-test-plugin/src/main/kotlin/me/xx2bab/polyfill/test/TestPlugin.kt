@@ -59,13 +59,13 @@ class TestPlugin : Plugin<Project> {
                 variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
             }
 
-            val preHookManifestTaskAction1 = PreUpdateManifestsTask(buildDir, id = "preHookManifestTaskAction1")
+            val preHookManifestTaskAction1 = PreUpdateManifestsTaskAction(buildDir, id = "preHookManifestTaskAction1")
             variant.artifactsPolyfill.use(
                 action = preHookManifestTaskAction1,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
             )
 
-            val preHookManifestTaskAction2 = PreUpdateManifestsTask(buildDir, id = "preHookManifestTaskAction2")
+            val preHookManifestTaskAction2 = PreUpdateManifestsTaskAction(buildDir, id = "preHookManifestTaskAction2")
             variant.artifactsPolyfill.use(
                 action = preHookManifestTaskAction2,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_MANIFESTS
@@ -96,7 +96,7 @@ class TestPlugin : Plugin<Project> {
         }
 
         // project.extensions.getByType<PolyfillExtension>()
-        //    .registerPincerTaskConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
+        //    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
     }
 
 
@@ -134,7 +134,7 @@ class TestPlugin : Plugin<Project> {
     }
 
 
-    class PreUpdateManifestsTask(
+    class PreUpdateManifestsTaskAction(
         private val buildDir: File,
         private val id: String
     ) : PolyfillAction<List<RegularFile>> {
@@ -201,4 +201,3 @@ class TestPlugin : Plugin<Project> {
     }
 
 }
-
