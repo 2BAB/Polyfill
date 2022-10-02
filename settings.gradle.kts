@@ -1,4 +1,5 @@
 rootProject.name = "polyfill-parent"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
 
