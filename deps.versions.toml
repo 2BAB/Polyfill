@@ -10,7 +10,6 @@ agpNextBetaVer = "7.3.0-beta01"
 
 # 30.2.0-beta03
 androidToolVer = "30.2.0"
-
 mockitoVer = "3.9.0"
 
 [libraries]

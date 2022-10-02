@@ -99,7 +99,7 @@ fun ApplicationVariant.getApkCreationConfigImpl() = getApplicationVariantImpl().
 
 /**
  * To access partial common used AGP [TaskProvider]s.
- * For example the [MutableTaskContainer.assembleTask].
+ * For example the [MutableTaskContainer.assembAleTask].
  *
  * @return [MutableTaskContainer]
  */

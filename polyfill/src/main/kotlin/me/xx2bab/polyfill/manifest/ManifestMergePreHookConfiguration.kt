@@ -52,21 +52,6 @@ class ManifestMergePreHookConfiguration(
                 }
             }
         }
-//        project.rootProject.subprojects {
-//            val subProject = this
-//            if (subProject !== project) {
-//                subProject.tasks.whenTaskAdded {
-//                    val targetTask = this
-//                    if (targetTask.name == "process${variantCapitalizedName}Manifest"
-//                        || targetTask.name == "extractDeepLinks${variantCapitalizedName}"
-//                    ) {
-//                        dependentTask.configure {
-//                            dependsOn(targetTask)
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
 }

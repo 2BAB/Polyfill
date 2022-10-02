@@ -43,7 +43,6 @@ class JavaResourceMergePreHookConfiguration(
             val all = subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
             (data as ListProperty<RegularFile>).set(all)
 
-
             // Setup in-place-update
             actionList().forEachIndexed { index, action ->
                 action.onTaskConfigure(mergeTask)
@@ -51,21 +50,7 @@ class JavaResourceMergePreHookConfiguration(
                     action.onExecute(data)
                 }
             }
-
-//            dependentTask.configure {
-//                dependsOn(appVariant.getTaskContainer().preBuildTask) // For current module
-//                // Initially it should use the Provider as the dependency directly,
-//                // however some dependencies were lost during the transformation from `FileCollection` to `Provider`.
-//                // dependsOn(data)
-//                dependsOn(mergeTask.subProjectJavaRes)
-//                dependsOn(mergeTask.externalLibJavaRes)
-//            }
-//
-//            // Right flank
-//            mergeTask.dependsOn(lazyTailTaskProvider())
         }
-
     }
-
 
 }

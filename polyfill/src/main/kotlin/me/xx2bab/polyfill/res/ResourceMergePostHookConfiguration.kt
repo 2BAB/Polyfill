@@ -34,15 +34,6 @@ class ResourceMergePostHookConfiguration(
                     }
                 }
             }
-//            // Left flank
-//            val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
-//            headTaskProvider.dependsOn(mergeTaskProvider)
-//
-//            // Right flank
-//            val linkTaskProvider = tasks.withType<LinkApplicationAndroidResourcesTask>().first {
-//                it.name.contains(variant.name, true) && !it.name.contains("test", true)
-//            }
-//            linkTaskProvider.dependsOn(lazyTailTaskProvider())
         }
     }
 
