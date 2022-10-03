@@ -37,7 +37,8 @@ class TestPlugin : Plugin<Project> {
             // BuildToolInfo
             val buildToolInfo = variant.getBuildToolInfo(project).get()
             val aapt2PathGenTask = project.tasks.register<WorkingWithAapt2Task>(
-                "writeAapt2PathFor${variant.name.capitalize()}") {
+                "writeAapt2PathFor${variant.name.capitalize()}"
+            ) {
                 aapt2 = buildToolInfo.getPath(BuildToolInfo.PathId.AAPT2)
                 this.buildDir = buildDir
             }
@@ -72,15 +73,28 @@ class TestPlugin : Plugin<Project> {
             )
 
             // ALL_RESOURCES & MERGED_RESOURCES
-            val allInputResources = variant.artifactsPolyfill
-                .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
-            val postUpdateResourceTaskAction = PostUpdateResourceTask(buildDir, allInputResources)
-            variant.artifactsPolyfill.use(
-                action = postUpdateResourceTaskAction,
-                toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
-            )
+//            val allInputResources = variant.artifactsPolyfill
+//                .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
+//            val postUpdateResourceTaskAction = PostUpdateResourceTask(buildDir, allInputResources)
+//            variant.artifactsPolyfill.use(
+//                action = postUpdateResourceTaskAction,
+//                toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
+//            )
 
             // ALL_JAVA_RES
+            val printAllJavaResTask = project.tasks.register<PrintAllJavaResourcesTask>(
+                "getAllInputJavaResFor${variant.name.capitalize()}"
+            ) {
+                beforeMergeInputs.set(
+                    variant.artifactsPolyfill
+                        .getAll(PolyfilledMultipleArtifact.ALL_JAVA_RES)
+                )
+                this.buildDir = buildDir
+            }
+            project.afterEvaluate {
+                variant.getTaskContainer().assembleTask.dependsOn(printAllJavaResTask)
+            }
+
             val preUpdateJavaResTaskAction = PreUpdateJavaResourcesTask(buildDir, "preUpdateJavaResTaskAction")
             variant.artifactsPolyfill.use(
                 action = preUpdateJavaResTaskAction,
@@ -88,12 +102,12 @@ class TestPlugin : Plugin<Project> {
             )
         }
 
-        project.gradle.taskGraph.whenReady {
-            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
-            val taskDepsTxt = getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
-            taskDepsTxt.createNewFile()
-            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
-        }
+//        project.gradle.taskGraph.whenReady {
+//            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
+//            val taskDepsTxt = getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
+//            taskDepsTxt.createNewFile()
+//            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
+//        }
 
         // project.extensions.getByType<PolyfillExtension>()
         //    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
@@ -166,6 +180,24 @@ class TestPlugin : Plugin<Project> {
             val resourcePathsOutput = getOutputFile(buildDir, "merged-resource-dir.txt")
             resourcePathsOutput.createNewFile()
             resourcePathsOutput.writeText(compiledFilesDir.get().asFile.absolutePath)
+        }
+    }
+
+
+    abstract class PrintAllJavaResourcesTask: DefaultTask() {
+        @get:InputFiles
+        abstract val beforeMergeInputs: ListProperty<RegularFile>
+
+        @get:Internal
+        var buildDir: File? = null
+
+        @TaskAction
+        fun beforeMerge() {
+            val manifestPathsOutput = getOutputFile(buildDir!!, "all-java-res-by-${name}.json")
+            manifestPathsOutput.createNewFile()
+            beforeMergeInputs.get().let { files ->
+                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+            }
         }
     }
 

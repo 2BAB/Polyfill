@@ -43,14 +43,16 @@ class JavaResourceMergePreHookConfiguration(
             val all = subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
             (data as ListProperty<RegularFile>).set(all)
 
+            val localData = data
             // Setup in-place-update
             actionList().forEachIndexed { index, action ->
                 action.onTaskConfigure(mergeTask)
                 mergeTask.doFirst("JavaResourceMergePreHookByPolyfill$index") {
-                    action.onExecute(data)
+                    action.onExecute(localData)
                 }
             }
         }
     }
+
 
 }
