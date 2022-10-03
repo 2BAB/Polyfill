@@ -4,7 +4,7 @@ import com.android.build.api.variant.ApplicationVariant
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.ResourceMergePreHookPatch
 import me.xx2bab.polyfill.getTaskContainer
-import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
@@ -18,7 +18,7 @@ class ResourceMergePreHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<List<Directory>>>
-) : MultipleArtifactPincerTaskConfiguration<Directory>(
+) : MultipleArtifactTaskExtendConfiguration<Directory>(
     project, appVariant, actionList
 ) {
 

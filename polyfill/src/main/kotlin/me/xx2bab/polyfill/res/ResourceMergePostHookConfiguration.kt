@@ -5,7 +5,7 @@ import com.android.build.gradle.internal.scope.InternalArtifactType
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getTaskContainer
-import me.xx2bab.polyfill.task.SingleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.SingleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
@@ -18,7 +18,7 @@ class ResourceMergePostHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<Directory>>
-) : SingleArtifactPincerTaskConfiguration<Directory>(project, appVariant, actionList) {
+) : SingleArtifactTaskExtendConfiguration<Directory>(project, appVariant, actionList) {
 
     override val data: Provider<Directory>
         get() = appVariant.getApkCreationConfigImpl().config.artifacts.get(InternalArtifactType.MERGED_RES)

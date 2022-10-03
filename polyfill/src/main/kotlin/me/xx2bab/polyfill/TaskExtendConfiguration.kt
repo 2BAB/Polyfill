@@ -64,7 +64,7 @@ abstract class TaskExtendConfiguration<CreationDataT>(
  *  A dedicated [TaskExtendConfiguration] for configuring [PolyfilledSingleArtifact].
  *  It provides data in `Provider<[FileTypeT]>` type.
  */
-abstract class SingleArtifactPincerTaskConfiguration<FileTypeT : FileSystemLocation>(
+abstract class SingleArtifactTaskExtendConfiguration<FileTypeT : FileSystemLocation>(
     project: Project,
     variant: Variant,
     actionList: () -> List<PolyfillAction<FileTypeT>>
@@ -74,7 +74,7 @@ abstract class SingleArtifactPincerTaskConfiguration<FileTypeT : FileSystemLocat
  * A dedicated [TaskExtendConfiguration] for configuring [PolyfilledMultipleArtifact].
  * It provides data in `Provider<List<[FileTypeT]>>` type.
  */
-abstract class MultipleArtifactPincerTaskConfiguration<FileTypeT : FileSystemLocation>(
+abstract class MultipleArtifactTaskExtendConfiguration<FileTypeT : FileSystemLocation>(
     project: Project,
     variant: Variant,
     actionList: () -> List<PolyfillAction<List<FileTypeT>>>

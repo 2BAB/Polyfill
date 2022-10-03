@@ -5,7 +5,7 @@ import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getCapitalizedName
-import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
@@ -18,7 +18,7 @@ class ManifestMergePreHookConfiguration(
     project: Project,
     private val appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<List<RegularFile>>>
-) : MultipleArtifactPincerTaskConfiguration<RegularFile>
+) : MultipleArtifactTaskExtendConfiguration<RegularFile>
     (project, appVariant, actionList) {
 
     override val data: Provider<List<RegularFile>> = appVariant.getApkCreationConfigImpl()

@@ -4,8 +4,8 @@ import me.xx2bab.polyfill.jar.JavaResourceMergePreHookConfiguration
 import me.xx2bab.polyfill.manifest.ManifestMergePreHookConfiguration
 import me.xx2bab.polyfill.res.ResourceMergePostHookConfiguration
 import me.xx2bab.polyfill.res.ResourceMergePreHookConfiguration
-import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
-import me.xx2bab.polyfill.task.SingleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
+import me.xx2bab.polyfill.task.SingleArtifactTaskExtendConfiguration
 import me.xx2bab.polyfill.task.TaskExtendConfiguration
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
@@ -27,11 +27,11 @@ abstract class PolyfillExtension {
     )
 
     /**
-     * To register a custom [SingleArtifactPincerTaskConfiguration] for [PolyfilledSingleArtifact].
+     * To register a custom [SingleArtifactTaskExtendConfiguration] for [PolyfilledSingleArtifact].
      */
     fun registerTaskExtensionConfig(
         artifactType: PolyfilledSingleArtifact<*, *>,
-        kClass: KClass<out SingleArtifactPincerTaskConfiguration<*>>
+        kClass: KClass<out SingleArtifactTaskExtendConfiguration<*>>
     ) {
         if (locked.get()) {
             return
@@ -40,11 +40,11 @@ abstract class PolyfillExtension {
     }
 
     /**
-     * To register a custom [MultipleArtifactPincerTaskConfiguration] for [PolyfilledMultipleArtifact].
+     * To register a custom [MultipleArtifactTaskExtendConfiguration] for [PolyfilledMultipleArtifact].
      */
     fun registerTaskExtensionConfig(
         artifactType: PolyfilledMultipleArtifact<*, *>,
-        kClass: KClass<out MultipleArtifactPincerTaskConfiguration<*>>
+        kClass: KClass<out MultipleArtifactTaskExtendConfiguration<*>>
     ) {
         if (locked.get()) {
             return

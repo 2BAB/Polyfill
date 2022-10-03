@@ -5,7 +5,7 @@ import com.android.build.gradle.internal.scope.getRegularFiles
 import com.android.build.gradle.internal.tasks.MergeJavaResourceTask
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getCapitalizedName
-import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
@@ -21,7 +21,7 @@ class JavaResourceMergePreHookConfiguration(
     project: Project,
     appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<List<RegularFile>>>
-) : MultipleArtifactPincerTaskConfiguration<RegularFile>(project, appVariant, actionList) {
+) : MultipleArtifactTaskExtendConfiguration<RegularFile>(project, appVariant, actionList) {
 
     override val data: Provider<List<RegularFile>> = project.objects.listProperty<RegularFile>() // A placeholder
 
