@@ -7,6 +7,7 @@ plugins {
 }
 
 android {
+    namespace = "me.xx2bab.polyfill.sample"
     compileSdkVersion(31)
     defaultConfig {
         applicationId = "me.xx2bab.polyfill.sample"
