@@ -2,9 +2,9 @@ package me.xx2bab.polyfill.manifest
 
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
-import com.android.build.gradle.tasks.ProcessApplicationManifest
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getApkCreationConfigImpl
+import me.xx2bab.polyfill.getCapitalizedName
 import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
@@ -38,8 +38,9 @@ class ManifestMergePreHookConfiguration(
 
     override fun orchestrate() {
         // `variant.toTaskContainer().processManifestTask` can not guarantee the impl class
+        val variantCapitalizedName = variant.getCapitalizedName()
         project.tasks.whenTaskAdded {
-            if (this is ProcessApplicationManifest) {
+            if (this.name == "process${variantCapitalizedName}MainManifest") {
                 // Create a local copy to
                 // 1. Avoid referring the *TaskConfiguration class with Project instance
                 // 2. Avoid referring any Project instance from task.doFirst()/doLast()
