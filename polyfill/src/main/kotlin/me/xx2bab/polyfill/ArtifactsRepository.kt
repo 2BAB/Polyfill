@@ -1,6 +1,8 @@
 package me.xx2bab.polyfill
 
+import com.android.build.api.artifact.Artifact
 import com.android.build.api.artifact.Artifacts
+import com.android.build.api.artifact.impl.ArtifactsImpl
 import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.provider.Provider
 
@@ -23,6 +25,13 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
     ): Provider<FileTypeT>
 
     /**
+     * The delegation of [ArtifactsImpl.get].
+     */
+    fun <FILE_TYPE : FileSystemLocation> get(
+        type: Artifact.Single<FILE_TYPE>
+    ): Provider<FILE_TYPE>
+
+    /**
      * The polyfill version of [Artifacts.getAll].
      *
      * ``` Kotlin
@@ -42,6 +51,13 @@ interface ArtifactsRepository<PluginTypeT : PolyfilledPluginType> {
     fun <FileTypeT : FileSystemLocation> getAll(
         type: PolyfilledMultipleArtifact<FileTypeT, PluginTypeT>
     ): Provider<List<FileTypeT>>
+
+    /**
+     * The delegation of [ArtifactsImpl.getAll].
+     */
+    fun <FILE_TYPE : FileSystemLocation> getAll(
+        type: Artifact.Multiple<FILE_TYPE>
+    ): Provider<List<FILE_TYPE>>
 
     /**
      * The polyfill version of [Artifacts.use] that update artifacts within a TaskAction.

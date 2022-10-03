@@ -1,6 +1,8 @@
 package me.xx2bab.polyfill.artifact
 
+import com.android.build.api.artifact.Artifact
 import com.android.build.api.artifact.ArtifactKind
+import com.android.build.api.artifact.impl.ArtifactsImpl
 import com.android.build.api.variant.Variant
 import com.android.build.api.variant.VariantExtension
 import me.xx2bab.polyfill.*
@@ -54,9 +56,17 @@ abstract class DefaultArtifactsRepository<PluginTypeT : PolyfilledPluginType>(
         type: PolyfilledSingleArtifact<FileTypeT, PluginTypeT>,
     ): Provider<FileTypeT> = getSingleArtifactContainer(type).get()
 
+    override fun <FILE_TYPE : FileSystemLocation> get(
+        type: Artifact.Single<FILE_TYPE>
+    ): Provider<FILE_TYPE> = (variant.artifacts as ArtifactsImpl).get(type)
+
     override fun <FileTypeT : FileSystemLocation> getAll(
         type: PolyfilledMultipleArtifact<FileTypeT, PluginTypeT>
     ): Provider<List<FileTypeT>> = getMultipleArtifactContainer(type).get()
+
+    override fun <FILE_TYPE : FileSystemLocation> getAll(
+        type: Artifact.Multiple<FILE_TYPE>
+    ): Provider<List<FILE_TYPE>> = (variant.artifacts as ArtifactsImpl).getAll(type)
 
     override fun <FileTypeT : FileSystemLocation> use(
         action: PolyfillAction<FileTypeT>,
