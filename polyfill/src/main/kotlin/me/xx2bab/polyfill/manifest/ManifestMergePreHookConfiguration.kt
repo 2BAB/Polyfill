@@ -40,6 +40,8 @@ class ManifestMergePreHookConfiguration(
         // `variant.toTaskContainer().processManifestTask` can not guarantee the impl class
         val variantCapitalizedName = variant.getCapitalizedName()
         project.tasks.whenTaskAdded {
+            // > if (this is ProcessApplicationManifest)
+            // Can not use above logic since it includes more unwanted tasks
             if (this.name == "process${variantCapitalizedName}MainManifest") {
                 // Create a local copy to
                 // 1. Avoid referring the *TaskConfiguration class with Project instance
