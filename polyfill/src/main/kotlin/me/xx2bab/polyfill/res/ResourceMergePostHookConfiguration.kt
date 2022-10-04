@@ -21,21 +21,55 @@ class ResourceMergePostHookConfiguration(
 ) : SingleArtifactTaskExtendConfiguration<Directory>(project, appVariant, actionList) {
 
     override val data: Provider<Directory>
-        get() = appVariant.getApkCreationConfigImpl().config.artifacts.get(InternalArtifactType.MERGED_RES)
+        get() = CreationAction(appVariant).extractMergedRes()
 
     override fun orchestrate() {
+        // We try to avoid using afterEvaluate{},
+        // but here it looks like the best workaround...
         project.afterEvaluate {
+            // MergeResources
             val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
+
+            val localData = data
+
+            // To consume the task instance here is ok,
+            // since the merge task must run in a clean build,
+            // it's not an avoidance task actually...
+            val mergeTask = mergeTaskProvider.get()
+
             actionList().forEachIndexed { index, action ->
-                mergeTaskProvider.configure {
-                    action.onTaskConfigure(this)
-                    doLast("ResourceMergePostHookByPolyfill$index") {
-                        action.onExecute(data)
-                    }
+                action.onTaskConfigure(mergeTask)
+                mergeTask.doLast("ResourceMergePostHookByPolyfill$index") {
+                    action.onExecute(localData)
                 }
             }
         }
+
+        // If the getTaskContainer() does not work anymore,
+        // we can fall back to below solution instead.
+        // However, we should be aware of that
+        // the `whenTaskAdded` is executed after `afterEavluate`.
+//        val variantCapitalizedName = variant.getCapitalizedName()
+//        project.tasks.whenTaskAdded {
+//            if (name == "merge${variantCapitalizedName}Resources") {
+//                val localData = data
+//                actionList().forEachIndexed { index, action ->
+//                    action.onTaskConfigure(this)
+//                    doLast("ResourceMergePostHookByPolyfill$index") {
+//                        action.onExecute(localData)
+//                    }
+//                }
+//            }
+//        }
     }
 
+    class CreationAction(private val appVariant: ApplicationVariant) {
+        fun extractMergedRes(): Provider<Directory> {
+            return appVariant.getApkCreationConfigImpl()
+                .config
+                .artifacts
+                .get(InternalArtifactType.MERGED_RES)
+        }
+    }
 
 }

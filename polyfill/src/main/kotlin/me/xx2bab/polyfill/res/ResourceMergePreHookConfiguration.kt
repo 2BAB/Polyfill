@@ -53,11 +53,12 @@ class ResourceMergePreHookConfiguration(
         project.afterEvaluate {
             // Right flank
             val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
+            val localData = data
             actionList().forEachIndexed { index, action ->
                 mergeTaskProvider.configure {
                     action.onTaskConfigure(this)
                     doFirst("ResourceMergePreHookByPolyfill$index") {
-                        action.onExecute(data)
+                        action.onExecute(localData)
                     }
                 }
             }

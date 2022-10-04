@@ -73,13 +73,13 @@ class TestPlugin : Plugin<Project> {
             )
 
             // ALL_RESOURCES & MERGED_RESOURCES
-//            val allInputResources = variant.artifactsPolyfill
-//                .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
-//            val postUpdateResourceTaskAction = PostUpdateResourceTask(buildDir, allInputResources)
-//            variant.artifactsPolyfill.use(
-//                action = postUpdateResourceTaskAction,
-//                toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
-//            )
+            val allInputResources = variant.artifactsPolyfill
+                .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
+            val postUpdateResourceTaskAction = PostUpdateResourceTask(buildDir, allInputResources)
+            variant.artifactsPolyfill.use(
+                action = postUpdateResourceTaskAction,
+                toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
+            )
 
             // ALL_JAVA_RES
             val printAllJavaResTask = project.tasks.register<PrintAllJavaResourcesTask>(
