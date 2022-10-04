@@ -167,5 +167,12 @@ class SampleProjectTest {
         assertThat(out.readText(), StringContains("android-lib/build/intermediates/library_java_res/debug/res.jar"))
     }
 
+    @ParameterizedTest
+    @MethodSource("agpVerProvider")
+    fun javaResourceMergePreHookConfigureAction_GetSuccessfully(agpVer: String) {
+        val out =
+            File("./build/test-app-for-$agpVer/${testProjectJsonOutputPath}/all-java-res-by-getAllInputJavaResForDebug.json")
+        assertThat("all-java-res-by-getAllInputJavaResForDebug.json does not exist", out.exists())
+    }
 
 }

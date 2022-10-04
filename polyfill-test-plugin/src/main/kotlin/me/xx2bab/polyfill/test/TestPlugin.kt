@@ -102,12 +102,12 @@ class TestPlugin : Plugin<Project> {
             )
         }
 
-//        project.gradle.taskGraph.whenReady {
-//            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
-//            val taskDepsTxt = getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
-//            taskDepsTxt.createNewFile()
-//            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
-//        }
+        project.gradle.taskGraph.whenReady {
+            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
+            val taskDepsTxt = getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
+            taskDepsTxt.createNewFile()
+            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
+        }
 
         // project.extensions.getByType<PolyfillExtension>()
         //    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
