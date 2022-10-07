@@ -22,11 +22,10 @@ val repo = "polyfill"
 val tagBranch = "master"
 val version = Versions.polyfillDevVersion
 val releaseNotes = ""
-createGithubReleaseTaskInternal(artifacts, token, repo, tagBranch, version, releaseNotes)
+createGithubReleaseTaskInternal(token, repo, tagBranch, version, releaseNotes)
 
 
 fun createGithubReleaseTaskInternal(
-    artifacts: DirectoryProperty,
     token: String,
     repo: String,
     tagBranch: String,
