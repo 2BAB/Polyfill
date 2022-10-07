@@ -20,7 +20,7 @@ If you are not familiar with new Artifact/Variant API of AGP (since 7.0), please
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.2.2")
-    implementation("me.2bab:polyfill:0.7.0")  <--
+    implementation("me.2bab:polyfill:0.8.0")  <--
 }
 ```
 
@@ -61,21 +61,25 @@ androidExtension.onVariants { variant ->
     )
 }
 
-...
-
+... 
 class PreUpdateManifestsTaskAction(
-    private val buildDir: File,
-    private val id: String
+    buildDir: File,
+    id: String
 ) : PolyfillAction<List<RegularFile>> {
+
     override fun onTaskConfigure(task: Task) {}
 
-    override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
-        val manifestPathsOutput = TestPlugin.getOutputFile(buildDir, "all-manifests-by-${id}.json")
-        manifestPathsOutput.createNewFile()
-        beforeMergeInputs.get().let { files ->
-            manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+    override fun onExecute(artifact: Provider<List<RegularFile>>) {
+        artifact.get().let { files ->
+            files.forEach {
+                val manifestFile = it.asFile
+                // Check per manifest input and filter whatever you want, remove broken pieces, etc.
+                // val updatedContent = manifestFile.readText().replace("abc", "def")
+                // manifestFile.writeText(updatedContent)
+            }
         }
     }
+    
 }
 ```
 
@@ -92,17 +96,16 @@ All supported Artifacts are listed below:
 |       ALL_RESOURCES        |`ListProvider<Directory>`|         To retrieve all `/res` directories that will paticipate merge process.          |
 |        ALL_JAVA_RES        |`ListProvider<RegularFile>`|               To retrieve all Java Resources that will paticipate merge process.               |
 
+In addition, `Artifact.Single<FILE_TYPE>`，`Artifact.Multiple<FILE_TYPE>` and their implementations such as `InternalArtifactType` are  supported by `get(...)/getAll(...)`. You can access more internal Artifacts of AGP through them.
 
-4. In addition, if aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are opening to customized Artifacts registry.（PR is welcome as well!)
+4. If aforementioned API sets are not satisfied for your requirement, a public data pipeline mechanism with a bunch of variant tools that provided by Polyfill are opening to customized Artifacts registry.（PR is welcome as well!)
 
 ``` Kotlin
 project.extensions.getByType<PolyfillExtension>()
     .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
 ```
 
-
-Check more in `./polyfill-test-plugin` and `./polyfill/src/functionalTest`.
-
+Check more examples in `./polyfill-test-plugin` and `./polyfill/src/functionalTest`.
 
 
 ## Why Polyfill?
@@ -135,6 +138,7 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 |  AGP Version  |      Latest Support Version      |
 |:-------------:|:--------------------------------:|
+| 7.2.x / 7.1.x |              0.8.0               |
 | 7.2.x / 7.1.x |              0.7.0               |
 |     7.1.x     |              0.6.2               |
 |     7.0.x     |              0.4.1               |

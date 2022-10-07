@@ -5,7 +5,7 @@ import com.android.build.gradle.internal.scope.getRegularFiles
 import com.android.build.gradle.internal.tasks.MergeJavaResourceTask
 import me.xx2bab.polyfill.PolyfillAction
 import me.xx2bab.polyfill.getCapitalizedName
-import me.xx2bab.polyfill.task.MultipleArtifactPincerTaskConfiguration
+import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
@@ -21,7 +21,7 @@ class JavaResourceMergePreHookConfiguration(
     project: Project,
     appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<List<RegularFile>>>
-) : MultipleArtifactPincerTaskConfiguration<RegularFile>(project, appVariant, actionList) {
+) : MultipleArtifactTaskExtendConfiguration<RegularFile>(project, appVariant, actionList) {
 
     override val data: Provider<List<RegularFile>> = project.objects.listProperty<RegularFile>() // A placeholder
 
@@ -43,28 +43,15 @@ class JavaResourceMergePreHookConfiguration(
             val all = subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
             (data as ListProperty<RegularFile>).set(all)
 
-
+            val localData = data
             // Setup in-place-update
             actionList().forEachIndexed { index, action ->
                 action.onTaskConfigure(mergeTask)
                 mergeTask.doFirst("JavaResourceMergePreHookByPolyfill$index") {
-                    action.onExecute(data)
+                    action.onExecute(localData)
                 }
             }
-
-//            dependentTask.configure {
-//                dependsOn(appVariant.getTaskContainer().preBuildTask) // For current module
-//                // Initially it should use the Provider as the dependency directly,
-//                // however some dependencies were lost during the transformation from `FileCollection` to `Provider`.
-//                // dependsOn(data)
-//                dependsOn(mergeTask.subProjectJavaRes)
-//                dependsOn(mergeTask.externalLibJavaRes)
-//            }
-//
-//            // Right flank
-//            mergeTask.dependsOn(lazyTailTaskProvider())
         }
-
     }
 
 

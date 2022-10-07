@@ -6,17 +6,6 @@ import me.xx2bab.polyfill.buildscript.BuildConfig.Versions
 import java.util.*
 
 val taskName = "releaseArtifactsToGithub"
-val artifacts: DirectoryProperty = project.objects.directoryProperty()
-artifacts.set(Path.getAggregatedJarDirectory(project))
-
-// Temporary workaround for directory is not recognized by ReleaseAssets
-gradle.taskGraph.whenReady {
-    beforeTask {
-        if (this is GithubReleaseTask) {
-            this.setReleaseAssets(Path.getAggregatedJarDirectory(project).listFiles())
-        }
-    }
-}
 
 val tokenFromEnv: String? = System.getenv("GH_DEV_TOKEN")
 val token: String = if (!tokenFromEnv.isNullOrBlank()) {
@@ -33,11 +22,10 @@ val repo = "polyfill"
 val tagBranch = "master"
 val version = Versions.polyfillDevVersion
 val releaseNotes = ""
-createGithubReleaseTaskInternal(artifacts, token, repo, tagBranch, version, releaseNotes)
+createGithubReleaseTaskInternal(token, repo, tagBranch, version, releaseNotes)
 
 
 fun createGithubReleaseTaskInternal(
-    artifacts: DirectoryProperty,
     token: String,
     repo: String,
     tagBranch: String,
@@ -46,20 +34,21 @@ fun createGithubReleaseTaskInternal(
 ): TaskProvider<GithubReleaseTask> {
 //    val id = version.replace(".", "")
     return project.tasks.register<GithubReleaseTask>("releaseArtifactsToGithub") {
-        setAuthorization("Token $token")
-        setOwner("2bab")
-        setRepo(repo)
-        setTagName(version)
-        setTargetCommitish(tagBranch)
-        setReleaseName("v${version}")
-        setBody(releaseNotes)
-        setDraft(false)
-        setPrerelease(false)
-        setReleaseAssets(artifacts)
-        setOverwrite(true)
-        setAllowUploadToExisting(true)
-        setApiEndpoint("https://api.github.com")
-        setDryRun(false)
+        authorization.set("Token $token")
+        owner.set("2bab")
+        this.repo.set(repo)
+        tagName.set(version)
+        targetCommitish.set(tagBranch)
+        releaseName.set("v${version}")
+        body.set(releaseNotes)
+        draft.set(false)
+        prerelease.set(false)
+        overwrite.set(true)
+        allowUploadToExisting.set(true)
+        apiEndpoint.set("https://api.github.com")
+        dryRun.set(false)
+        generateReleaseNotes.set(false)
+        releaseAssets.from(fileTree(Path.getAggregatedJarDirectory(project)))
     }
 }
 

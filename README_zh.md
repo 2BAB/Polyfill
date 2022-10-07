@@ -20,7 +20,7 @@ Polyfill 是一个第三方的**工件仓库**，服务于编写 Android 构建�
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:7.2.2")
-    implementation("me.2bab:polyfill:0.7.0")  <--
+    implementation("me.2bab:polyfill:0.8.0")  <--
 }
 ```
 
@@ -62,21 +62,25 @@ androidExtension.onVariants { variant ->
     )
 }
 
-...
-
+... 
 class PreUpdateManifestsTaskAction(
-    private val buildDir: File,
-    private val id: String
+    buildDir: File,
+    id: String
 ) : PolyfillAction<List<RegularFile>> {
+
     override fun onTaskConfigure(task: Task) {}
 
-    override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
-        val manifestPathsOutput = TestPlugin.getOutputFile(buildDir, "all-manifests-by-${id}.json")
-        manifestPathsOutput.createNewFile()
-        beforeMergeInputs.get().let { files ->
-            manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+    override fun onExecute(artifact: Provider<List<RegularFile>>) {
+        artifact.get().let { files ->
+            files.forEach {
+                val manifestFile = it.asFile
+                // Check per manifest input and filter whatever you want, remove broken pieces, etc.
+                // val updatedContent = manifestFile.readText().replace("abc", "def")
+                // manifestFile.writeText(updatedContent)
+            }
         }
     }
+    
 }
 ```
 
@@ -94,7 +98,9 @@ class PreUpdateManifestsTaskAction(
 |       ALL_RESOURCES        |`ListProvider<Directory>`|         To retrieve all `/res` directories that will paticipate merge process.          |
 |        ALL_JAVA_RES        |`ListProvider<RegularFile>`|               To retrieve all Java Resources that will paticipate merge process.               |
 
-4. 另外，如果上述 API 集无法满足你的需求，Polyfill 提供了其底层的数据管道机制以及获取数据的便捷工具，方便注册自定义的工件（同样欢迎直接提交 PR）。
+另外 `Artifact.Single<FILE_TYPE>`、`Artifact.Multiple<FILE_TYPE>` 和它们的实现类例如 `InternalArtifactType` 均被 `get(...)/getAll(...)` 支持，通过它们你可以获取更多 AGP 内部的 Artifacts.
+
+4. 如果上述 API 集无法满足你的需求，Polyfill 提供了其底层的数据管道机制以及获取数据的便捷工具，方便注册自定义的工件（同样欢迎直接提交 PR）。
 
 ``` Kotlin
 project.extensions.getByType<PolyfillExtension>()
