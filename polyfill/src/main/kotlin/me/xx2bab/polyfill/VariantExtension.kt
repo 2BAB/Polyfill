@@ -1,7 +1,10 @@
 package me.xx2bab.polyfill
 
 import com.android.Version
+import com.android.build.api.artifact.Artifacts
+import com.android.build.api.artifact.impl.ArtifactsImpl
 import com.android.build.api.component.analytics.AnalyticsEnabledApplicationVariant
+import com.android.build.api.component.analytics.AnalyticsEnabledArtifacts
 import com.android.build.api.component.analytics.AnalyticsEnabledLibraryVariant
 import com.android.build.api.component.impl.ApkCreationConfigImpl
 import com.android.build.api.variant.ApplicationVariant
@@ -47,9 +50,11 @@ fun Variant.getBuildToolInfo(project: Project): Provider<BuildToolInfo> {
             is ApplicationVariant -> {
                 project.plugins.getPlugin(com.android.build.gradle.internal.plugins.AppPlugin::class.java)
             }
+
             is LibraryVariant -> {
                 project.plugins.getPlugin(com.android.build.gradle.internal.plugins.LibraryPlugin::class.java)
             }
+
             else -> {
                 throw UnsupportedOperationException("Can not find corresponding plugin associated to $this.")
             }
@@ -78,9 +83,11 @@ fun ApplicationVariant.getApplicationVariantImpl(): ApplicationVariantImpl {
         is ApplicationVariantImpl -> {
             this
         }
+
         is AnalyticsEnabledApplicationVariant -> {
             this.delegate as ApplicationVariantImpl
         }
+
         else -> {
             throw UnsupportedOperationException("Can not convert $this to ApplicationVariantImpl.")
         }
@@ -118,11 +125,21 @@ fun LibraryVariant.getLibraryVariantImpl(): LibraryVariantImpl {
         is LibraryVariantImpl -> {
             this
         }
+
         is AnalyticsEnabledLibraryVariant -> {
             this.delegate as LibraryVariantImpl
         }
+
         else -> {
             throw UnsupportedOperationException("Can not convert $this to LibraryVariantImpl.")
         }
+    }
+}
+
+fun Artifacts.toImplementation(): ArtifactsImpl {
+    return when (this) {
+        is ArtifactsImpl -> this
+        is AnalyticsEnabledArtifacts -> this.delegate as ArtifactsImpl
+        else -> throw UnsupportedOperationException("Can not convert $this to ArtifactsImpl.")
     }
 }

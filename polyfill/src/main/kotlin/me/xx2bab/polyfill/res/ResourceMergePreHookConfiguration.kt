@@ -51,7 +51,6 @@ class ResourceMergePreHookConfiguration(
 
     override fun orchestrate() {
         project.afterEvaluate {
-            // Right flank
             val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
             val localData = data
             actionList().forEachIndexed { index, action ->
