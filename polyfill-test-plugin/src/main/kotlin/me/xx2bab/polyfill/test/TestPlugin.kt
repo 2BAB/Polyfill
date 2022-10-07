@@ -98,7 +98,7 @@ class TestPlugin : Plugin<Project> {
             val javaResPathsOutput = project.objects.fileProperty().fileValue(
                 getOutputFile(
                     buildDir,
-                    "all-java-res-by-${"preUpdateJavaResTaskAction".toLowerCase()}.json"
+                    "all-java-res-by-preUpdateJavaResTaskAction.json"
                 )
             )
             val preUpdateJavaResTaskAction = PreUpdateJavaResourcesTaskAction(javaResPathsOutput)
@@ -243,9 +243,7 @@ class TestPlugin : Plugin<Project> {
         private val record: RegularFileProperty,
     ) : PolyfillAction<List<RegularFile>> {
 
-        override fun onTaskConfigure(task: Task) {
-
-        }
+        override fun onTaskConfigure(task: Task) {}
 
         override fun onExecute(artifact: Provider<List<RegularFile>>) {
             artifact.get().let { files ->
