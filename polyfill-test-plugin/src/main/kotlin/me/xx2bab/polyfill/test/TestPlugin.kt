@@ -2,6 +2,7 @@ package me.xx2bab.polyfill.test
 
 import com.alibaba.fastjson.JSON
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.gradle.internal.scope.InternalArtifactType
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.sdklib.BuildToolInfo
 import me.xx2bab.polyfill.*
@@ -11,12 +12,11 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 import java.io.File
@@ -39,8 +39,8 @@ class TestPlugin : Plugin<Project> {
             val aapt2PathGenTask = project.tasks.register<WorkingWithAapt2Task>(
                 "writeAapt2PathFor${variant.name.capitalize()}"
             ) {
-                aapt2 = buildToolInfo.getPath(BuildToolInfo.PathId.AAPT2)
-                this.buildDir = buildDir
+                aapt2Path.set(buildToolInfo.getPath(BuildToolInfo.PathId.AAPT2))
+                record.set(getOutputFile(buildDir, "aapt2-path.txt"))
             }
             project.afterEvaluate {
                 variant.getTaskContainer().assembleTask.dependsOn(aapt2PathGenTask)
@@ -54,7 +54,7 @@ class TestPlugin : Plugin<Project> {
                     variant.artifactsPolyfill
                         .getAll(PolyfilledMultipleArtifact.ALL_MANIFESTS)
                 )
-                this.buildDir = buildDir
+                record.set(getOutputFile(buildDir, "all-manifests-by-${name}.json"))
             }
             project.afterEvaluate {
                 variant.getTaskContainer().assembleTask.dependsOn(printManifestTask)
@@ -75,7 +75,7 @@ class TestPlugin : Plugin<Project> {
             // ALL_RESOURCES & MERGED_RESOURCES
             val allInputResources = variant.artifactsPolyfill
                 .getAll(PolyfilledMultipleArtifact.ALL_RESOURCES)
-            val postUpdateResourceTaskAction = PostUpdateResourceTask(buildDir, allInputResources)
+            val postUpdateResourceTaskAction = PostUpdateResourceTaskAction(buildDir, allInputResources)
             variant.artifactsPolyfill.use(
                 action = postUpdateResourceTaskAction,
                 toInPlaceUpdate = PolyfilledSingleArtifact.MERGED_RESOURCES
@@ -89,17 +89,43 @@ class TestPlugin : Plugin<Project> {
                     variant.artifactsPolyfill
                         .getAll(PolyfilledMultipleArtifact.ALL_JAVA_RES)
                 )
-                this.buildDir = buildDir
+                record.set(getOutputFile(buildDir, "all-java-res-by-${name}.json"))
             }
             project.afterEvaluate {
                 variant.getTaskContainer().assembleTask.dependsOn(printAllJavaResTask)
             }
 
-            val preUpdateJavaResTaskAction = PreUpdateJavaResourcesTask(buildDir, "preUpdateJavaResTaskAction")
+            val javaResPathsOutput = project.objects.fileProperty().fileValue(
+                getOutputFile(
+                    buildDir,
+                    "all-java-res-by-${"preUpdateJavaResTaskAction".toLowerCase()}.json"
+                )
+            )
+            val preUpdateJavaResTaskAction = PreUpdateJavaResourcesTaskAction(javaResPathsOutput)
             variant.artifactsPolyfill.use(
                 action = preUpdateJavaResTaskAction,
                 toInPlaceUpdate = PolyfilledMultipleArtifact.ALL_JAVA_RES
             )
+
+            val getManifestMergeReportTask = project.tasks.register<GetManifestMergeReportTask>(
+                "getManifestMergeReportFor${variant.name.capitalize()}"
+            ) {
+                this.report.set(
+                    variant.artifactsPolyfill
+                        .get(InternalArtifactType.MANIFEST_MERGE_REPORT)
+                )
+                this.record.set(
+                    project.objects.fileProperty().fileValue(
+                        getOutputFile(
+                            buildDir,
+                            "manifest-merger-debug-report.txt"
+                        )
+                    )
+                )
+            }
+            project.afterEvaluate {
+                variant.getTaskContainer().assembleTask.dependsOn(getManifestMergeReportTask)
+            }
         }
 
         project.gradle.taskGraph.whenReady {
@@ -109,112 +135,139 @@ class TestPlugin : Plugin<Project> {
             taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
         }
 
-        // project.extensions.getByType<PolyfillExtension>()
-        //    .registerTaskExtensionConfig(DUMMY_SINGLE_ARTIFACT, DummySingleArtifactImpl::class)
     }
 
 
-    abstract class WorkingWithAapt2Task: DefaultTask() {
-        @get:Input
-        var aapt2: String = ""
+    abstract class WorkingWithAapt2Task : DefaultTask() {
 
-        @get:Internal
-        var buildDir: File? = null
+        @get:Input // This can be @Internal sometimes
+        abstract val aapt2Path: Property<String>
+
+        @get:OutputFile
+        abstract val record: RegularFileProperty
 
         @TaskAction
         fun beforeMerge() {
-            val aapt2PathOutput = getOutputFile(buildDir!!, "aapt2-path.txt")
-            aapt2PathOutput.createNewFile()
-            aapt2PathOutput.writeText(aapt2)
+            record.get().asFile.writeText(aapt2Path.get())
         }
+
     }
 
 
-    abstract class PrintAllManifestsTask: DefaultTask() {
+    abstract class PrintAllManifestsTask : DefaultTask() {
+
         @get:InputFiles
         abstract val beforeMergeInputs: ListProperty<RegularFile>
 
-        @get:Internal
-        var buildDir: File? = null
+        @get:OutputFile
+        abstract val record: RegularFileProperty
 
         @TaskAction
         fun beforeMerge() {
-            val manifestPathsOutput = getOutputFile(buildDir!!, "all-manifests-by-${name}.json")
-            manifestPathsOutput.createNewFile()
             beforeMergeInputs.get().let { files ->
-                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+                record.get().asFile.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
+
     }
 
 
     class PreUpdateManifestsTaskAction(
-        private val buildDir: File,
-        private val id: String
+        buildDir: File,
+        id: String
     ) : PolyfillAction<List<RegularFile>> {
-        override fun onTaskConfigure(task: Task) {
-        }
 
-        override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
-            val manifestPathsOutput = getOutputFile(buildDir, "all-manifests-by-${id}.json")
-            manifestPathsOutput.createNewFile()
-            beforeMergeInputs.get().let { files ->
-                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+        private val record = getOutputFile(buildDir, "all-manifests-by-${id}.json")
+
+        override fun onTaskConfigure(task: Task) {}
+
+        override fun onExecute(artifact: Provider<List<RegularFile>>) {
+            artifact.get().let { files ->
+                files.forEach {
+                    val manifestFile = it.asFile
+                    // Check per manifest input and filter whatever you want, remove broken pieces, etc.
+                    // val updatedContent = manifestFile.readText().replace("abc", "def")
+                    // manifestFile.writeText(updatedContent)
+                }
+                // Please do not write out new files in PolyfillAction for production usage
+                // since it's intent to update artifacts in place. For consuming & generating new files,
+                // you should use `get(...)` / `getAll(...)` with Task.
+                // Here we just want to export something for testing.
+                record.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
     }
 
-    class PostUpdateResourceTask(
-        private val buildDir: File,
+
+    class PostUpdateResourceTaskAction(
+        buildDir: File,
         private val beforeMergeInputs: Provider<List<Directory>>
     ) : PolyfillAction<Directory> {
-        override fun onTaskConfigure(task: Task) {
-        }
 
-        override fun onExecute(compiledFilesDir: Provider<Directory>) {
-            val allResourcesInputJSONFile = getOutputFile(buildDir, "all-resources.json")
+        private val allResourcesInputJSONFile = getOutputFile(buildDir, "all-resources.json")
+        private val resourcePathsOutput = getOutputFile(buildDir, "merged-resource-dir.txt")
+
+        override fun onTaskConfigure(task: Task) {}
+
+        override fun onExecute(artifact: Provider<Directory>) {
             allResourcesInputJSONFile.createNewFile()
             beforeMergeInputs.get().let { set ->
                 allResourcesInputJSONFile.writeText(JSON.toJSONString(set.map { it.asFile.absolutePath }))
             }
-            val resourcePathsOutput = getOutputFile(buildDir, "merged-resource-dir.txt")
+
             resourcePathsOutput.createNewFile()
-            resourcePathsOutput.writeText(compiledFilesDir.get().asFile.absolutePath)
+            resourcePathsOutput.writeText(artifact.get().asFile.absolutePath)
         }
     }
 
 
-    abstract class PrintAllJavaResourcesTask: DefaultTask() {
+    abstract class PrintAllJavaResourcesTask : DefaultTask() {
+
         @get:InputFiles
         abstract val beforeMergeInputs: ListProperty<RegularFile>
 
-        @get:Internal
-        var buildDir: File? = null
+        @get:OutputFile
+        abstract val record: RegularFileProperty
 
         @TaskAction
         fun beforeMerge() {
-            val manifestPathsOutput = getOutputFile(buildDir!!, "all-java-res-by-${name}.json")
-            manifestPathsOutput.createNewFile()
             beforeMergeInputs.get().let { files ->
-                manifestPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+                record.get().asFile.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
+
     }
 
-    class PreUpdateJavaResourcesTask(
-        private val buildDir: File,
-        private val id: String
+
+    class PreUpdateJavaResourcesTaskAction(
+        private val record: RegularFileProperty,
     ) : PolyfillAction<List<RegularFile>> {
+
         override fun onTaskConfigure(task: Task) {
+
         }
 
-        override fun onExecute(beforeMergeInputs: Provider<List<RegularFile>>) {
-            val javaResPathsOutput = getOutputFile(buildDir, "all-java-res-by-${id}.json")
-            javaResPathsOutput.createNewFile()
-            beforeMergeInputs.get().let { files ->
-                javaResPathsOutput.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+        override fun onExecute(artifact: Provider<List<RegularFile>>) {
+            artifact.get().let { files ->
+                record.get().asFile.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
+
+    }
+
+    abstract class GetManifestMergeReportTask : DefaultTask() {
+
+        @get: InputFile
+        abstract val report: RegularFileProperty
+
+        @get: OutputFile
+        abstract val record: RegularFileProperty
+
+        @TaskAction
+        fun onPrint() {
+            record.get().asFile.writeText(report.get().asFile.readText())
+        }
+
     }
 
 
@@ -226,9 +279,7 @@ class TestPlugin : Plugin<Project> {
             return File(
                 buildDir,
                 "functionTestOutput" + File.separator + fileName
-            ).apply {
-                createNewFile()
-            }
+            )
         }
     }
 
