@@ -1,10 +1,11 @@
 package me.xx2bab.polyfill.buildscript
 
-plugins{
+plugins {
     `maven-publish`
     signing
 }
 
+val publishType = (project.properties["me.2bab.maven.publish.type"] as String) ?: "jar"
 
 // Stub secrets to let the project sync and build without the publication values set up
 ext["signing.keyId"] = null
@@ -31,9 +32,9 @@ if (secretPropsFile.exists()) {
     ext["ossrh.username"] = System.getenv("OSSRH_USERNAME")
     ext["ossrh.password"] = System.getenv("OSSRH_PASSWORD")
 }
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("javadoc")
-}
+//val javadocJar by tasks.registering(Jar::class) {
+//    archiveClassifier.set("javadoc")
+//}
 fun getExtraString(name: String) = ext[name]?.toString()
 
 
@@ -52,43 +53,60 @@ val inception = "2018"
 
 val username = "2BAB"
 
+fun MavenPublication.configMetadata(publishType: String) {
+    // artifact(javadocJar.get())
+    if (publishType != "plugin") {
+        from(components["java"])
+    }
+    pom {
+        // Description
+        name.set(projectName)
+        description.set(mavenDesc)
+        url.set(siteUrl)
+
+        // Archive
+        groupId = groupName
+        artifactId = project.name
+        version = BuildConfig.Versions.polyfillDevVersion
+
+        // License
+        inceptionYear.set(inception)
+        licenses {
+            licenseNames.forEachIndexed { ln, li ->
+                license {
+                    name.set(li)
+                    url.set(licenseUrls[ln])
+                }
+            }
+        }
+        developers {
+            developer {
+                name.set(username)
+            }
+        }
+        scm {
+            connection.set(gitUrl)
+            developerConnection.set(gitUrl)
+            url.set(siteUrl)
+        }
+    }
+}
+
 
 publishing {
-
     publications {
-        create<MavenPublication>("PolyfillArtifact") {
-            artifact(javadocJar.get())
-            from(components["java"])
-            pom {
-                // Description
-                name.set(projectName)
-                description.set(mavenDesc)
-                url.set(siteUrl)
-
-                // Archive
-                groupId = groupName
-                artifactId = project.name
-                version = BuildConfig.Versions.polyfillDevVersion
-
-                // License
-                inceptionYear.set(inception)
-                licenses {
-                    licenseNames.forEachIndexed { ln, li ->
-                        license {
-                            name.set(li)
-                            url.set(licenseUrls[ln])
-                        }
+        afterEvaluate {
+            when (publishType) {
+                "jar" -> {
+                    create<MavenPublication>("PolyfillArtifact") {
+                        configMetadata(publishType)
                     }
                 }
-                developers {
-                    developer {
-                        name.set(username)
+
+                "plugin" -> {
+                    named<MavenPublication>("pluginMaven") {
+                        configMetadata(publishType)
                     }
-                }
-                scm {
-                    connection.set(gitUrl)
-                    developerConnection.set(gitUrl)
-                    url.set(siteUrl)
                 }
             }
         }
@@ -115,6 +133,8 @@ publishing {
     }
 }
 
-signing {
-    sign(publishing.publications)
+afterEvaluate {
+    signing {
+        sign(publishing.publications)
+    }
 }

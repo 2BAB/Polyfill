@@ -14,12 +14,10 @@ import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.withType
 
 /**
- * To retrieve all java resources (except current module)
- * that will participate the merge process.
+ * To retrieve all java resources for external projects
+ * that will participate the resource merge process.
  */
-@Deprecated(message = "Since AGP 8.1, the `subProjectJavaRes` become Directory type, " +
-        "we need to separate them into different artifacts.")
-class JavaResourceMergePreHookConfiguration(
+class JavaResourceMergeOfExtProjectsPreHookConfiguration(
     project: Project,
     appVariant: ApplicationVariant,
     actionList: () -> List<PolyfillAction<List<RegularFile>>>
@@ -31,17 +29,13 @@ class JavaResourceMergePreHookConfiguration(
         val variantCapitalizedName = variant.getCapitalizedName()
         project.afterEvaluate {
             val mergeTask = project.tasks.withType<MergeJavaResourceTask>().first {
-                it.name.contains(variantCapitalizedName)
+                it.name.contains(variantCapitalizedName, true)
                         && it.name.contains("test", true).not()
             }
 
             // Setup data
-            val subProjectsJavaResList = mergeTask.subProjectJavaRes
-                .getRegularFiles(project.rootProject.layout.projectDirectory)
-            val externalDepJavaResList = mergeTask.externalLibJavaRes
-                .getRegularFiles(project.rootProject.layout.projectDirectory)
-            val all = subProjectsJavaResList.zip(externalDepJavaResList) { a, b -> a + b }
-            (data as ListProperty<RegularFile>).set(all)
+            (data as ListProperty<RegularFile>).set(mergeTask.externalLibJavaRes
+                .getRegularFiles(project.rootProject.layout.projectDirectory))
 
             val localData = data
             // Setup in-place-update
@@ -53,6 +47,5 @@ class JavaResourceMergePreHookConfiguration(
             }
         }
     }
-
 
 }

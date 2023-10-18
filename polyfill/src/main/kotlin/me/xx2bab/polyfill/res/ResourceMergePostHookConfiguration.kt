@@ -2,13 +2,14 @@ package me.xx2bab.polyfill.res
 
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.scope.InternalArtifactType
+import com.android.build.gradle.tasks.MergeResources
 import me.xx2bab.polyfill.PolyfillAction
-import me.xx2bab.polyfill.getApkCreationConfigImpl
-import me.xx2bab.polyfill.getTaskContainer
+import me.xx2bab.polyfill.getArtifactsImpl
 import me.xx2bab.polyfill.task.SingleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.withType
 
 /**
  * Configurations for fetching required data and set up dependencies
@@ -27,16 +28,19 @@ class ResourceMergePostHookConfiguration(
         // We try to avoid using afterEvaluate{},
         // but here it looks like the best workaround...
         project.afterEvaluate {
-            // MergeResources
-            val mergeTaskProvider = appVariant.getTaskContainer().mergeResourcesTask
-
             val localData = data
 
             // To consume the task instance here is ok,
             // since the merge task must run in a clean build,
             // it's not an avoidance task actually...
-            val mergeTask = mergeTaskProvider.get()
-
+            // val mergeTask = mergeTaskProvider.get()
+            val mergeTask = project.tasks.withType<MergeResources>().first {
+                it.name.let { taskName ->
+                    taskName.equals("merge${appVariant.name}Resources", true)
+                            && taskName.contains("test").not()
+                }
+            }
+            println("mergeTaskkkk" + (mergeTask.name))
             actionList().forEachIndexed { index, action ->
                 action.onTaskConfigure(mergeTask)
                 mergeTask.doLast("ResourceMergePostHookByPolyfill$index") {
@@ -65,9 +69,7 @@ class ResourceMergePostHookConfiguration(
 
     class CreationAction(private val appVariant: ApplicationVariant) {
         fun extractMergedRes(): Provider<Directory> {
-            return appVariant.getApkCreationConfigImpl()
-                .config
-                .artifacts
+            return appVariant.getArtifactsImpl()
                 .get(InternalArtifactType.MERGED_RES)
         }
     }

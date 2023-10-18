@@ -58,9 +58,9 @@ class PolyfillPlugin : Plugin<Project> {
 
     private fun checkSupportedGradleVersion() {
         val curr = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_VERSION)
-        val min = SemanticVersionLite("7.1")
+        val min = SemanticVersionLite("8.0")
         if (curr < min) {
-            throw throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version 7.1")
+            throw throw UnsupportedAGPVersionException("Required minimum Android Gradle Plugin version $min, currently it is $curr")
         }
     }
 
