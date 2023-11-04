@@ -6,12 +6,12 @@ import com.android.build.api.artifact.impl.ArtifactsImpl
 import com.android.build.api.component.analytics.AnalyticsEnabledApplicationVariant
 import com.android.build.api.component.analytics.AnalyticsEnabledArtifacts
 import com.android.build.api.component.analytics.AnalyticsEnabledLibraryVariant
-import com.android.build.api.component.impl.ApkCreationConfigImpl
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.api.variant.LibraryVariant
 import com.android.build.api.variant.Variant
 import com.android.build.api.variant.impl.ApplicationVariantImpl
 import com.android.build.api.variant.impl.LibraryVariantImpl
+import com.android.build.gradle.internal.dependency.VariantDependencies
 import com.android.build.gradle.internal.plugins.BasePlugin
 import com.android.build.gradle.internal.scope.MutableTaskContainer
 import com.android.build.gradle.internal.services.VersionedSdkLoaderService
@@ -45,26 +45,24 @@ fun Variant.getAgpVersion() = SemanticVersionLite(Version.ANDROID_GRADLE_PLUGIN_
  * @return [BuildToolInfo] wrapped by [Provider].
  */
 fun Variant.getBuildToolInfo(project: Project): Provider<BuildToolInfo> {
-    return BuildToolInfoPatch(this).applyOrDefault {
-        val plugin = when (this) {
-            is ApplicationVariant -> {
-                project.plugins.getPlugin(com.android.build.gradle.internal.plugins.AppPlugin::class.java)
-            }
-
-            is LibraryVariant -> {
-                project.plugins.getPlugin(com.android.build.gradle.internal.plugins.LibraryPlugin::class.java)
-            }
-
-            else -> {
-                throw UnsupportedOperationException("Can not find corresponding plugin associated to $this.")
-            }
+    val plugin = when (this) {
+        is ApplicationVariant -> {
+            project.plugins.getPlugin(com.android.build.gradle.internal.plugins.AppPlugin::class.java)
         }
-        val sdkLoaderService = ReflectionKit.getField(
-            BasePlugin::class.java,
-            plugin, "versionedSdkLoaderService"
-        ) as VersionedSdkLoaderService
-        sdkLoaderService.versionedSdkLoader.get().buildToolInfoProvider
+
+        is LibraryVariant -> {
+            project.plugins.getPlugin(com.android.build.gradle.internal.plugins.LibraryPlugin::class.java)
+        }
+
+        else -> {
+            throw UnsupportedOperationException("Can not find corresponding plugin associated to $this.")
+        }
     }
+    val sdkLoaderServiceLazy = ReflectionKit.getField(
+        BasePlugin::class.java,
+        plugin, "versionedSdkLoaderService\$delegate"
+    ) as Lazy<VersionedSdkLoaderService>
+    return sdkLoaderServiceLazy.value.versionedSdkLoader.get().buildToolInfoProvider
 }
 
 
@@ -95,13 +93,20 @@ fun ApplicationVariant.getApplicationVariantImpl(): ApplicationVariantImpl {
 }
 
 /**
- * Indirect implementation of [com.android.build.gradle.internal.component.ApkCreationConfig].
- * The [ApkCreationConfigImpl.config] provides internal Artifacts APIs that can be consumed
- * for more intermediate files.
+ * The [VariantDependencies] provides `getArtifactCollection(...)` and more APIs to collect
+ * artifacts from all dependencies.
  *
- * @return [ApkCreationConfigImpl]
+ * @return [VariantDependencies]
  */
-fun ApplicationVariant.getApkCreationConfigImpl() = getApplicationVariantImpl().delegate
+fun ApplicationVariant.getVariantDependenciesImpl() = getApplicationVariantImpl().variantDependencies
+
+/**
+ * The [ArtifactsImpl] provides internal Artifacts APIs
+ * that can be consumed for more intermediate files.
+ *
+ * @return [ArtifactsImpl]
+ */
+fun ApplicationVariant.getArtifactsImpl() = getApplicationVariantImpl().artifacts
 
 
 /**
@@ -110,7 +115,7 @@ fun ApplicationVariant.getApkCreationConfigImpl() = getApplicationVariantImpl().
  *
  * @return [MutableTaskContainer]
  */
-fun ApplicationVariant.getTaskContainer() = getApkCreationConfigImpl().config.taskContainer
+fun ApplicationVariant.getTaskContainer() = getApplicationVariantImpl().taskContainer
 
 
 ////////// LibraryVariant //////////

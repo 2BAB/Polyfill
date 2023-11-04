@@ -58,4 +58,7 @@ class SemanticVersionLite(private var version: String) : Comparable<SemanticVers
         return version.hashCode()
     }
 
+    override fun toString(): String {
+        return version
+    }
 }

@@ -1,5 +1,3 @@
-import java.util.*
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -8,11 +6,11 @@ plugins {
 
 android {
     namespace = "me.xx2bab.polyfill.sample"
-    compileSdkVersion(31)
     defaultConfig {
         applicationId = "me.xx2bab.polyfill.sample"
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 34
+        compileSdkVersion = "android-34"
         versionCode = 1
         versionName = "1.0"
     }
@@ -21,10 +19,26 @@ android {
             isMinifyEnabled = false
         }
     }
+
     sourceSets["main"].java.srcDir("src/main/kotlin")
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation(projects.androidLib)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }

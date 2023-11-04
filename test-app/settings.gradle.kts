@@ -50,7 +50,7 @@ if (enabledCompositionBuild) {
     includeBuild(externalDependencyBaseDir) {
         dependencySubstitution {
             substitute(module("me.2bab:polyfill-test-plugin"))
-                .with(project(":polyfill-test-plugin"))
+                .using(project(":polyfill-test-plugin"))
         }
     }
 }
