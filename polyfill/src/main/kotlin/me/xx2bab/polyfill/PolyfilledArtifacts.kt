@@ -24,8 +24,6 @@ interface PolyfilledApplicationArtifact : PolyfilledPluginType
 interface PolyfilledLibraryArtifact : PolyfilledPluginType
 
 
-
-
 /**
  * The polyfill version of [Artifact].
  */
@@ -38,10 +36,10 @@ sealed class PolyfilledSingleArtifact<FileTypeT : FileSystemLocation,
         PluginTypeT : PolyfilledPluginType>(kind: ArtifactKind<FileTypeT>) :
     PolyfilledArtifact<FileTypeT>(kind) {
 
-        // For MERGED_MANIFEST you can use
-        // [com.android.build.api.artifact.SingleArtifact.MERGED_MANIFEST] directly.
-        // object MERGED_MANIFEST :
-        //     PolyfilledSingleArtifact<RegularFile, PolyfilledApplicationArtifact>(ArtifactKind.FILE)
+    // For MERGED_MANIFEST you can use
+    // [com.android.build.api.artifact.SingleArtifact.MERGED_MANIFEST] directly.
+    // object MERGED_MANIFEST :
+    //     PolyfilledSingleArtifact<RegularFile, PolyfilledApplicationArtifact>(ArtifactKind.FILE)
 
     object MERGED_RESOURCES :
         PolyfilledSingleArtifact<Directory, PolyfilledApplicationArtifact>(ArtifactKind.DIRECTORY)
@@ -60,7 +58,21 @@ sealed class PolyfilledMultipleArtifact<FileTypeT : FileSystemLocation,
     object ALL_RESOURCES :
         PolyfilledMultipleArtifact<Directory, PolyfilledApplicationArtifact>(ArtifactKind.DIRECTORY)
 
+    @Deprecated(
+        message = "Since AGP 8.1, sub projects and external projects has different " +
+                "ArtifactKind type, so we will need to separate them.",
+        replaceWith = ReplaceWith(
+            "Do find these two separated artifacts.",
+            "ALL_JAVA_RES_OF_SUB_PROJECTS",
+            "ALL_JAVA_RES_OF_EXT_PROJECTS"
+        )
+    )
     object ALL_JAVA_RES :
         PolyfilledMultipleArtifact<RegularFile, PolyfilledApplicationArtifact>(ArtifactKind.FILE)
-}
 
+    object ALL_JAVA_RES_OF_SUB_PROJECTS :
+        PolyfilledMultipleArtifact<Directory, PolyfilledApplicationArtifact>(ArtifactKind.DIRECTORY)
+
+    object ALL_JAVA_RES_OF_EXT_PROJECTS :
+        PolyfilledMultipleArtifact<RegularFile, PolyfilledApplicationArtifact>(ArtifactKind.FILE)
+}

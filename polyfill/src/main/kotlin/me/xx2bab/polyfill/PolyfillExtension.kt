@@ -1,5 +1,7 @@
 package me.xx2bab.polyfill
 
+import me.xx2bab.polyfill.jar.JavaResourceMergeOfExtProjectsPreHookConfiguration
+import me.xx2bab.polyfill.jar.JavaResourceMergeOfSubProjectsPreHookConfiguration
 import me.xx2bab.polyfill.jar.JavaResourceMergePreHookConfiguration
 import me.xx2bab.polyfill.manifest.ManifestMergePreHookConfiguration
 import me.xx2bab.polyfill.res.ResourceMergePostHookConfiguration
@@ -23,7 +25,9 @@ abstract class PolyfillExtension {
             KClass<out TaskExtendConfiguration<*>>>(
         PolyfilledMultipleArtifact.ALL_MANIFESTS to ManifestMergePreHookConfiguration::class,
         PolyfilledMultipleArtifact.ALL_RESOURCES to ResourceMergePreHookConfiguration::class,
-        PolyfilledMultipleArtifact.ALL_JAVA_RES to JavaResourceMergePreHookConfiguration::class
+        PolyfilledMultipleArtifact.ALL_JAVA_RES to JavaResourceMergePreHookConfiguration::class,
+        PolyfilledMultipleArtifact.ALL_JAVA_RES_OF_SUB_PROJECTS to JavaResourceMergeOfSubProjectsPreHookConfiguration::class,
+        PolyfilledMultipleArtifact.ALL_JAVA_RES_OF_EXT_PROJECTS to JavaResourceMergeOfExtProjectsPreHookConfiguration::class,
     )
 
     /**

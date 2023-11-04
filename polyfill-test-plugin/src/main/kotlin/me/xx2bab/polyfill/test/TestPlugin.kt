@@ -5,7 +5,12 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.internal.scope.InternalArtifactType
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.sdklib.BuildToolInfo
-import me.xx2bab.polyfill.*
+import me.xx2bab.polyfill.PolyfillAction
+import me.xx2bab.polyfill.PolyfilledMultipleArtifact
+import me.xx2bab.polyfill.PolyfilledSingleArtifact
+import me.xx2bab.polyfill.artifactsPolyfill
+import me.xx2bab.polyfill.getBuildToolInfo
+import me.xx2bab.polyfill.getTaskContainer
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,7 +21,11 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 import java.io.File
@@ -89,7 +98,20 @@ class TestPlugin : Plugin<Project> {
                     variant.artifactsPolyfill
                         .getAll(PolyfilledMultipleArtifact.ALL_JAVA_RES)
                 )
-                record.set(getOutputFile(buildDir, "all-java-res-by-${name}.json"))
+                beforeMergeInputsForSubProjects.set(
+                    variant.artifactsPolyfill
+                        .getAll(PolyfilledMultipleArtifact.ALL_JAVA_RES_OF_SUB_PROJECTS)
+                )
+                beforeMergeInputsForExtProjects.set(
+                    variant.artifactsPolyfill
+                        .getAll(PolyfilledMultipleArtifact.ALL_JAVA_RES_OF_EXT_PROJECTS)
+                )
+                record.set(getOutputFile(buildDir,
+                    "all-java-res-by-${name}.json"))
+                recordForSubProjects.set(getOutputFile(buildDir,
+                    "all-java-res-of-sub-projects-by-${name}.json"))
+                recordForExtProjects.set(getOutputFile(buildDir,
+                    "all-java-res-of-ext-projects-by-${name}.json"))
             }
             project.afterEvaluate {
                 variant.getTaskContainer().assembleTask.dependsOn(printAllJavaResTask)
@@ -129,10 +151,13 @@ class TestPlugin : Plugin<Project> {
         }
 
         project.gradle.taskGraph.whenReady {
-            val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
-            val taskDepsTxt = getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
-            taskDepsTxt.createNewFile()
-            taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
+            if (project.tasks.findByName("getAllInputManifestsForDebug") != null) {
+//                val deps = getDependencies(project.tasks.getByName("getAllInputManifestsForDebug"))
+//                val taskDepsTxt =
+//                    getOutputFile(buildDir, "get-all-input-manifests-for-debug-task-deps.txt")
+//                taskDepsTxt.createNewFile()
+//                taskDepsTxt.writeText(deps.joinToString(", ") { it.name })
+            }
         }
 
     }
@@ -226,13 +251,34 @@ class TestPlugin : Plugin<Project> {
         @get:InputFiles
         abstract val beforeMergeInputs: ListProperty<RegularFile>
 
+        @get:InputFiles
+        abstract val beforeMergeInputsForSubProjects: ListProperty<Directory>
+
+        @get:InputFiles
+        abstract val beforeMergeInputsForExtProjects: ListProperty<RegularFile>
+
         @get:OutputFile
         abstract val record: RegularFileProperty
+
+        @get:OutputFile
+        abstract val recordForSubProjects: RegularFileProperty
+
+        @get:OutputFile
+        abstract val recordForExtProjects: RegularFileProperty
 
         @TaskAction
         fun beforeMerge() {
             beforeMergeInputs.get().let { files ->
-                record.get().asFile.writeText(JSON.toJSONString(files.map { it.asFile.absolutePath }))
+                record.get().asFile.writeText(
+                    JSON.toJSONString(files.map { it.asFile.absolutePath }))
+            }
+            beforeMergeInputsForSubProjects.get().let { files ->
+                recordForSubProjects.get().asFile.writeText(
+                    JSON.toJSONString(files.map { it.asFile.absolutePath }))
+            }
+            beforeMergeInputsForExtProjects.get().let { files ->
+                recordForExtProjects.get().asFile.writeText(
+                    JSON.toJSONString(files.map { it.asFile.absolutePath }))
             }
         }
 

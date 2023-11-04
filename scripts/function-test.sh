@@ -2,6 +2,6 @@
 # because the Polyfill project is under incubating.
 
 # One for current min support version
-./gradlew clean functionalTest -PagpVersion=7.1.2
+./gradlew clean functionalTest -PagpVersion=8.0.1
 # One for latest version
-./gradlew clean functionalTest -PagpVersion=7.2.0-beta04
+./gradlew clean functionalTest -PagpVersion=8.1.2

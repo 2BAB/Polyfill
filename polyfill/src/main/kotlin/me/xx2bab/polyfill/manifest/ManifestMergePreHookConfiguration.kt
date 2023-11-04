@@ -3,8 +3,8 @@ package me.xx2bab.polyfill.manifest
 import com.android.build.api.variant.ApplicationVariant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import me.xx2bab.polyfill.PolyfillAction
-import me.xx2bab.polyfill.getApkCreationConfigImpl
 import me.xx2bab.polyfill.getCapitalizedName
+import me.xx2bab.polyfill.getVariantDependenciesImpl
 import me.xx2bab.polyfill.task.MultipleArtifactTaskExtendConfiguration
 import org.gradle.api.Project
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
@@ -26,8 +26,7 @@ class ManifestMergePreHookConfiguration(
 
     override val data: Provider<List<RegularFile>> = project.objects.newInstance(
         CreateAction::class.java,
-        appVariant.getApkCreationConfigImpl().config
-            .variantDependencies
+        appVariant.getVariantDependenciesImpl()
             .getArtifactCollection(
                 AndroidArtifacts.ConsumedConfigType.RUNTIME_CLASSPATH,
                 AndroidArtifacts.ArtifactScope.ALL,

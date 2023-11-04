@@ -9,7 +9,7 @@ plugins {
 }
 val versionCatalog = extensions.getByType<VersionCatalogsExtension>().named("deps")
 val defaultAGPVer = versionCatalog.findVersion("agpVer").get().requiredVersion
-val defaultAGP = versionCatalog.findDependency("android-gradle-plugin").get()
+val defaultAGP = versionCatalog.findLibrary("android-gradle-plugin").get()
 
 val fixtureClasspath: Configuration by configurations.creating
 tasks.pluginUnderTestMetadata {
@@ -61,11 +61,9 @@ val test by tasks.getting(Test::class) {
     }
 }
 
-@Suppress("UnstableApiUsage")
 val fixtureAgpVersion: String = providers
     .environmentVariable("AGP_VERSION")
-    .forUseAtConfigurationTime()
-    .orElse(providers.gradleProperty("agpVersion").forUseAtConfigurationTime())
+    .orElse(providers.gradleProperty("agpVersion"))
     .getOrElse(defaultAGPVer)
 
 
