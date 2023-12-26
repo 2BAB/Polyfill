@@ -32,9 +32,9 @@ if (secretPropsFile.exists()) {
     ext["ossrh.username"] = System.getenv("OSSRH_USERNAME")
     ext["ossrh.password"] = System.getenv("OSSRH_PASSWORD")
 }
-//val javadocJar by tasks.registering(Jar::class) {
-//    archiveClassifier.set("javadoc")
-//}
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
 fun getExtraString(name: String) = ext[name]?.toString()
 
 
@@ -54,7 +54,7 @@ val inception = "2018"
 val username = "2BAB"
 
 fun MavenPublication.configMetadata(publishType: String) {
-    // artifact(javadocJar.get())
+    artifact(javadocJar)
     if (publishType != "plugin") {
         from(components["java"])
     }
