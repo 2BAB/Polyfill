@@ -5,7 +5,7 @@ buildConfigVer = "3.0.3"
 agpVer = "8.1.2"
 agpPatchIgnoredVer = "8.1.0" # To be used by backport version matching
 agpBackportVer = "8.0.1"
-agpBackportPatchIgnoredVer = "8.0.1" # To be used by backport version matching, e.g. apply backport patches when (7.1.0 <= ver < 7.2.0)
+agpBackportPatchIgnoredVer = "8.0.0" # To be used by backport version matching, e.g. apply backport patches when (7.1.0 <= ver < 7.2.0)
 agpNextBetaVer = "8.2.0-beta06"
 
 # Please refer to https://mvnrepository.com/artifact/com.android.tools/sdk-common?repo=google
