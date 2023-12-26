@@ -7,5 +7,4 @@ do
 ./gradlew :"$module":publishPolyfillArtifactPublicationToSonatypeRepository
 done
 ./gradlew :polyfill:publishPluginMavenPublicationToSonatypeRepository
-./gradlew :polyfill:publishMe.2bab.polyfillPluginMarkerMavenPublicationToSonatypeRepository
 ./gradlew aggregateJars releaseArtifactsToGithub
