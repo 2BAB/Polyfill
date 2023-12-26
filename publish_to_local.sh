@@ -8,5 +8,4 @@ do
 done
 
 ./gradlew clean :polyfill:publishPluginMavenPublicationToMavenLocalRepository
-./gradlew clean :polyfill:publishMe.2bab.polyfillPluginMarkerMavenPublicationToMyMavenlocalRepository
 ./gradlew clean :polyfill-test-plugin:publishAllPublicationsToMyMavenlocalRepository
