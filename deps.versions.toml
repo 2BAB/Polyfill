@@ -1,5 +1,5 @@
 [versions]
-kotlinVer = "1.9.10"
+kotlinVer = "1.9.22"
 buildConfigVer = "3.0.3"
 
 agpVer = "8.1.2"
