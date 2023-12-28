@@ -138,7 +138,8 @@ Polyfill is only supported & tested on latest **2** Minor versions of Android Gr
 
 |  AGP Version  |      Latest Support Version      |
 |:-------------:|:--------------------------------:|
-| 7.2.x / 7.1.x |              0.8.0               |
+| 8.1.x / 8.0.x |              0.9.0               |
+| 7.2.x / 7.1.x |              0.8.1               |
 | 7.2.x / 7.1.x |              0.7.0               |
 |     7.1.x     |              0.6.2               |
 |     7.0.x     |              0.4.1               |
