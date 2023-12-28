@@ -20,7 +20,7 @@ Polyfill 是一个第三方的**工件仓库**，服务于编写 Android 构建�
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:8.1.2")
-    implementation("me.2bab:polyfill:0.9.1")  <--
+    implementation("me.2bab:polyfill:0.9.1")
 }
 ```
 
