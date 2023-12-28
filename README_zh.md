@@ -20,7 +20,7 @@ Polyfill 是一个第三方的**工件仓库**，服务于编写 Android 构建�
 ``` kotlin
 dependencies {
     compileOnly("com.android.tools.build:gradle:8.1.2")
-    implementation("me.2bab:polyfill:0.9.0")  <--
+    implementation("me.2bab:polyfill:0.9.1")
 }
 ```
 
@@ -141,8 +141,8 @@ Polyfill 只支持并在最新的两个 Android Gradle Plugin (minor) 版本进�
 
 |  AGP Version  |      Latest Support Version      |
 |:-------------:|:--------------------------------:|
-| 8.1.x / 8.0.x |              0.9.0               |
-| 7.2.x / 7.1.x |              0.8.0               |
+| 8.1.x / 8.0.x |              0.9.1               |
+| 7.2.x / 7.1.x |              0.8.1               |
 | 7.2.x / 7.1.x |              0.7.0               |
 |     7.1.x     |              0.6.2               |
 |     7.0.x     |              0.4.1               |

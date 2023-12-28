@@ -40,7 +40,6 @@ class ResourceMergePostHookConfiguration(
                             && taskName.contains("test").not()
                 }
             }
-            println("mergeTaskkkk" + (mergeTask.name))
             actionList().forEachIndexed { index, action ->
                 action.onTaskConfigure(mergeTask)
                 mergeTask.doLast("ResourceMergePostHookByPolyfill$index") {

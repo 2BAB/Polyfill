@@ -32,7 +32,6 @@ fun createGithubReleaseTaskInternal(
     version: String,
     releaseNotes: String
 ): TaskProvider<GithubReleaseTask> {
-//    val id = version.replace(".", "")
     return project.tasks.register<GithubReleaseTask>("releaseArtifactsToGithub") {
         authorization.set("Token $token")
         owner.set("2bab")

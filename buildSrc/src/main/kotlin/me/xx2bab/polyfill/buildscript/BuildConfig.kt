@@ -12,7 +12,7 @@ object BuildConfig {
     }
 
     object Versions {
-        const val polyfillDevVersion = "0.9.0"
+        const val polyfillDevVersion = "0.9.1"
 
         val polyfillSourceCompatibilityVersion = JavaVersion.VERSION_11
         val polyfillTargetCompatibilityVersion = JavaVersion.VERSION_17
